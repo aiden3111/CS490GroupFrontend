@@ -35,8 +35,12 @@ function RegistrationPage() {
       .catch((err) => console.error("Errorrrrrrr:", err));
   };
   return (
-    <div style={{ backgroundColor: '#308b1a', minHeight: '100vh', padding: '20px' }}>
+
+  //TODO: Conecte eeeeeeverything to flask
+    <div style={{ backgroundColor: '#369236', minHeight: '100vh', padding: '20px' }}>
     <Container>
+    
+    
       <h1 className="text-center mb-4">Join here my friend</h1>
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -88,7 +92,7 @@ function RegistrationPage() {
             <Form.Group className="mb-3" controlId="formBasicDob">
               <Form.Label>Date of Birth</Form.Label>
               <Form.Control
-                type="number"
+                type="date"
                 placeholder="Date of Birth"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
@@ -154,5 +158,5 @@ function RegistrationPage() {
     </div>
   );
 }
-
+//TODO: if already has account link to login page
 export default RegistrationPage;

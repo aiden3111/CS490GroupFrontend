@@ -12,7 +12,8 @@ function LoginPage() {
 
 
   };
-
+  
+        //TODO: Conecte eeverything to flask
     const HandleGoogleLogin = (response) => {
         const googleToken = response.credential;
         fetch(`http://127.0.0.1:5000/api/google-login`, {
