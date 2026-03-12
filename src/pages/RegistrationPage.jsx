@@ -1,55 +1,45 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { GoogleLogin } from "@react-oauth/google";
-import './Regcss.css';
+import { useFormik } from "formik";
+import "./Regcss.css";
 
 function RegistrationPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [first_name, setFirstName] = useState("");
-  const [last_name, setLastName] = useState("");
-  const [dob, setDob] = useState("");
-  const [gender, setGender] = useState("");
-  const [phone_number, setPhoneNumber] = useState("");
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("Login attempted with:", { email, password });
-  };
-
-  const HandleGoogleLogin = (response) => {
-    const googleToken = response.credential;
-    fetch(`http://127.0.0.1:5000/api/google-login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token: googleToken }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Backend Response:", data);
+  //TODO: add Input validation
+  const formikForm = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      first_name: "",
+      last_name: "",
+      dob: "",
+      gender: "",
+      phone_number: "",
+      height: "",
+      weight: "",
+    },
+    onSubmit: (values) => {
+      fetch("http://127.0.0.1:5000/register/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       })
-      .catch((err) => console.error("Errorrrrrrr:", err));
-  };
+        .then((res) => res.json())
+        .then((data) => console.log("Success:", data))
+        .catch((err) => console.error("Error:", err));
+    },
+  });
   return (
-
-  //TODO: Conecte eeeeeeverything to flask
-    <div style={{ backgroundColor: '#369236', minHeight: '100vh', padding: '20px' }}>
-    <Container>
-    
-    
+    <div style={{ backgroundColor: "#369236", minHeight: "100vh", padding: "20px",}}>
       <h1 className="text-center mb-4">Join here my friend</h1>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={formikForm.handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
             type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="Enter email"
+            onChange={formikForm.handleChange}
+            value={formikForm.values.email}
           />
         </Form.Group>
 
@@ -57,9 +47,9 @@ function RegistrationPage() {
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="Password"
+            onChange={formikForm.handleChange}
+            value={formikForm.values.password}
           />
         </Form.Group>
 
@@ -69,9 +59,9 @@ function RegistrationPage() {
               <Form.Label>First Name</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="First Name"
-                value={first_name}
-                onChange={(e) => setFirstName(e.target.value)}
+                name="First Name"
+                onChange={formikForm.handleChange}
+                value={formikForm.values.first_name}
               />
             </Form.Group>
           </Col>
@@ -80,9 +70,9 @@ function RegistrationPage() {
               <Form.Label>Last Name</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Last Name"
-                value={last_name}
-                onChange={(e) => setLastName(e.target.value)}
+                name="Last Name"
+                onChange={formikForm.handleChange}
+                value={formikForm.values.last_name}
               />
             </Form.Group>
           </Col>
@@ -93,20 +83,20 @@ function RegistrationPage() {
               <Form.Label>Date of Birth</Form.Label>
               <Form.Control
                 type="date"
-                placeholder="Date of Birth"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
+                name="Date of Birth"
+                onChange={formikForm.handleChange}
+                value={formikForm.values.dob}
               />
             </Form.Group>
           </Col>
           <Col md={6}>
-            <Form.Group className="mb-3" controlId="formBasicDob">
+            <Form.Group className="mb-3" controlId="formBasicGender">
               <Form.Label>Gender</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Gender"
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
+                name="Gender"
+                onChange={formikForm.handleChange}
+                value={formikForm.values.gender}
               />
             </Form.Group>
           </Col>
@@ -115,9 +105,9 @@ function RegistrationPage() {
           <Form.Label>Phone Number</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Phone Number"
-            value={phone_number}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            name="Phone Number"
+            onChange={formikForm.handleChange}
+            value={formikForm.values.phone_number}
           />
         </Form.Group>
         <Row className="mb-3">
@@ -126,9 +116,9 @@ function RegistrationPage() {
               <Form.Label>Height</Form.Label>
               <Form.Control
                 type="number"
-                placeholder="Height"
-                value={height}
-                onChange={(e) => setHeight(e.target.value)}
+                name="Height"
+                onChange={formikForm.handleChange}
+                value={formikForm.values.height}
               />
             </Form.Group>
           </Col>
@@ -137,9 +127,9 @@ function RegistrationPage() {
               <Form.Label>Weight</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Weight"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
+                name="Weight"
+                onChange={formikForm.handleChange}
+                value={formikForm.values.height}
               />
             </Form.Group>
           </Col>
@@ -149,14 +139,12 @@ function RegistrationPage() {
           Sign In
         </Button>
       </Form>
-      <h2 className="text-center mb-4">Login with Google</h2>
-      <GoogleLogin
-        onSuccess={HandleGoogleLogin}
-        onError={() => console.log("Login Failed")}
-      />
-    </Container>
+      
     </div>
   );
 }
+//TODO: Add create account with google
+
+//TODO: Terms and conditions
 //TODO: if already has account link to login page
 export default RegistrationPage;
