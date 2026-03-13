@@ -1,7 +1,14 @@
 body {
-    background: linear-gradient(135deg, #000000 15%, #2c4b34 80%);
-    background-attachment: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: linear-gradient(135deg, #000000 15%, #2c4b34 80%);
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.containerdiv
+ {
+  background: "#369236";
+  padding: "20px";
+  border-radius: "15px";
 }

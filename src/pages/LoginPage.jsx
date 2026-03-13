@@ -1,73 +1,126 @@
-import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
-import { GoogleLogin } from '@react-oauth/google'; 
+import React, { useState } from "react";
+import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import { GoogleLogin } from "@react-oauth/google";
+import { useFormik } from "formik";
+import "./Regcss.css";
+import { Link } from "react-router-dom";
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const formikForm = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit: (values) => {
+      const creds = {
+        clientEmail: values.email,
+        password: values.password,
+      };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log('Login attempted with:', { email, password });
-
-
-  };
-  
-        //TODO: Conecte eeverything to flask
-    const HandleGoogleLogin = (response) => {
-        const googleToken = response.credential;
-        fetch(`http://127.0.0.1:5000/api/google-login`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token: googleToken }),
-        })
+      fetch("/api/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(creds),
+      })
         .then((res) => res.json())
         .then((data) => {
-            console.log("Backend Response:", data);
+          if (data.error) {
+            alert(data.error);
+          } else {
+            console.log("Success:", data);
+            alert("Login Successful!");
+          }
         })
         .catch((err) => console.error("Errorrrrrrr:", err));
-    };
+    },
+    validate: (values) => {
+      if (  values.email.length === 0 ||
+        values.password.length === 0) {
+        alert("All Fields are required.");
+        return { error: "Required" };
+      }
+    },
+  });
+
+  //TODO: TEst Google conection
+  //TODO: Redirect to profile page
+  const HandleGoogleLogin = (response) => {
+    const googleToken = response.credential;
+    fetch(`http://127.0.0.1:5000/api/google-login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token: googleToken }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Backend Response:", data);
+      })
+      .catch((err) => console.error("Errorrrrrrr:", err));
+  };
   return (
-    
     <Container>
+      <div
+        style={{
+            backgroundColor: "#385e38",
+          padding: "20px",
+          borderRadius: "15px",
+        }}
+      >
         <h1 className="text-center mb-4">Login here my friend</h1>
-        <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control
-                    type="email"
-                    placeholder="Enter email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </Form.Group>
+        <Form onSubmit={formikForm.handleSubmit}>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>Email address</Form.Label>
+            <Form.Control
+              type="email"
+              name="email"
+              onChange={formikForm.handleChange}
+              value={formikForm.values.email}
+            />
+          </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              name="password"
+              onChange={formikForm.handleChange}
+              value={formikForm.values.password}
+            />
+          </Form.Group>
 
-            <Button variant="primary" type="submit" className="w-100">
-                Login
-            </Button>
-        </Form>  
+          <Button variant="primary" type="submit" className="w-100">
+            Login
+          </Button>
+        </Form>
         <h2 className="text-center mb-4">Login with Google</h2>
         <GoogleLogin
-        onSuccess={HandleGoogleLogin}
-        onError={() => console.log('Login Failed')}
+          onSuccess={HandleGoogleLogin}
+          onError={() => console.log("Login Failed")}
         />
-    
-
+      </div>
+      <div
+        className="text-center mt-3"
+        style={{
+          backgroundColor: "#385e38",
+          marginBottom: 50,
+        }}
+      >
+        <p>
+          New Here? Create an account:  
+          <Link
+            to="/RegistrationPage"
+            style={{ color: "#1d271d", fontWeight: "bold" }}
+          >
+            Register here
+          </Link>
+        </p>
+      </div>
     </Container>
-    
   );
 }
-
+//TODO: Redirect to profile page
 export default LoginPage;
