@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { GoogleLogin } from "@react-oauth/google";
 import { useFormik } from "formik";
@@ -6,6 +7,7 @@ import "./Regcss.css";
 import { Link } from "react-router-dom";
 
 function LoginPage() {
+    const navigate = useNavigate();
   const formikForm = useFormik({
     initialValues: {
       email: "",
@@ -30,6 +32,7 @@ function LoginPage() {
             alert(data.error);
           } else {
             console.log("Success:", data);
+            navigate("/LandingPage");
             alert("Login Successful!");
           }
         })
