@@ -5,7 +5,6 @@ import { useFormik } from "formik";
 import "./Regcss.css";
 
 function RegistrationPage() {
-  //TODO: add Input validation
   const formikForm = useFormik({
     initialValues: {
       email: "",
@@ -18,8 +17,10 @@ function RegistrationPage() {
       height: "",
       weight: "",
     },
+    validateOnChange: false,
+    validateOnBlur: false,
     onSubmit: (values) => {
-      fetch("http://127.0.0.1:5000/register/", {
+      fetch("/api/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -28,8 +29,15 @@ function RegistrationPage() {
         .then((data) => console.log("Success:", data))
         .catch((err) => console.error("Error:", err));
     },
+    validate: values =>{
+        if(!values.email || !values.password || !values.first_name || !values.last_name || !values.dob) {
+            alert("All Fields are required.");
+            return { error: "Required" };
+    }
+  },
   });
   return (
+    <Container>
     <div style={{ backgroundColor: "#369236", minHeight: "100vh", padding: "20px",}}>
       <h1 className="text-center mb-4">Join here my friend</h1>
       <Form onSubmit={formikForm.handleSubmit}>
@@ -37,7 +45,7 @@ function RegistrationPage() {
           <Form.Label>Email address</Form.Label>
           <Form.Control
             type="email"
-            name="Enter email"
+            name="email"
             onChange={formikForm.handleChange}
             value={formikForm.values.email}
           />
@@ -47,7 +55,7 @@ function RegistrationPage() {
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            name="Password"
+            name="password"
             onChange={formikForm.handleChange}
             value={formikForm.values.password}
           />
@@ -59,7 +67,7 @@ function RegistrationPage() {
               <Form.Label>First Name</Form.Label>
               <Form.Control
                 type="text"
-                name="First Name"
+                name="first_name"
                 onChange={formikForm.handleChange}
                 value={formikForm.values.first_name}
               />
@@ -70,7 +78,7 @@ function RegistrationPage() {
               <Form.Label>Last Name</Form.Label>
               <Form.Control
                 type="text"
-                name="Last Name"
+                name="last_name"
                 onChange={formikForm.handleChange}
                 value={formikForm.values.last_name}
               />
@@ -83,7 +91,7 @@ function RegistrationPage() {
               <Form.Label>Date of Birth</Form.Label>
               <Form.Control
                 type="date"
-                name="Date of Birth"
+                name="dob"
                 onChange={formikForm.handleChange}
                 value={formikForm.values.dob}
               />
@@ -94,7 +102,7 @@ function RegistrationPage() {
               <Form.Label>Gender</Form.Label>
               <Form.Control
                 type="text"
-                name="Gender"
+                name="gender"
                 onChange={formikForm.handleChange}
                 value={formikForm.values.gender}
               />
@@ -105,7 +113,7 @@ function RegistrationPage() {
           <Form.Label>Phone Number</Form.Label>
           <Form.Control
             type="text"
-            name="Phone Number"
+            name="phone_number"
             onChange={formikForm.handleChange}
             value={formikForm.values.phone_number}
           />
@@ -116,7 +124,7 @@ function RegistrationPage() {
               <Form.Label>Height</Form.Label>
               <Form.Control
                 type="number"
-                name="Height"
+                name="height"
                 onChange={formikForm.handleChange}
                 value={formikForm.values.height}
               />
@@ -126,10 +134,10 @@ function RegistrationPage() {
             <Form.Group className="mb-3" controlId="formBasicWeight">
               <Form.Label>Weight</Form.Label>
               <Form.Control
-                type="text"
-                name="Weight"
+                type="number"
+                name="weight"
                 onChange={formikForm.handleChange}
-                value={formikForm.values.height}
+                value={formikForm.values.weight}
               />
             </Form.Group>
           </Col>
@@ -141,6 +149,7 @@ function RegistrationPage() {
       </Form>
       
     </div>
+    </Container>
   );
 }
 //TODO: Add create account with google
