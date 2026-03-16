@@ -4,6 +4,7 @@ import './App.css';
 import RegistrationPage from './pages/RegistrationPage';
 import LoginPage from './pages/LoginPage';
 import LandingPage from './pages/LandingPage';
+import UserProfile from './pages/UserProfile';
 function App() {
   return (
     /*Add the routes here*/
@@ -12,6 +13,7 @@ function App() {
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/RegistrationPage" element={<RegistrationPage />} />
         <Route path="/LandingPage" element={<LandingPage />} />
+        <Route path="/UserProfile/:clientId" element={<UserProfile/>} />
       
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>
