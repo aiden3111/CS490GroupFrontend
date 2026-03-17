@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { GoogleLogin } from "@react-oauth/google";
 import { useFormik } from "formik";
+import { useNavigate, Link } from "react-router-dom";
 import "./Regcss.css";
-import { Link } from "react-router-dom";
 
 function LoginPage() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const formikForm = useFormik({
     initialValues: {
       email: "",
@@ -32,19 +31,14 @@ function LoginPage() {
             alert(data.error);
           } else {
             console.log("Success:", data);
-            
-    
-          navigate("/UserProfile/${data.client_id}"); 
-  
-
+            navigate(`/UserProfile/${data.client_id}`);
             //navigate("/LandingPage");
           }
         })
         .catch((err) => console.error("Errorrrrrrr:", err));
     },
     validate: (values) => {
-      if (  values.email.length === 0 ||
-        values.password.length === 0) {
+      if (values.email.length === 0 || values.password.length === 0) {
         alert("All Fields are required.");
         return { error: "Required" };
       }
@@ -52,10 +46,9 @@ function LoginPage() {
   });
 
   //TODO: TEst Google conection
-  //TODO: Redirect to profile page
   const HandleGoogleLogin = (response) => {
     const googleToken = response.credential;
-    fetch(`http://127.0.0.1:5000/api/google-login`, {
+    fetch("/api/api/google-login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -72,7 +65,7 @@ function LoginPage() {
     <Container>
       <div
         style={{
-            backgroundColor: "#385e38",
+          backgroundColor: "#385e38",
           padding: "20px",
           borderRadius: "15px",
         }}
@@ -117,7 +110,7 @@ function LoginPage() {
         }}
       >
         <p>
-          New Here? Create an account:  
+          New Here? Create an account:
           <Link
             to="/RegistrationPage"
             style={{ color: "#1d271d", fontWeight: "bold" }}
@@ -129,5 +122,4 @@ function LoginPage() {
     </Container>
   );
 }
-//TODO: Redirect to profile page
 export default LoginPage;
