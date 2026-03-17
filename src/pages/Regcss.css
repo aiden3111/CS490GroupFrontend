@@ -32,3 +32,13 @@ body {
   align-items: center;
   font-weight: bold;
 }
+
+.GoogleButton{
+background: rgba(96, 201, 178, 0.2); 
+  margin: 15px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center; 
+  align-items: center;    
+  padding: 20px;
+}

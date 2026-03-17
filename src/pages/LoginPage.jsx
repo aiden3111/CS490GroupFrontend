@@ -58,6 +58,12 @@ function LoginPage() {
       .then((res) => res.json())
       .then((data) => {
         console.log("Backend Response:", data);
+        if (data.client_id) {
+            navigate(`/UserProfile/${data.client_id}`);
+        } else if (data["needs registration"]) {
+            alert("Account not found. Redirecting to sign up...");
+            navigate("/RegistrationPage");
+        }
       })
       .catch((err) => console.error("Errorrrrrrr:", err));
   };

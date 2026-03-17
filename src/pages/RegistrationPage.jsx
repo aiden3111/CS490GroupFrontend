@@ -117,7 +117,7 @@ function RegistrationPage() {
             <h1 className="text-center mb-4">Join here my friend</h1>
 
             <div className="GoogleButton">
-              <h2 className="text-center mb-4">Login with Google</h2>
+              <h2 className="text-center mb-4">Sign up with Google</h2>
               <GoogleLogin
                 onSuccess={handleGoogleSignup}
                 onError={() => console.log("Login Failed")}
