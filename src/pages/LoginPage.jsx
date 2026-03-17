@@ -32,8 +32,12 @@ function LoginPage() {
             alert(data.error);
           } else {
             console.log("Success:", data);
-            navigate("/LandingPage");
-            alert("Login Successful!");
+            
+    
+          navigate("/UserProfile/${data.client_id}"); 
+  
+
+            //navigate("/LandingPage");
           }
         })
         .catch((err) => console.error("Errorrrrrrr:", err));
