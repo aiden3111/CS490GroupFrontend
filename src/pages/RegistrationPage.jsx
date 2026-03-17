@@ -264,6 +264,6 @@ function RegistrationPage() {
 //TODO: Add create account with google
 //TODO: check unitos for height and weight
 //TODO: Terms and conditions
-//TODO: Redirect to profile page
+
 
 export default RegistrationPage;

@@ -31,7 +31,7 @@ function LoginPage() {
             alert(data.error);
           } else {
             console.log("Success:", data);
-            navigate(`/UserProfile/${data.client_id}`);
+            navigate(`/LandingPage/${data.client_id}`);
             //navigate("/LandingPage");
           }
         })
@@ -45,7 +45,7 @@ function LoginPage() {
     },
   });
 
-  //TODO: TEst Google conection
+
   const HandleGoogleLogin = (response) => {
     const googleToken = response.credential;
     fetch("/api/api/google-login", {
