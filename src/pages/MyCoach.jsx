@@ -3,7 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { Navbar, Nav } from "react-bootstrap";
 
-const LandingPage = () => {
+const MyCoach = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
@@ -43,8 +43,8 @@ const LandingPage = () => {
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
-          <li className="nav-item active">Dashboard</li>
-          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}> MyCoaches</li>
+          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
+          <li className="nav-item active">MyCoaches</li>
           <li className="nav-item">Workout Logs</li>
           <li className="nav-item">Meal Tracker</li>
           <li className="nav-item">Mood Tracker</li>
@@ -81,25 +81,25 @@ const LandingPage = () => {
         <div className="dashboard-grid">
           <div className="grid-left">
             <div className="section-card">
-              <h3> Mood Tracker</h3>
-              <div className="chart-placeholder">TODO: put the chart here</div>
+              <h3> My Coach</h3>
+              <div className="chart-placeholder">Coaches</div>
             </div>
 
             <div className="section-card">
-              <h3> Mood Tracker</h3>
-              <div className="chart-placeholder">TODO: put the chart here</div>
+              <h3> I dont know </h3>
+              <div className="chart-placeholder">I dont know</div>
             </div>
           </div>
 
           <div className="grid-right">
             <div className="section-card">
-              <h3>Top Coaches</h3>
-              <p>TODO: Loading coach recommendations.</p>
+              <h3>I dont know </h3>
+              <p>Maybe remove it</p>
             </div>
 
             <div className="section-card">
-              <h3>Top Coaches</h3>
-              <p>TODO: Loading coach recommendations.</p>
+                <h3>I dont know </h3>
+              <p>Maybe remove it</p>
             </div>
           </div>
         </div>
@@ -107,6 +107,5 @@ const LandingPage = () => {
     </div>
   );
 };
-//TODO: Fix Styling
-//TODO: Fix Sqares content
-export default LandingPage;
+//TODO: 
+export default MyCoach;

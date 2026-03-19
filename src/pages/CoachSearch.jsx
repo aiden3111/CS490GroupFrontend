@@ -1,7 +1,12 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
-
+  //TODO: add the links to side bar
+  //TODO: ask Litzy add a button back on user profile
+  //TODO: Add logut logit
+  //TODO: Build the top bar
+  //TODO: Filter coaches
+  //TODO: Send request
 const CoachSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
@@ -52,14 +57,14 @@ const CoachSearch = () => {
         .catch((err) => console.error("Fetch error:", err));
     }
   }, [query]);
-
+//Coach Search dont have lateral nav bar add filtering ans sorting instead
   return (
     <div className="coach-page">
     <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
-          <li className="nav-item">Dashboard</li>
-          <li className="nav-item">MyCoaches</li>
+          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
+          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}> MyCoaches</li>
           <li className="nav-item">Workout Logs</li>
           <li className="nav-item">Meal Tracker</li>
           <li className="nav-item">Mood Tracker</li>
