@@ -7,20 +7,36 @@ const LandingPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
+
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
-
     if (loggedInId !== clientId) {
       navigate(`/UserProfile/${loggedInId}`);
       return;
     }
   }, [clientId, navigate]);
 
+  const handleSearch = () => {
+    if (searchTerm.trim().length === 0) {
+      alert("Please enter a valid search term.");
+      return;
+    }
+    const encodedSearch = encodeURIComponent(searchTerm);
+    navigate(`/CoachSearch/${clientId}?search=${searchTerm}`);
+  };
+
+  const handleEnter = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   //TODO: add the links to side bar
   //TODO: ask Litzy add a button back on user profile
   //TODO: Add logut logit
   //TODO: Build the top bar
-  //TODO: add the search
+
+  
   return (
     <div className="dashboard-container">
       <nav className="sidebar">
@@ -34,12 +50,8 @@ const LandingPage = () => {
           <li className="nav-item">Messages</li>
           <li className="nav-item">Subscriptions</li>
           <li className="nav-item">Analytics</li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile
-          </li>
+          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>
+            My Profile </li>
         </ul>
 
         <div className="sidebar-bottom">
@@ -53,6 +65,15 @@ const LandingPage = () => {
 
           <div className="search-container">
             <p>Search here</p>
+            <input
+              type="text"
+              className="form-control search-input"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleEnter}
+            />
+            <button onClick={handleSearch}>Search</button>
           </div>
         </header>
 

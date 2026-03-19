@@ -62,7 +62,7 @@ function LoginPage() {
         if (data.client_id) {
             navigate(`/UserProfile/${data.client_id}`);
         } else if (data["needs registration"]) {
-            alert("Account not found. Redirecting to sign up...");
+            alert("Account not found.");
             navigate("/RegistrationPage");
         }
       })

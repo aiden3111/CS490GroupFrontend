@@ -186,3 +186,11 @@ body {
   height: 100%; 
   border: 1px solid #333;
 }
+
+.coach-page{
+    display: flex;
+    height: 100vh;
+    background-color: #09090b;
+    color: #ffffff;
+
+}
