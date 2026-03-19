@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+import ProtectedRoutes from './ProtectedRoutes';
 
 import RegistrationPage from './pages/RegistrationPage';
 import LoginPage from './pages/LoginPage';
@@ -12,8 +13,8 @@ function App() {
       <Routes>
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/RegistrationPage" element={<RegistrationPage />} />
-        <Route path="/LandingPage/:clientId" element={<LandingPage />} />
-        <Route path="/UserProfile/:clientId" element={<UserProfile/>} />
+        <Route path="/LandingPage/:clientId" element={ <ProtectedRoutes> <LandingPage /> </ProtectedRoutes> } />
+        <Route path="/UserProfile/:clientId" element={ <ProtectedRoutes> <UserProfile/> </ProtectedRoutes> } />
       
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>

@@ -31,6 +31,7 @@ function LoginPage() {
             alert(data.error);
           } else {
             console.log("Success:", data);
+            localStorage.setItem("authenticatedClientId", data.client_id);
             navigate(`/LandingPage/${data.client_id}`);
             //navigate("/LandingPage");
           }

@@ -1,11 +1,20 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar, Nav } from "react-bootstrap";
 
 const LandingPage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
+  useEffect(() => {
+    const loggedInId = localStorage.getItem("authenticatedClientId");
+
+    if (loggedInId !== clientId) {
+      navigate(`/UserProfile/${loggedInId}`);
+      return;
+    }
+  }, [clientId, navigate]);
 
   //TODO: add the links to side bar
   //TODO: ask Litzy add a button back on user profile
@@ -14,8 +23,6 @@ const LandingPage = () => {
   //TODO: add the search
   return (
     <div className="dashboard-container">
-     
-
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
@@ -56,7 +63,7 @@ const LandingPage = () => {
               <div className="chart-placeholder">TODO: put the chart here</div>
             </div>
 
-             <div className="section-card">
+            <div className="section-card">
               <h3> Mood Tracker</h3>
               <div className="chart-placeholder">TODO: put the chart here</div>
             </div>
@@ -68,7 +75,7 @@ const LandingPage = () => {
               <p>TODO: Loading coach recommendations.</p>
             </div>
 
-             <div className="section-card">
+            <div className="section-card">
               <h3>Top Coaches</h3>
               <p>TODO: Loading coach recommendations.</p>
             </div>
@@ -79,5 +86,5 @@ const LandingPage = () => {
   );
 };
 //TODO: Fix Styling
-//TODO: Fix Sqares content 
+//TODO: Fix Sqares content
 export default LandingPage;
