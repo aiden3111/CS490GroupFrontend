@@ -55,30 +55,23 @@ const CoachSearch = () => {
 
   return (
     <div className="coach-page">
-      <nav className="sidebar">
+    <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
-          </li>
-          <li className="nav-item active">Coach Search</li>
-          <li className="nav-item">Workout Logit gs</li>
+          <li className="nav-item">Dashboard</li>
+          <li className="nav-item">MyCoaches</li>
+          <li className="nav-item">Workout Logs</li>
+          <li className="nav-item">Meal Tracker</li>
+          <li className="nav-item">Mood Tracker</li>
           <li className="nav-item">Messages</li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile
-          </li>
+          <li className="nav-item">Subscriptions</li>
+          <li className="nav-item">Analytics</li>
+          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>
+            My Profile </li>
         </ul>
 
         <div className="sidebar-bottom">
-          <button className="nav-item" onClick={() => navigate("/LoginPage")}>
-            Logout
-          </button>
+          <button className="nav-item">Logout</button>
         </div>
       </nav>
 
