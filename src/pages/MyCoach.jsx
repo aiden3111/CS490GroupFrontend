@@ -32,7 +32,8 @@ const MyCoach = () => {
   };
 
   const handleLogout = () => {
-     localStorage.removeItem("authenticatedClientId");
+     //localStorage.removeItem("authenticatedClientId");
+     localStorage.clear();
       navigate("/LoginPage/");
   };
 
