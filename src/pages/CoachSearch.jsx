@@ -85,14 +85,27 @@ const CoachSearch = () => {
     localStorage.clear();
     navigate("/LoginPage/");
   };
+//wainting for the table to exist
 
-  /*const handleCardClick = (coach) => {
-    fetch(`http://127.0.0.1:5000/api/coaches_search/?search=${coach}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setSelectedCoach(data);
-      });
-  };*/
+  const handleRequestCoach = async () => {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/api/coach/${selectedCoach.coach_id}/request`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ client_id: clientId }) 
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      alert("Sent");
+      setSelectedCoach(null); 
+    } else {
+      alert(data.error || "Error");
+    }
+  } catch (err) {
+    console.error("Error:", err);
+  }
+};
 
   return (
     <div className="coach-page">
@@ -203,7 +216,7 @@ const CoachSearch = () => {
               <p className="specialty-tag"><b>Specialty:</b> {selectedCoach.specialty}</p>
               <p> <b>Pricing:</b> ${selectedCoach.pricing} </p>
               <p> <b>Certifications:</b> {selectedCoach.certifications} </p>
-              <button className="rent-btn"> Request Coach </button>
+              <button className="rent-btn" onClick={() => handleRequestCoach(selectedCoach.coach_id)}> Request Coach </button>
             </div>
           )}
         </Modal>
