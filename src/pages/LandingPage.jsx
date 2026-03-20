@@ -31,6 +31,12 @@ const LandingPage = () => {
     }
   };
 
+  const handleLogout = () => {
+     localStorage.removeItem("authenticatedClientId");
+      navigate("/LoginPage/");
+  };
+
+
   //TODO: add the links to side bar
   //TODO: ask Litzy add a button back on user profile
   //TODO: Add logut logit
@@ -56,7 +62,7 @@ const LandingPage = () => {
         </ul>
 
         <div className="sidebar-bottom">
-          <button className="nav-item">Logout</button>
+          <button className="nav-item" onClickCapture={ handleLogout }>Logout</button>
         </div>
       </nav>
 

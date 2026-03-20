@@ -31,6 +31,11 @@ const MyCoach = () => {
     }
   };
 
+  const handleLogout = () => {
+     localStorage.removeItem("authenticatedClientId");
+      navigate("/LoginPage/");
+  };
+
   //TODO: add the links to side bar
   //TODO: Add logut logit
   //TODO: Build the top bar
@@ -54,8 +59,8 @@ const MyCoach = () => {
             My Profile </li>
         </ul>
 
-        <div className="sidebar-bottom">
-          <button className="nav-item">Logout</button>
+     <div className="sidebar-bottom">
+          <button className="nav-item" onClickCapture={ handleLogout }>Logout</button>
         </div>
       </nav>
 
