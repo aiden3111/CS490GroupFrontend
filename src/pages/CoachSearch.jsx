@@ -1,12 +1,12 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
-  //TODO: add the links to side bar
-  //TODO: ask Litzy add a button back on user profile
-  //TODO: Add logut logit
-  //TODO: Build the top bar
-  //TODO: Filter coaches
-  //TODO: Send request
+//TODO: add the links to side bar
+//TODO: ask Litzy add a button back on user profile
+//TODO: Add logut logit
+//TODO: Build the top bar
+//TODO: Filter coaches
+//TODO: Send request
 const CoachSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
@@ -31,9 +31,7 @@ const CoachSearch = () => {
       return;
     }
 
-    navigate(
-      `/CoachSearch/${clientId}?search=${encodeURIComponent(searchTerm)}`,
-    );
+    navigate(`/CoachSearch/${clientId}?search=${encodeURIComponent(searchTerm)}`,);
   };
 
   const handleEnter = (e) => {
@@ -41,6 +39,24 @@ const CoachSearch = () => {
       handleSearch();
     }
   };
+ /* const handleSubmit = (event) => {
+    let filters = '';
+    if (filters.fitness) filters += 'fitnes';
+    if (inputs.nutrition) {
+      if (inputs.fitness) filters += ' and ';
+      filters += 'nutrition';
+    }
+    if (filters == '') filters = 'no filters';
+    alert(`asadasdda`);
+    event.preventDefault();
+  };
+  const [inputs, setInputs] = useState({});
+  const handleChange = (e) => {
+    const target = e.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    
+    setInputs(values => ({...values, value}))
+  }*/
 
   useEffect(() => {
     if (query) {
@@ -57,23 +73,49 @@ const CoachSearch = () => {
         .catch((err) => console.error("Fetch error:", err));
     }
   }, [query]);
-//Coach Search dont have lateral nav bar add filtering ans sorting instead
+  //Coach Search dont have lateral nav bar add filtering ans sorting instead
   return (
     <div className="coach-page">
-    <nav className="sidebar">
+      <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
-          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}> MyCoaches</li>
-          <li className="nav-item">Workout Logs</li>
-          <li className="nav-item">Meal Tracker</li>
-          <li className="nav-item">Mood Tracker</li>
-          <li className="nav-item">Messages</li>
-          <li className="nav-item">Subscriptions</li>
-          <li className="nav-item">Analytics</li>
-          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>
-            My Profile </li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/LandingPage/${clientId}`)}
+          >
+            Dashboard
+          </li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/UserProfile/${clientId}`)}
+          >
+            My Profile
+          </li>
         </ul>
+      {/* Checkbox not checkboxing
+        <form onSubmit={handleSubmit}>
+          
+          <label>
+            Fitness
+            <input
+              type="checkbox"
+              name="Fitness"
+              checked={inputs.Fitness}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Nutrition
+            <input
+              type="checkbox"
+              name="Nutrition"
+              checked={inputs.Nutrition}
+              onChange={handleChange}
+            />
+          </label>
+          <button type="submit">Submit </button>
+        </form>
+        */}
 
         <div className="sidebar-bottom">
           <button className="nav-item">Logout</button>

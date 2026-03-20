@@ -79,6 +79,8 @@ function UserProfile() {
           >
             Fitness Goals
           </li>
+
+           <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
         </ul>
       </nav>
 

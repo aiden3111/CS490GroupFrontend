@@ -32,7 +32,6 @@ const MyCoach = () => {
   };
 
   //TODO: add the links to side bar
-  //TODO: ask Litzy add a button back on user profile
   //TODO: Add logut logit
   //TODO: Build the top bar
   
