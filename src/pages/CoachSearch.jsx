@@ -40,7 +40,7 @@ const CoachSearch = () => {
     }
   };
 
-  const specialty = [
+  const selectedFilters = [
     { _id: 1, name: "Fitness" },
     { _id: 2, name: "Nutrition" },
     { _id: 3, name: "Both" },
@@ -125,40 +125,28 @@ const CoachSearch = () => {
           </li>
         </ul>
 
-        {/* Checkbox not checkboxing
-        
-          <label className="checkbox-container">
+        {/* Checkbox not checkboxing*/}
+        <div className="checkbox">
+          <label className="checkbox-container1">
             <input
               type="checkbox"
               name="Fitness"
               checked={selectedFilters.includes("fitness")}
-      onChange={() => toggleFilter("fitness")}
+              onChange={() => toggleFilter("fitness")}
             />
             Fitness
           </label>
-          <label className="checkbox-container">
-            #
+          <label className="checkbox-container2">
             <input
               type="checkbox"
               name="Nutrition"
               checked={selectedFilters.includes("nutrition")}
-      onChange={() => toggleFilter("nutrition")}
+              onChange={() => toggleFilter("nutrition")}
             />
             Nutrition
           </label>
-          */}
-
-        {/*} <Panel>
-          {specialty.map((value, index) =>
-          <React.Fragment key={index}>
-            <CheckBox>
-              onChange
-              type="checkbox"
-              checked
-            </CheckBox>
-            <span>{value.name}</span>
-          </React.Fragment>)}
-        </Panel>*/}
+          </div>
+          
 
         <div className="sidebar-bottom">
           <button className="nav-item" onClickCapture={handleLogout}>

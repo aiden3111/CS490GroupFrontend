@@ -194,3 +194,11 @@ body {
     color: #ffffff;
 
 }
+.checkbox{
+    border-color: #43704e;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 15px;
+    padding: 35px;
+    margin-bottom: 45px;
+}
