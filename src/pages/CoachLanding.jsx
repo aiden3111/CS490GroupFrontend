@@ -3,14 +3,10 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { Navbar, Nav } from "react-bootstrap";
 
-const LandingPage = () => {
+const CoachLanding = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
-  const [landingData, setLandingData] = useState({
-    top_coaches: [],
-    trackers: [],
-  });
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -36,53 +32,33 @@ const LandingPage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("authenticatedClientId");
-    navigate("/LoginPage/");
+     localStorage.removeItem("authenticatedClientId");
+      navigate("/LoginPage/");
   };
 
-  useEffect(() => {
-    const fetchLandingData = async () => {
-      const response = await fetch(`/api/api/landing_page/${clientId}`);
-      const data = await response.json();
-      setLandingData(data);
-    };
-    fetchLandingData();
-  }, [clientId]);
 
   //TODO: add the links to side bar
   //TODO: Build the top bar
-
+  
   return (
     <div className="dashboard-container">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
           <li className="nav-item active">Dashboard</li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MyCoach/${clientId}`)}
-          >
-            {" "}
-            My Coaches
-          </li>
+          <li className="nav-item">My Clients</li>
           <li className="nav-item">Workout Logs</li>
           <li className="nav-item">Meal Tracker</li>
           <li className="nav-item">Mood Tracker</li>
           <li className="nav-item">Messages</li>
           <li className="nav-item">Subscriptions</li>
           <li className="nav-item">Analytics</li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile{" "}
-          </li>
+          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>
+            My Profile </li>
         </ul>
 
         <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={handleLogout}>
-            Logout
-          </button>
+          <button className="nav-item" onClickCapture={ handleLogout }>Logout</button>
         </div>
       </nav>
 
@@ -107,40 +83,25 @@ const LandingPage = () => {
         <div className="dashboard-grid">
           <div className="grid-left">
             <div className="section-card">
-              <div>
               <h3> Mood Tracker</h3>
-              {landingData.trackers.map((mood) => (
-                <div key={mood.log_date} className="coach-square">
-                  <p> {mood.log_date} </p>
-                  <p> Score: {mood.mood_score} </p>
-                  <p>Feeling: {mood.mood_label}</p>
-                  
-                </div>
-              ))}
-            </div>
+              <div className="chart-placeholder">TODO: put the chart here</div>
             </div>
 
             <div className="section-card">
-              <h3> Exercise tracker.</h3>
-              <div className="chart-placeholder">TODO: Add exercise tracker logic here.</div>
+              <h3> Mood Tracker</h3>
+              <div className="chart-placeholder">TODO: put the chart here</div>
             </div>
           </div>
 
           <div className="grid-right">
             <div className="section-card">
               <h3>Top Coaches</h3>
-              {landingData.top_coaches.map((coach) => (
-                <div key={coach.coach_id} className="coach-square">
-                  <h3> {coach.first_name} {coach.last_name} </h3>
-                  <p>Specialty: {coach.specialty}</p>
-                  <p>Rating: {coach.average_rating } ⭐ </p>
-                </div>
-              ))}
+              <p>TODO: Loading coach recommendations.</p>
             </div>
 
             <div className="section-card">
-              <h3>Meal Tracker</h3>
-              <p>TODO: Add meal tracker logic here.</p>
+              <h3>Top Coaches</h3>
+              <p>TODO: Loading coach recommendations.</p>
             </div>
           </div>
         </div>
@@ -150,4 +111,4 @@ const LandingPage = () => {
 };
 //TODO: Fix Styling
 //TODO: Fix Sqares content
-export default LandingPage;
+export default CoachLanding;

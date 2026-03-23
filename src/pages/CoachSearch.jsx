@@ -6,7 +6,7 @@ import Modal from "./ModalPage";
 //TODO: add the links to side bar
 //TODO: Build the top bar
 //TODO: Filter coaches
-//TODO: Send request
+
 
 const CoachSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -85,7 +85,6 @@ const CoachSearch = () => {
     localStorage.clear();
     navigate("/LoginPage/");
   };
-//wainting for the table to exist
 
   const handleRequestCoach = async () => {
   try {

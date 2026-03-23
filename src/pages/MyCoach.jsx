@@ -41,8 +41,6 @@ const MyCoach = () => {
   //TODO: Add logut logit
   //TODO: Build the top bar
   
-
-  
   return (
     <div className="dashboard-container">
       <nav className="sidebar">
