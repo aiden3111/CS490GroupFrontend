@@ -9,6 +9,10 @@ import UserProfile from './pages/UserProfile';
 import CoachSearch from './pages/CoachSearch';
 import MyCoach from './pages/MyCoach';
 import CoachLanding from './pages/CoachLanding';
+import MoodTrackPage from './pages/MoodTrackPage';
+import WorkoutLogPage from './pages/WorkoutLogPage';
+
+
 
 function App() {
   return (
@@ -21,6 +25,8 @@ function App() {
         <Route path="/UserProfile/:clientId" element={ <ProtectedRoutes> <UserProfile/> </ProtectedRoutes> } />
         <Route path="/CoachSearch/:clientId" element={ <ProtectedRoutes> <CoachSearch/> </ProtectedRoutes> } />
         <Route path="/MyCoach/:clientId" element={ <ProtectedRoutes> <MyCoach/> </ProtectedRoutes> } />
+        <Route path="/MoodTrackPage/:clientId" element={ <ProtectedRoutes> <MoodTrackPage/> </ProtectedRoutes> } />
+        <Route path="/WorkoutLogPage/:clientId" element={ <ProtectedRoutes> <WorkoutLogPage/> </ProtectedRoutes> } />
         <Route path="/CoachLanding/:clientId" element={ <ProtectedRoutes> <CoachLanding/> </ProtectedRoutes> } />
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>

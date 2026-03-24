@@ -3,11 +3,14 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { Navbar, Nav } from "react-bootstrap";
 
-const MyCoach = () => {
+const MoodTrackPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
-
+  const [landingData, setLandingData] = useState({
+    top_coaches: [],
+    trackers: [],
+  });
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -33,14 +36,20 @@ const MyCoach = () => {
   };
 
   const handleLogout = () => {
-    //localStorage.removeItem("authenticatedClientId");
-    localStorage.clear();
+    localStorage.removeItem("authenticatedClientId");
     navigate("/LoginPage/");
   };
 
+  useEffect(() => {
+    const fetchLandingData = async () => {
+      const response = await fetch(`/api/api/landing_page/${clientId}`);
+      const data = await response.json();
+      setLandingData(data);
+    };
+    fetchLandingData();
+  }, [clientId]);
 
   //TODO: add the links to side bar
- 
   //TODO: Build the top bar
 
   return (
@@ -48,36 +57,15 @@ const MyCoach = () => {
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
-          </li>
-          <li className="nav-item active">MyCoaches</li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
-          >
-            Workout Logs
-          </li>
+          <li className="nav-item">Dashboard</li>
+          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coaches </li>
+          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
           <li className="nav-item">Meal Tracker</li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MoodTrackPage/${clientId}`)}
-          >
-            {" "}
-            Mood Tracker
-          </li>
+          <li className="nav-item active">Mood Tracker</li>
           <li className="nav-item">Messages</li>
           <li className="nav-item">Subscriptions</li>
           <li className="nav-item">Analytics</li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile{" "}
-          </li>
+          <li className="nav-item"onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
         </ul>
 
         <div className="sidebar-bottom">
@@ -87,32 +75,20 @@ const MyCoach = () => {
         </div>
       </nav>
 
-      <main className="main-content">
-        <header className="dashboard-header">
-          <h1 className="welcome-text">Welcome Back!</h1>
-
-          <div className="search-container">
-            <p>Search here</p>
-            <input
-              type="text"
-              className="form-control search-input"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleEnter}
-            />
-            <button onClick={handleSearch}>Search</button>
-          </div>
-        </header>
-
-        <div className="section-card">
-          <h3>My Assigned Coach</h3>
-          
-        
+      <div className="main-content">
+        <div className="header">
+          <h1>Mood Tracker</h1>
         </div>
-      </main>
+        <div className="mood-graph">
+
+        </div>
+
+
+      </div>
+
     </div>
   );
 };
-//TODO:
-export default MyCoach;
+//TODO: Fix Styling
+//TODO: Fix Sqares content
+export default MoodTrackPage;

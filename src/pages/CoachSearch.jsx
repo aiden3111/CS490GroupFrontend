@@ -5,7 +5,7 @@ import Modal from "./ModalPage";
 
 //TODO: add the links to side bar
 //TODO: Build the top bar
-//TODO: DEal with the "both" from the db
+//TODO: DEal with the "both" from the
 
 const CoachSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,6 +15,9 @@ const CoachSearch = () => {
   const [coaches, setCoaches] = useState([]);
   const navigate = useNavigate();
   const [selectedCoach, setSelectedCoach] = useState(null);
+  const [selectedFilters, setselectedFilters] = useState([]);
+
+  
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -44,8 +47,6 @@ const CoachSearch = () => {
       handleSearch();
     }
   };
-
-const [selectedFilters, setselectedFilters] = useState([]);
 
 
 
