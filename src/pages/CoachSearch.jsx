@@ -5,8 +5,7 @@ import Modal from "./ModalPage";
 
 //TODO: add the links to side bar
 //TODO: Build the top bar
-//TODO: Filter coaches
-
+//TODO: DEal with the "both" from the db
 
 const CoachSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,6 +23,12 @@ const CoachSearch = () => {
     }
   }, [clientId, navigate]);
 
+    const handleLogout = () => {
+   
+    localStorage.clear();
+    navigate("/LoginPage/");
+  };
+
   const handleSearch = () => {
     if (searchTerm.trim().length === 0) {
       alert("Please enter a valid search term.");
@@ -40,29 +45,9 @@ const CoachSearch = () => {
     }
   };
 
-  const selectedFilters = [
-    { _id: 1, name: "Fitness" },
-    { _id: 2, name: "Nutrition" },
-    { _id: 3, name: "Both" },
-  ];
-  /* const handleSubmit = (event) => {
-    let filters = '';
-    if (filters.fitness) filters += 'fitnes';
-    if (inputs.nutrition) {
-      if (inputs.fitness) filters += ' and ';
-      filters += 'nutrition';
-    }
-    if (filters == '') filters = 'no filters';
-    alert(`asadasdda`);
-    event.preventDefault();
-  };
-  const [inputs, setInputs] = useState({});
-  const handleChange = (e) => {
-    const target = e.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    
-    setInputs(values => ({...values, value}))
-  }*/
+const [selectedFilters, setselectedFilters] = useState([]);
+
+
 
   useEffect(() => {
     if (query) {
@@ -80,11 +65,19 @@ const CoachSearch = () => {
     }
   }, [query]);
 
-  const handleLogout = () => {
-    //localStorage.removeItem("authenticatedClientId");
-    localStorage.clear();
-    navigate("/LoginPage/");
-  };
+
+
+
+  const handleFilterChange = (name) => {
+    const lowerName = name.toLowerCase();
+      setselectedFilters( prev => prev.includes(lowerName) ? prev.filter(item=> item !== lowerName)
+    : [...prev, lowerName]);
+};
+
+const displayCoaches = selectedFilters.length === 0 
+    ? coaches 
+    : coaches.filter(coach => selectedFilters.includes(coach.specialty.toLowerCase()));
+
 
   const handleRequestCoach = async () => {
   try {
@@ -103,10 +96,12 @@ const CoachSearch = () => {
     }
   } catch (err) {
     console.error("Error:", err);
-  }
+  } 
 };
 
-  return (
+
+
+ return (
     <div className="coach-page">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
@@ -132,7 +127,7 @@ const CoachSearch = () => {
               type="checkbox"
               name="Fitness"
               checked={selectedFilters.includes("fitness")}
-              onChange={() => toggleFilter("fitness")}
+              onChange={() => handleFilterChange("fitness")}
             />
             Fitness
           </label>
@@ -141,7 +136,7 @@ const CoachSearch = () => {
               type="checkbox"
               name="Nutrition"
               checked={selectedFilters.includes("nutrition")}
-              onChange={() => toggleFilter("nutrition")}
+              onChange={() => handleFilterChange("nutrition")}
             />
             Nutrition
           </label>
@@ -173,14 +168,14 @@ const CoachSearch = () => {
         {query && <h2 className="section-title">Seach Results: "{query}"</h2>}
 
         <div className="coach-grid">
-          {coaches.length > 0
-            ? coaches.map((coach) => (
+          {displayCoaches.length > 0
+            ? displayCoaches.map((coach) => (
                 <div key={coach.coach_id} className="section-card">
                   <h3>
                     Coach: {coach.first_name} {coach.last_name}
                   </h3>
                   <p className="specialty-tag">
-                    <b>Specialty:</b> {coach.specialty}
+                    <b>Specialty:</b> {coach.specialty === 'both' ? 'Fitness & Nutrition' : coach.specialty}
                   </p>
                   <p>
                     <b>Pricing:</b> ${coach.pricing}
