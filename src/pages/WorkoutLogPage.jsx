@@ -2,15 +2,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { Navbar, Nav } from "react-bootstrap";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const WorkoutLogPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
-  const [landingData, setLandingData] = useState({
-    top_coaches: [],
-    trackers: [],
-  });
+  const [stepData, setStepData] = useState([]);
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -41,12 +47,12 @@ const WorkoutLogPage = () => {
   };
 
   useEffect(() => {
-    const fetchLandingData = async () => {
-      const response = await fetch(`/api/api/landing_page/${clientId}`);
+    const fetchStepData = async () => {
+      const response = await fetch(`http://127.0.0.1:5000/api/steps_graph/${clientId}`);
       const data = await response.json();
-      setLandingData(data);
+      setStepData(data);
     };
-    fetchLandingData();
+    fetchStepData();
   }, [clientId]);
 
   //TODO: add the links to side bar
@@ -79,6 +85,43 @@ const WorkoutLogPage = () => {
         <div className="header">
           <h1>Workout Logs</h1>
         </div>
+
+          <div className="main-content">
+                <div className="header">
+                  <h1>Steps Tracker</h1>
+                  {stepData.map((steps) => (
+                    <div key={steps.log_date} className="call-square">
+                      <p>Date: {steps.log_date}</p>
+                      <p>Steps: {steps.steps}</p>
+                      
+                      
+                    </div>
+                  ))}
+                </div>
+                <div className="callgraph">
+                  <div className="calorie-graph" style={{ width: "100%", height: 300, marginTop: "20px" }}>
+                    <h3>Steps Trends</h3>
+                    {stepData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={stepData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="log_date" />
+                          <YAxis />
+                          <Tooltip />
+                          <Line
+                            type="monotone"
+                            dataKey="steps"
+                            stroke="#509e54"
+                            fill="#78b47b"
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <p>No calorie data found.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
         <div className="mood-graph">
 
         </div>

@@ -48,7 +48,7 @@ const MealTrackPage = () => {
 
   useEffect(() => {
     const fetchCalorieData = async () => {
-      const response = await fetch(`/api/api/calorie_graph/${clientId}`);
+      const response = await fetch(`http://127.0.0.1:5000/api/calorie_graph/${clientId}`);
       const data = await response.json();
       setCalorieData(data);
     };
@@ -93,7 +93,7 @@ const MealTrackPage = () => {
             <div key={cal.log_date} className="call-square">
               <p>Date: {cal.log_date}</p>
               <p>Calories: {cal.actual_calories}</p>
-              <p>Notes {cal.notes}</p>
+              <p>Notes: {cal.notes}</p>
             </div>
           ))}
         </div>
@@ -110,7 +110,7 @@ const MealTrackPage = () => {
                   <Line
                     type="monotone"
                     dataKey="actual_calories"
-                    stroke="#78b47b"
+                    stroke="#509e54"
                     fill="#78b47b"
                   />
                 </LineChart>
