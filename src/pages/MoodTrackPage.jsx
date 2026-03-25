@@ -7,10 +7,7 @@ const MoodTrackPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
-  const [landingData, setLandingData] = useState({
-    top_coaches: [],
-    trackers: [],
-  });
+  const [mooddata, setLandingData] = useState([]);
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -42,7 +39,7 @@ const MoodTrackPage = () => {
 
   useEffect(() => {
     const fetchLandingData = async () => {
-      const response = await fetch(`/api/api/landing_page/${clientId}`);
+      const response = await fetch(`/api/api/mood/${clientId}`);
       const data = await response.json();
       setLandingData(data);
     };
@@ -57,7 +54,7 @@ const MoodTrackPage = () => {
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
-          <li className="nav-item">Dashboard</li>
+          <li className="nav-item"onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
           <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coaches </li>
           <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
           <li className="nav-item">Meal Tracker</li>
@@ -78,6 +75,14 @@ const MoodTrackPage = () => {
       <div className="main-content">
         <div className="header">
           <h1>Mood Tracker</h1>
+          {mooddata.map((mood) => (
+           <div key={mood.log_date} className="mood-square">
+            <p>Date:  {mood.log_date}</p>
+             <p>Score {mood.mood_score}</p>
+                <p>Label: {mood.mood_label}</p>
+                <p>Aditional notes: {mood.notes}</p>
+                </div>
+          ))}
         </div>
         <div className="mood-graph">
 

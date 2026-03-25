@@ -216,3 +216,12 @@ body {
     border-radius: 15px;
     padding: 25px;
 }
+
+.mood-square{
+    border-color: #22c55e;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 15px;
+    padding: 5px;
+    margin-bottom: 15px;
+}
