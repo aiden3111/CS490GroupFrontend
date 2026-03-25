@@ -202,3 +202,17 @@ body {
     padding: 35px;
     margin-bottom: 45px;
 }
+
+.search-containerR{
+    margin-top: 15px;
+    
+ 
+}
+
+.coach-removal{
+    border-color: #22c55e;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 15px;
+    padding: 25px;
+}

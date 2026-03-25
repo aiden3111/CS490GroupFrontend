@@ -34,7 +34,14 @@ const MyCoach = () => {
 
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/api/my_coach/${clientId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok){
+          return null;
+        }
+      
+        return res.json();
+    
+    })
       .then((data) => {
         setMyCoach(data);
       })
@@ -112,14 +119,14 @@ const MyCoach = () => {
           </div>
         </header>
         <div className="section-card">
-          {!myCoach ? (
+          { !myCoach ? (
             <div className="coach-info-display">
               <p>No Coach Found</p>
               <button
                 className="btn-search"
                 onClick={() => navigate(`/CoachSearch/${clientId}`)}
               >
-                Find a Coach
+                Find a Coach!
               </button>
             </div>
           ) : (
@@ -142,6 +149,7 @@ const MyCoach = () => {
               </p>
             </div>
           )}
+          <button className="btn-outline" onClick={() => navigate(`/SwitchCoach/${clientId}`)}>Remove/Switch Coach</button>
         </div>
       </main>
     </div>
