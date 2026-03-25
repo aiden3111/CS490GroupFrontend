@@ -4,7 +4,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useFormik } from "formik";
 import "./Regcss.css";
 import { useNavigate, Link } from "react-router-dom";
- 
+
 
 function RegistrationPage() {
   const navigate = useNavigate();
@@ -34,7 +34,8 @@ function RegistrationPage() {
             alert(data.error);
           } else {
             console.log("Success:", data);
-            navigate(`/UserProfile/${data.client_id}`);
+            navigate(`/OnboardingSurvey/${data.client_id}`);
+            //navigate(`/UserProfile/${data.client_id}`);
             //navigate("/LandingPage");
           }
         })
