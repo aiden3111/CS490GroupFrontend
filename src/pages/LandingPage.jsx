@@ -60,7 +60,7 @@ const LandingPage = () => {
           <li className="nav-item active">Dashboard</li>
           <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}> My Coaches</li>
           <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
-          <li className="nav-item">Meal Tracker</li>
+          <li className="nav-item"onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
           <li className="nav-item">Messages</li>
           <li className="nav-item">Subscriptions</li>

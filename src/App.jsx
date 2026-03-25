@@ -12,6 +12,7 @@ import CoachLanding from './pages/CoachLanding';
 import MoodTrackPage from './pages/MoodTrackPage';
 import WorkoutLogPage from './pages/WorkoutLogPage';
 import SwitchCoach from './pages/SwitchCoach';
+import MealTrackPage from './pages/MealTrackPage';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/CoachSearch/:clientId" element={ <ProtectedRoutes> <CoachSearch/> </ProtectedRoutes> } />
         <Route path="/MyCoach/:clientId" element={ <ProtectedRoutes> <MyCoach/> </ProtectedRoutes> } />
         <Route path="/MoodTrackPage/:clientId" element={ <ProtectedRoutes> <MoodTrackPage/> </ProtectedRoutes> } />
+        <Route path="/MealTrackPage/:clientId" element={ <ProtectedRoutes> <MealTrackPage/> </ProtectedRoutes> } />
         <Route path="/WorkoutLogPage/:clientId" element={ <ProtectedRoutes> <WorkoutLogPage/> </ProtectedRoutes> } />
         <Route path="/CoachLanding/:clientId" element={ <ProtectedRoutes> <CoachLanding/> </ProtectedRoutes> } />
         <Route path="/SwitchCoach/:clientId" element={ <ProtectedRoutes> <SwitchCoach/> </ProtectedRoutes> } />
