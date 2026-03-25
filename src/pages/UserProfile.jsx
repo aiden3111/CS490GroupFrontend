@@ -61,24 +61,14 @@ function UserProfile() {
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
-          <li
-            onClick={() => setActiveTab("personal")}
-            className={`nav-item ${activeTab === "personal" ? "active" : ""}`}
-          >
-            Personal Info
-          </li>
-          <li
-            onClick={() => setActiveTab("physical")}
-            className={`nav-item ${activeTab === "physical" ? "active" : ""}`}
-          >
-            Physical Stats
-          </li>
-          <li
-            onClick={() => setActiveTab("goals")}
-            className={`nav-item ${activeTab === "goals" ? "active" : ""}`}
-          >
-            Fitness Goals
-          </li>
+          <li onClick={() => setActiveTab("personal")} className={`nav-item ${activeTab === "personal" ? "active" : ""}`}>Personal Info</li>
+          <li onClick={() => setActiveTab("physical")} className={`nav-item ${activeTab === "physical" ? "active" : ""}`}> Physical Stats</li>
+          <li onClick={() => setActiveTab("goals")} className={`nav-item ${activeTab === "goals" ? "active" : ""}`}> Fitness </li>
+          {user.role === 'coach' && (
+            <>
+            <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
+            <li onClick={() => setActiveTab('coach-management')} className={`nav-item ${activeTab === "coach-management" ? "active" : ""}`}>Coach Management</li>
+            </>)}
 
            <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
         </ul>
@@ -103,6 +93,7 @@ function UserProfile() {
           />
         )}
         {activeTab === "goals" && <FitnessGoalsSection clientId={clientId} />}
+        {activeTab === 'coach-management' && <CoachManagementSection clientId={clientId} />}
       </main>
     </div>
   );
@@ -349,12 +340,12 @@ const FitnessGoalsSection = ({ clientId }) => {
         setIsEditing(false);
       }
     } catch (err) {
-      console.error("Goals update failed:", err);
+      console.error(" update failed:", err);
     }
   };
 
   if (!goals)
-    return <div className="p-4 text-zinc-500">Loading BitFit Goals...</div>;
+    return <div className="p-4 text-zinc-500">Loading BitFit ...</div>;
 
   return (
     <div className="section-card">
@@ -457,6 +448,118 @@ const FitnessGoalsSection = ({ clientId }) => {
       </div>
     </div>
   );
+};
+
+const CoachManagementSection = ({ clientId }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [coachForm, setCoachForm] = useState({
+      pricing: '',
+      specialty: '',
+      certifications: '',
+      availability: '',
+      status: ''
+    });
+
+    useEffect(() => {
+        if (clientId) {
+            fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`)
+                .then(res => res.json())
+                .then(data => setCoachForm(data))
+                .catch(err => console.error("Error fetching coach info:", err));
+        }
+    }, [clientId]);
+
+    const handleSave = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`,{
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(coachForm)
+                
+            });
+
+            if (response.ok) {
+                setIsEditing(false);
+            }
+        } catch (err) {
+            console.error("Coach update failed:", err);
+        }
+    };
+
+    return (
+        <div className="section-card">
+            <div className="section-header">
+                <div>
+                    <h2 className="section-title">Coach Management</h2>
+                    <p className="text-zinc-500 text-sm">Update your professional profile and availability.</p>
+                </div>
+                {!isEditing ? (
+                    <button onClick={() => setIsEditing(true)} className="btn-outline">Edit Management</button>
+                ) : (
+                    <div className="flex gap-2">
+                        <button onClick={handleSave} className="btn-primary">Save All Changes</button>
+                        <button onClick={() => setIsEditing(false)} className="btn-secondary">Cancel</button>
+                    </div>
+                )}
+            </div>
+
+            <div className="space-y-8">
+                <div className="stats-grid">
+                    <div className="field-group">
+                        <label className="field-label">Hourly Rate ($)</label>
+                        {isEditing ? (
+                            <input type="number" value={coachForm.pricing} onChange={(e) => setCoachForm({ ...coachForm, pricing: e.target.value })} className="bitfit-input" />
+                        ) : (
+                            <p className="field-value-highlight">${coachForm.pricing}</p>
+                        )}
+                    </div>
+                    <div className="field-group">
+                        <label className="field-label">Specialty</label>
+                        {isEditing ? (
+                            <select value={coachForm.specialty} onChange={(e) => setCoachForm({ ...coachForm, specialty: e.target.value })} className="bitfit-input">
+                                <option value="fitness">Fitness</option>
+                                <option value="nutrition">Nutrition</option>
+                                <option value="both">Both</option>
+                            </select>
+                        ) : (
+                            <p className="field-value capitalize">{coachForm.specialty}</p>
+                        )}
+                    </div>
+                </div>
+
+                <hr style={{ borderColor: '#27272a', margin: '2rem 0' }} />
+
+                <div className="field-group">
+                    <label className="field-label">Certifications & Qualifications</label>
+                    {isEditing ? (
+                        <textarea
+                            value={coachForm.certifications}
+                            onChange={(e) => setCoachForm({ ...coachForm, certifications: e.target.value })}
+                            className="bitfit-input"
+                            rows="3"
+                        />
+                    ) : (
+                        <p className="field-value-highlight">{coachForm.certifications || "No certifications listed."}</p>
+                    )}
+                </div>
+
+                <div className="field-group">
+                    <label className="field-label">Weekly Availability</label>
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            placeholder="e.g. Mon-Fri 9am-5pm"
+                            value={coachForm.availability}
+                            onChange={(e) => setCoachForm({ ...coachForm, availability: e.target.value })}
+                            className="bitfit-input"
+                        />
+                    ) : (
+                        <p className="field-value-highlight">{coachForm.availability || "Not set"}</p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default UserProfile;

@@ -171,3 +171,10 @@ body {
     background-color: #3f3f46;
     color: #00ff40;
 }
+
+.field-value.capitalize {
+    text-transform: capitalize;
+    color: #22c55e;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
