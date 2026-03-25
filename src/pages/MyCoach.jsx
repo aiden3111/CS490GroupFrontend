@@ -7,7 +7,7 @@ const MyCoach = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
-
+  const [myCoach, setMyCoach] = useState(null);
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -32,15 +32,22 @@ const MyCoach = () => {
     }
   };
 
+  useEffect(() => {
+    fetch(`http://127.0.0.1:5000/api/my_coach/${clientId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMyCoach(data);
+      })
+      .catch((error) => console.error("Error fetching my coach:", error));
+  }, [clientId]);
+
   const handleLogout = () => {
     //localStorage.removeItem("authenticatedClientId");
     localStorage.clear();
     navigate("/LoginPage/");
   };
 
-
   //TODO: add the links to side bar
- 
   //TODO: Build the top bar
 
   return (
@@ -89,7 +96,7 @@ const MyCoach = () => {
 
       <main className="main-content">
         <header className="dashboard-header">
-          <h1 className="welcome-text">Welcome Back!</h1>
+          <h1 className="welcome-text">My Coach</h1>
 
           <div className="search-container">
             <p>Search here</p>
@@ -104,11 +111,37 @@ const MyCoach = () => {
             <button onClick={handleSearch}>Search</button>
           </div>
         </header>
-
         <div className="section-card">
-          <h3>My Assigned Coach</h3>
-          
-        
+          {!myCoach ? (
+            <div className="coach-info-display">
+              <p>No Coach Found</p>
+              <button
+                className="btn-search"
+                onClick={() => navigate(`/CoachSearch/${clientId}`)}
+              >
+                Find a Coach
+              </button>
+            </div>
+          ) : (
+            <div className="coach-info-display">
+              <h4> {myCoach.first_name} {myCoach.last_name}</h4>
+              <p><b>Specialty:</b>
+                {myCoach?.specialty?.toLowerCase() === "both"
+                  ? "Fitness & Nutrition"
+                  : myCoach.specialty}</p>
+              <p>
+                <b>Pricing:</b> ${myCoach.pricing}
+              </p>
+              <p>
+                
+                <b>Availability:</b> {myCoach.availability}
+              </p>
+              <p>
+               
+                <b>Certifications:</b> {myCoach.certifications}
+              </p>
+            </div>
+          )}
         </div>
       </main>
     </div>
