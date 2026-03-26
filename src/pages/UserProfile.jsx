@@ -72,7 +72,7 @@ function UserProfile() {
               <li onClick={() => setActiveTab('coach-management')} className={`nav-item ${activeTab === "coach-management" ? "active" : ""}`}>Coach Management</li>
             </>
           )}
-          {user.role != 'coach' && (
+          {user.role === 'client' && (
             <>
               <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
               <li onClick={() => setActiveTab('coach-application')} className={`nav-item ${activeTab === "coach-application" ? "active" : ""}`}>Coach Application</li>
