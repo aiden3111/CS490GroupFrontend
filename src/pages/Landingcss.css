@@ -242,3 +242,13 @@ body {
 .edit-btn{
     background-color: #43704e;
 }
+
+.sidebarb {
+    width: 260px;
+    background-color:  #020e06;
+    padding: 2rem;
+    border-right: 1px solid #27272a;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}

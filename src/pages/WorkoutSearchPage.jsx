@@ -79,7 +79,7 @@ const WorkoutSearchPage = () => {
 
   return (
     <div className="coach-page">
-      <nav className="sidebar">
+      <nav className="sidebarb">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
           <li
