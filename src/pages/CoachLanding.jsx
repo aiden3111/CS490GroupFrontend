@@ -10,7 +10,16 @@ const CoachLanding = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [clients, setClients] = useState([]);
 
+  useEffect(() => {
+    if (activeTab === 'clients') {
+      fetch(`/api/api/clients/coach/${clientId}`)
+        .then(res => res.json())
+        .then(data => setClients(data))
+        .catch(err => console.error("Error loading roster:", err));
+    }
+  }, [activeTab, clientId]);
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -37,6 +46,11 @@ const CoachLanding = () => {
           client_id: targetClientId
         }),
       });
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.error); 
+        return;
+      }
 
       if (response.ok) {
         setRequests((prev) => prev.filter((req) => req.request_id !== requestId));
@@ -86,7 +100,12 @@ const CoachLanding = () => {
           >
             Pending Requests {requests.length > 0 && `(${requests.length})`}
           </li>
-          <li className="nav-item">My Clients</li>
+          <li
+            className={`nav-item ${activeTab === 'clients' ? 'active' : ''}`}
+            onClick={() => setActiveTab('clients')}
+          >
+            My Clients
+          </li>
           <li className="nav-item">Workout Logs</li>
           <li className="nav-item">Meal Tracker</li>
           <li className="nav-item">Mood Tracker</li>
@@ -105,24 +124,27 @@ const CoachLanding = () => {
       <main className="main-content">
         <header className="dashboard-header">
           <h1 className="welcome-text">
-            {activeTab === 'dashboard' ? 'Coach Dashboard' : 'Manage Client Requests'}
+            {activeTab === 'dashboard' && 'Coach Dashboard'}
+            {activeTab === 'requests' && 'Manage Client Requests'}
+            {activeTab === 'clients' && 'My Clients'}
           </h1>
 
-          <div className="search-container">
-            <p>Search here</p>
-            <input
-              type="text"
-              className="form-control search-input"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleEnter}
-            />
-            <button onClick={handleSearch}>Search</button>
-          </div>
+          {(activeTab === 'dashboard' || activeTab === 'clients') && (
+            <div className="search-container">
+              <input
+                type="text"
+                className="form-control search-input"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleEnter}
+              />
+              <button className="btn-primary" onClick={handleSearch}>Search</button>
+            </div>
+          )}
         </header>
 
-        {activeTab === 'dashboard' ? (
+        {activeTab === 'dashboard' && (
           <div className="dashboard-grid">
             <div className="grid-left">
               <div className="section-card">
@@ -136,7 +158,9 @@ const CoachLanding = () => {
               </div>
             </div>
           </div>
-        ) : (
+        )}
+
+        {activeTab == 'requests' && (
           <div className="requests-page-view">
             <div className="section-card" style={{ minHeight: '70vh' }}>
               <div className="flex justify-between items-center mb-6">
@@ -158,15 +182,59 @@ const CoachLanding = () => {
                       <div className="flex gap-3">
                         <button
                           className="btn-primary"
-                          onClick={() => handleAction(req.request_id, 'accepted', req.client_id)}
+                          onClick={() => handleAction(req.request_id, 'accepted', req.client_id)}>Accept</button>
+                        <button
+                          className="btn-secondary"
+                          onClick={() => handleAction(req.request_id, 'denied')}>Deny</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'clients' && (
+          <div className="clients-page-view">
+            <div className="section-card" style={{ minHeight: '75vh' }}>
+              <div className="flex justify-between items-center mb-6">
+                <h3>Current Roster</h3>
+                <p className="text-zinc-500">{clients.length} total active clients</p>
+              </div>
+
+              {clients.length === 0 ? (
+                <div className="text-center py-20">
+                  <p className="text-zinc-500 text-lg">Your roster is currently empty.</p>
+                  <button className="btn-primary mt-4" onClick={() => setActiveTab('requests')}>Check Requests</button>
+                </div>
+              ) : (
+                <div className="client-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+                  {clients.map(client => (
+                    <div key={client.client_id} className="coach-square client-card">
+                      <div className="mb-4">
+                        <h4 style={{ margin: 0, color: '#fbbf24' }}>{client.first_name} {client.last_name}</h4>
+                        <p className="text-sm text-zinc-400">{client.email}</p>
+                      </div>
+
+                      <div className="client-meta mb-4" style={{ fontSize: '13px', borderTop: '1px solid #27272a', paddingTop: '10px' }}>
+                        <p><strong>Weight:</strong> {client.weight} lbs</p>
+                        <p><strong>Joined:</strong> {new Date(client.signup_date).toLocaleDateString()}</p>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          className="btn-primary"
+                          style={{ flex: 1 }}
+                          onClick={() => navigate(`/UserProfile/${client.client_id}`)}
                         >
-                          Accept
+                          Full Profile
                         </button>
                         <button
                           className="btn-secondary"
-                          onClick={() => handleAction(req.request_id, 'denied')}
+                          onClick={() => navigate(`/WorkoutLogPage/${client.client_id}`)}
                         >
-                          Deny
+                          Logs
                         </button>
                       </div>
                     </div>
@@ -176,6 +244,7 @@ const CoachLanding = () => {
             </div>
           </div>
         )}
+
       </main>
     </div>
   );
