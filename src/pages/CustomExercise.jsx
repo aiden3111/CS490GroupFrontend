@@ -1,8 +1,8 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
-import Modal from "./ModalPage";
-import { Form, Button, Container, Row, Col } from "react-bootstrap";
+/*import Modal from "./ModalPage";*/
+import { Form, Button, Container, Row, Col, Modal } from "react-bootstrap";
 
 import { useFormik } from "formik";
 //TODO: add the links to side bar
@@ -67,29 +67,26 @@ function CustomExercise() {
             className="nav-item"
             onClick={() => navigate(`/LandingPage/${clientId}`)}
           >
-            {" "}
-            Dashboard{" "}
+            Dashboard
           </li>
           <li
             className="nav-item"
             onClick={() => navigate(`/UserProfile/${clientId}`)}
           >
-            {" "}
-            My Profile{" "}
+            My Profile
           </li>
           <li
             className="nav-item"
             onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
           >
             {" "}
-            Workout Logs{" "}
+            Workout Logs
           </li>
           <ul className="sub-nav">
             <li
               className="nav-item"
               onClick={() => navigate(`/StepsTracker/${clientId}`)}
             >
-              {" "}
               Step Tracker{" "}
             </li>
             <li className="nav-item active">Custom Exercise </li>
@@ -104,7 +101,6 @@ function CustomExercise() {
                 onClick={() => setActiveTab("create-custom")}
                 className={`nav-item ${activeTab === "create-custom" ? "active" : ""}`}
               >
-                {" "}
                 Create exercise
               </li>
             </ul>
@@ -134,82 +130,200 @@ function CustomExercise() {
 function MyCustom({ clientId }) {
   const [workouts, setWorkouts] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
+  const [modalEdit, setModalEdit] = useState(false);
 
-  useEffect(() => {
+  const fetchWorkouts = () => {
     fetch(`http://127.0.0.1:5000/api/my_exercises/?client_id=${clientId}`)
       .then((res) => res.json())
       .then((data) => setWorkouts(data));
-  }, [clientId]);
-
-  const handleCardClick = (film) => {
-    fetch(`http://127.0.0.1:5000/api/exercises/${film.id}`)
-      .then((res) => res.json())
-      .then((fullData) => {
-        setSelectedExercise(fullData);
-      });
   };
 
+  useEffect(() => {
+    fetchWorkouts();
+  }, [clientId]);
+
+  const handleEdit = (exercise) => {
+    setSelectedExercise(exercise);
+    setModalEdit(true);
+  };
 
   const handleDelete = async (exer) => {
     const confirm = window.confirm("The Exercise will be permanently removed");
-    if (confirm ){
+    if (confirm) {
       try {
-    const response = await fetch(`http://127.0.0.1:5000/api/exercises/${exer}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ client_id: clientId }) 
-    });
+        const response = await fetch(
+          `http://127.0.0.1:5000/api/exercises/${exer}`,
+          {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ client_id: clientId }),
+          },
+        );
 
-    const data = await response.json();
-    if (response.ok) {
-      alert("Exercise Deleted");
-      setSelectedExercise(null);
-      window.location.reload();
+        const data = await response.json();
+        if (response.ok) {
+          alert("Exercise Deleted");
+          setSelectedExercise(null);
+          window.location.reload();
+        } else {
+          alert(data.error || "Error");
+        }
+      } catch (err) {
+        console.error("Error:", err);
+      }
     } else {
-      alert(data.error || "Error");
-    }
-  } catch (err) {
-    console.error("Error:", err);
-  }
-
-    }else{
-          
       alert("Delete Canceled");
     }
- 
   };
-
 
   return (
     <div className="first-section">
       <div className="exercise-section">
         {workouts.map((ex) => (
-          <div key={ex.exercise_id} className="section-card"
-           
+          <div
+            key={ex.exercise_id}
+            className="section-card"
             style={{ cursor: "help" }}
           >
-            <h3>{ex.exercise_name}</h3>
-            <p>{ex.muscle_group} </p>
-            <p> {ex.equipment}</p>
-              <button className="edit-btn" onClick={() => handleCardClick(ex)}> Edit </button>
-              <button className="delete-btn" onClick={() => handleDelete(ex.exercise_id)}> Delete </button>
+            <h3>Exercise: {ex.exercise_name}</h3>
+            <p>Muscle Group: {ex.muscle_group} </p>
+            <p>Equipment: {ex.equipment}</p>
+            <p>Example: {ex.example_video}</p>
+            <button className="edit-btn" onClick={() => handleEdit(ex)}>
+              Edit
+            </button>
+            <button
+              className="delete-btn"
+              onClick={() => handleDelete(ex.exercise_id)}
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>
-      <div className="modal-sectoion">
-        <Modal open={selectedExercise !== null} onClose={() => setSelectedExercise(null)}>
-          {selectedExercise && (
-            <div className="modal-inner-contentF">
-              <strong> Exercise Details:</strong>
-              <h3> Name: {selectedExercise.exercise_name} </h3>
-              <p> <b>Muscle Group:</b> {selectedExercise.muscle_group}</p>
-              <p> <b>Equipment:</b> {selectedExercise.ex.equipment} </p>
-              <p> <b>Example:</b> {selectedExercise.example_video} </p>
-            </div>
-          )}
-        </Modal>
-      </div>
+      <EditModal
+        show={modalEdit}
+        onHide={() => setModalEdit(false)}
+        exercise={selectedExercise}
+        clientId={clientId}
+        onSuccess={fetchWorkouts}
+      />
     </div>
+  );
+}
+
+function EditModal({ show, onHide, exercise, clientId, onSuccess }) {
+  const formikForm = useFormik({
+    initialValues: {
+      exercise_name: exercise?.exercise_name || "",
+      muscle_group: exercise?.muscle_group || "",
+      equipment: exercise?.equipment || "",
+      category: exercise?.category || "",
+      example_video: exercise?.example_video || "",
+    },
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      try {
+        const res = await fetch(
+          `http://127.0.0.1:5000/api/exercises/${exercise.exercise_id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...values, client_id: clientId }),
+          },
+        );
+        if (res.ok) {
+          alert("Exercisse Updated");
+          onSuccess();
+          onHide();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+  });
+
+  return (
+    <Modal show={show} onHide={onHide} centered>
+      <Modal.Header closeButton className="bg-dark text-white">
+        <Modal.Title>Edit Exercise</Modal.Title>
+      </Modal.Header>
+      <Modal.Body className="bg-dark text-white">
+        <Form onSubmit={formikForm.handleSubmit}>
+          <Form.Group className="mb-3" controlId="formExerciseName">
+            <Form.Label>Exercise Name</Form.Label>
+            <Form.Control
+              type="text"
+              name="exercise_name"
+              placeholder="..."
+              onChange={formikForm.handleChange}
+              value={formikForm.values.exercise_name}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formMuscleGroup">
+            <Form.Label>Muscle Group</Form.Label>
+            <Form.Select
+              name="muscle_group"
+              onChange={formikForm.handleChange}
+              value={formikForm.values.muscle_group}
+            >
+              <option value="">Select Muscle Group</option>
+              <option value="Chest">Chest</option>
+              <option value="Shoulders">Shoulders</option>
+              <option value="Back">Back</option>
+              <option value="Legs">Legs</option>
+              <option value="Arms">Arms</option>
+              <option value="Core">Core</option>
+              <option value="Glutes">Glutes</option>
+              <option value="Cardio">Cardio</option>
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formEquipment">
+            <Form.Label>Equipment</Form.Label>
+            <Form.Select
+              name="equipment"
+              onChange={formikForm.handleChange}
+              value={formikForm.values.equipment}
+            >
+              <option value="">Select Equipment</option>
+              <option value="Barbell">Barbell</option>
+              <option value="Dumbbell">Dumbbell</option>
+              <option value="Machine">Machine</option>
+              <option value="Cable">Cable</option>
+              <option value="Bodyweight">Bodyweight</option>
+              <option value="None">None</option>
+              <option value="Treadmill">Treadmill</option>
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formCategory">
+            <Form.Label>Category</Form.Label>
+            <Form.Control
+              type="text"
+              name="category"
+              placeholder="e.g. Strength"
+              onChange={formikForm.handleChange}
+              value={formikForm.values.category}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formVideo">
+            <Form.Label>Example Video URL</Form.Label>
+            <Form.Control
+              type="url"
+              name="example_video"
+              placeholder="https://youtube.com/..."
+              onChange={formikForm.handleChange}
+              value={formikForm.values.example_video}
+            />
+          </Form.Group>
+
+          <Button variant="success" type="submit" className="w-100">  Edit </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
   );
 }
 
