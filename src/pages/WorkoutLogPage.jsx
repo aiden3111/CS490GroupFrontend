@@ -71,8 +71,8 @@ const WorkoutLogPage = () => {
           <li className="nav-item active">Workout Logs</li>
           <ul className="sub-nav">
             <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}>Step Tracker </li>
+            <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}>Custom Exercise </li>
             
-
           </ul>
           <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
