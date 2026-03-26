@@ -12,6 +12,33 @@ const CoachLanding = () => {
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
 
+  const handleCreatePlan = async (clientData) => {
+    const planData = {
+      created_by: localStorage.getItem("authenticatedClientId"), 
+      client_id: clientData.client_id, 
+      frequency: 3,
+      difficulty: "Intermediate",
+      is_draft: 0 
+    };
+
+    try {
+      const res = await fetch("/api/workout_plans/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(planData)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Plan created!");
+        // Optional: Navigate to a builder page using the new ID
+        navigate(`/WorkoutBuilder/${data.workout_plan_id}`);
+      }
+    } catch (err) {
+      console.error("Assignment failed:", err);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'clients') {
       fetch(`/api/api/clients/coach/${clientId}`)
@@ -237,6 +264,13 @@ const CoachLanding = () => {
                           Logs
                         </button>
                       </div>
+                      <button
+                        className="btn-outline-warning w-100"
+                        style={{ border: '1px solid #fbbf24', color: '#fbbf24', background: 'transparent', padding: '8px' }}
+                        onClick={() => handleCreatePlan(client)}
+                      >
+                        + Assign New Workout Plan
+                      </button>
                     </div>
                   ))}
                 </div>
