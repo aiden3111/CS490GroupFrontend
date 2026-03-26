@@ -2,7 +2,9 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import Modal from "./ModalPage";
+import { Form, Button, Container, Row, Col } from "react-bootstrap";
 
+import { useFormik } from "formik";
 //TODO: add the links to side bar
 //TODO: Build the top bar
 
@@ -13,8 +15,52 @@ const CustomExercise = () => {
   const query = searchParams.get("search");
   const [workouts, setWorkouts] = useState([]);
   const navigate = useNavigate();
-  const [selectedCoach, setSelectedCoach] = useState(null);
   const [selectedFilters, setselectedFilters] = useState([]);
+
+  const formikForm = useFormik({
+    initialValues: {
+      exercise_name: "",
+      muscle_group: "",
+      equipment: "",
+      category: "",
+      example_video: "",
+      is_custom: 1, 
+      created_by: clientId,
+    },
+    validateOnChange: false,
+    validateOnBlur: false,
+
+    onSubmit: (values) => {
+      fetch("http://127.0.0.1:5000/api/exercises", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            console.log("Success:", data);
+            alert("Exercise Created.");
+            navigate(`/WorkoutSearchPage/${clientId}`);
+        
+          }
+        })
+        .catch((err) => console.error("Error:", err));
+    },
+    validate: (values) => {
+      if (
+        values.exercise_name.length === 0 ||
+        values.muscle_group.length === 0 ||
+        values.equipment.length === 0 ||
+        values.category.length === 0 ||
+        values.example_video.length === 0
+      
+      )
+        return alert("All fields are required");
+    },
+  });
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -68,13 +114,7 @@ const CustomExercise = () => {
     );
   };
 
-  const displayWorkouts =
-    selectedFilters.length === 0
-      ? workouts
-      : workouts.filter((exercise) =>
-            selectedFilters.includes(exercise.muscle_group) ||
-            selectedFilters.includes(exercise.equipment)
-        );
+
 
   return (
     <div className="coach-page">
@@ -93,193 +133,22 @@ const CustomExercise = () => {
           >
             My Profile
           </li>
-          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
-           <ul className="sub-nav">
-            <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}>Step Tracker </li>
-            <li className="nav-item active" >Custom Exercise </li>
-            
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
+          >
+            Workout Logs
+          </li>
+          <ul className="sub-nav">
+            <li
+              className="nav-item"
+              onClick={() => navigate(`/StepsTracker/${clientId}`)}
+            >
+              Step Tracker{" "}
+            </li>
+            <li className="nav-item active">Custom Exercise </li>
           </ul>
         </ul>
-
-        {/* Checkbox not checkboxing*/}
-        <div className="checkbox">
-            
-          <p>Muscle Group</p>
-
-          <label className="checkbox-container1">
-            <input
-              type="checkbox"
-              name="Chest"
-              checked={selectedFilters.includes("Chest")}
-              onChange={() => handleFilterChange("Chest")}
-            />
-            Chest
-          </label>
-
-          <label className="checkbox-container2">
-            <input
-              type="checkbox"
-              name="Shoulders"
-              checked={selectedFilters.includes("Shoulders")}
-              onChange={() => handleFilterChange("Shoulders")}
-            />
-            Shoulders
-          </label>
-
-          <label className="checkbox-container3">
-            <input
-              type="checkbox"
-              name="Back"
-              checked={selectedFilters.includes("Back")}
-              onChange={() => handleFilterChange("Back")}
-            />
-            Back
-          </label>
-
-          <label className="checkbox-container4">
-            <input
-              type="checkbox"
-              name="Legs"
-              checked={selectedFilters.includes("Legs")}
-              onChange={() => handleFilterChange("Legs")}
-            />
-            Legs
-          </label>
-
-          <label className="checkbox-container5">
-            <input
-              type="checkbox"
-              name="Hamstrings"
-              checked={selectedFilters.includes("Hamstrings")}
-              onChange={() => handleFilterChange("Hamstrings")}
-            />
-            Hamstrings
-          </label>
-
-          <label className="checkbox-container6">
-            <input
-              type="checkbox"
-              name="Core"
-              checked={selectedFilters.includes("Core")}
-              onChange={() => handleFilterChange("Core")}
-            />
-            Core
-          </label>
-
-          <label className="checkbox-container7">
-            <input
-              type="checkbox"
-              name="Cardio"
-              checked={selectedFilters.includes("Cardio")}
-              onChange={() => handleFilterChange("Cardio")}
-            />
-            Cardio
-          </label>
-
-          <label className="checkbox-container8">
-            <input
-              type="checkbox"
-              name="Arms"
-              checked={selectedFilters.includes("Arms")}
-              onChange={() => handleFilterChange("Arms")}
-            />
-            Arms
-          </label>
-
-          <label className="checkbox-container9">
-            <input
-              type="checkbox"
-              name="Glutes"
-              checked={selectedFilters.includes("Glutes")}
-              onChange={() => handleFilterChange("Glutes")}
-            />
-            Glutes
-          </label>
-
-          <label className="checkbox-container10">
-            <input
-              type="checkbox"
-              name="Full Body"
-              checked={selectedFilters.includes("Full Body")}
-              onChange={() => handleFilterChange("Full Body")}
-            />
-            Full Body
-          </label>
-        </div>
-
-        <div className="checkbox">
-          <p>Equipment</p>
-
-          <label className="checkbox-container-e1">
-            <input
-              type="checkbox"
-              name="Barbell"
-              checked={selectedFilters.includes("Barbell")}
-              onChange={() => handleFilterChange("Barbell")}
-            />
-            Barbell
-          </label>
-
-          <label className="checkbox-container-e2">
-            <input
-              type="checkbox"
-              name="Dumbbell"
-              checked={selectedFilters.includes("Dumbbell")}
-              onChange={() => handleFilterChange("Dumbbell")}
-            />
-            Dumbbell
-          </label>
-
-          <label className="checkbox-container-e3">
-            <input
-              type="checkbox"
-              name="Machine"
-              checked={selectedFilters.includes("Machine")}
-              onChange={() => handleFilterChange("Machine")}
-            />
-            Machine
-          </label>
-
-          <label className="checkbox-container-e4">
-            <input
-              type="checkbox"
-              name="Bodyweight"
-              checked={selectedFilters.includes("Bodyweight")}
-              onChange={() => handleFilterChange("Bodyweight")}
-            />
-            Bodyweight
-          </label>
-
-          <label className="checkbox-container-e5">
-            <input
-              type="checkbox"
-              name="Treadmill"
-              checked={selectedFilters.includes("Treadmill")}
-              onChange={() => handleFilterChange("Treadmill")}
-            />
-            Treadmill
-          </label>
-
-          <label className="checkbox-container-e6">
-            <input
-              type="checkbox"
-              name="Cable"
-              checked={selectedFilters.includes("Cable")}
-              onChange={() => handleFilterChange("Cable")}
-            />
-            Cable
-          </label>
-
-          <label className="checkbox-container-e7">
-            <input
-              type="checkbox"
-              name="None"
-              checked={selectedFilters.includes("None")}
-              onChange={() => handleFilterChange("None")}
-            />
-            None
-          </label>
-        </div>
 
         <div className="sidebar-bottom">
           <button className="nav-item" onClickCapture={handleLogout}>
@@ -305,47 +174,98 @@ const CustomExercise = () => {
             Search{" "}
           </button>
         </div>
+        <div className="custom-creation">
+          <Container>
+            <div
+              style={{
+                backgroundColor: "#2a472a",
+                padding: "20px",
+                borderRadius: "15px",
+              }}
+            >
+              <h1 className="text-center mb-4">Create New Exercise</h1>
+              <Form onSubmit={formikForm.handleSubmit}>
+                
+                <Form.Group className="mb-3" controlId="formExerciseName">
+                  <Form.Label>Exercise Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="exercise_name"
+                    placeholder="..."
+                    onChange={formikForm.handleChange}
+                    value={formikForm.values.exercise_name}
+                  />
+                </Form.Group>
 
-        {query && <h2 className="section-title">Seach Results: "{query}"</h2>}
+                
+                <Form.Group className="mb-3" controlId="formMuscleGroup">
+                  <Form.Label>Muscle Group</Form.Label>
+                  <Form.Select
+                    name="muscle_group"
+                    onChange={formikForm.handleChange}
+                    value={formikForm.values.muscle_group}
+                  >
+                    <option value="">Select Muscle Group</option>
+                    <option value="Chest">Chest</option>
+                    <option value="Shoulders">Shoulders</option>
+                    <option value="Back">Back</option>
+                    <option value="Legs">Legs</option>
+                    <option value="Arms">Arms</option>
+                    <option value="Core">Core</option>
+                    <option value="Glutes">Glutes</option>
+                    <option value="Cardio">Cardio</option>
+                  </Form.Select>
+                </Form.Group>
 
-        <div className="coach-grid">
-          {displayWorkouts.length > 0
-            ? displayWorkouts.map((exercise) => (
-                <div key={exercise.exercise_id} className="section-card">
-                  <h3>{exercise.exercise_name}</h3>
+                
+                <Form.Group className="mb-3" controlId="formEquipment">
+                  <Form.Label>Equipment</Form.Label>
+                  <Form.Select
+                    name="equipment"
+                    onChange={formikForm.handleChange}
+                    value={formikForm.values.equipment}
+                  >
+                    <option value="">Select Equipment</option>
+                    <option value="Barbell">Barbell</option>
+                    <option value="Dumbbell">Dumbbell</option>
+                    <option value="Machine">Machine</option>
+                    <option value="Cable">Cable</option>
+                    <option value="Bodyweight">Bodyweight</option>
+                    <option value="None">None</option>
+                    <option value="Treadmill">Treadmill</option>
+                  </Form.Select>
+                </Form.Group>
 
-                  <p className="specialty-tag">
-                    <b>Muscle Group:</b> {exercise.muscle_group}
-                  </p>
+                <Form.Group className="mb-3" controlId="formCategory">
+                  <Form.Label>Category</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="category"
+                    placeholder="e.g. Strength"
+                    onChange={formikForm.handleChange}
+                    value={formikForm.values.category}
+                  />
+                </Form.Group>
 
-                  <p>
-                    <b>Equipment:</b> {exercise.equipment}
-                  </p>
+                
+                <Form.Group className="mb-3" controlId="formVideo">
+                  <Form.Label>Example Video URL</Form.Label>
+                  <Form.Control
+                    type="url"
+                    name="example_video"
+                    placeholder="https://youtube.com/..."
+                    onChange={formikForm.handleChange}
+                    value={formikForm.values.example_video}
+                  />
+                </Form.Group>
 
-                  <p>
-                    <b>Category:</b> {exercise.category}
-                  </p>
-
-                  <p>
-                    <b>Source:</b> {exercise.is_custom ? "Custom" : "Library"}
-                  </p>
-                  {exercise.example_video && (
-                    <a
-                      href={exercise.example_video}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="video-link"
-                    >
-                      View Demo Video
-                    </a>
-                  )}
-                </div>
-              ))
-            : query && <p>No coaches found.</p>}
+                <Button variant="success" type="submit" className="w-100">
+                  Create Custom Exercise
+                </Button>
+              </Form>
+            </div>
+          </Container>
         </div>
-        <Modal>
-         
-        </Modal>
       </main>
     </div>
   );

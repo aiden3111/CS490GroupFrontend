@@ -5,6 +5,7 @@ import Modal from "./ModalPage";
 
 //TODO: add the links to side bar
 //TODO: Build the top bar
+//TODO: Search by terms not working 
 
 const WorkoutSearchPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -46,7 +47,7 @@ const WorkoutSearchPage = () => {
 
   useEffect(() => {
     if (query) {
-      fetch(`http://127.0.0.1:5000/api/exercises`)
+      fetch(`http://127.0.0.1:5000/api/exercises/`)
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {
@@ -94,6 +95,10 @@ const WorkoutSearchPage = () => {
             My Profile
           </li>
           <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
+           <ul className="sub-nav">
+            <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}>Step Tracker</li>
+            <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}>Custom Exercise</li>
+          </ul>
         </ul>
 
         {/* Checkbox not checkboxing*/}
