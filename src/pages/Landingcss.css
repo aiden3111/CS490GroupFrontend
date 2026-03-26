@@ -234,3 +234,11 @@ body {
     padding: 5px;
     margin-bottom: 15px;
 }
+
+.delete-btn{
+    background-color: rgb(151, 89, 89);
+    margin-left: 5%;
+}
+.edit-btn{
+    background-color: #43704e;
+}
