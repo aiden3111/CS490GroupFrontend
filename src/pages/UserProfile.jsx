@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { Form, Button } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
+import Modal from "./ModalPage";
 
 function UserProfile() {
   const { clientId } = useParams();
@@ -13,18 +14,16 @@ function UserProfile() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const loggedInUserRole = localStorage.getItem("userRole");
-
+  const [isOpen, setIsOpen] = useState(false); 
 
   const loggedInId = localStorage.getItem("authenticatedClientId");
 
   useEffect(() => {
     if (!clientId) return;
 
-    // SINGLE FETCH LOGIC
     fetch(`http://127.0.0.1:5000/api/clients/${clientId}`)
       .then((res) => res.json())
       .then((data) => {
-        // SECURITY GATE: Redirect if not my profile AND not a coach
         if (loggedInId !== clientId && loggedInUserRole !== 'coach') {
           navigate(`/UserProfile/${loggedInId}`);
           return;
@@ -54,6 +53,22 @@ function UserProfile() {
     if (res.ok) {
       setUser({ ...user, ...formData });
       setEditing(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const res = await fetch(`/api/api/clients/${clientId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setIsOpen(false);
+        localStorage.clear();
+        navigate("/LoginPage");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
     }
   };
 
@@ -116,7 +131,9 @@ function UserProfile() {
             setEditing={setEditing}
             handleSave={handleSave}
             canEdit={canEdit}
+            setIsOpen={setIsOpen}
           />
+
         )}
         {activeTab === "physical" && (
           <PhysicalStatsSection
@@ -129,6 +146,19 @@ function UserProfile() {
         {activeTab === "goals" && <FitnessGoalsSection clientId={clientId} canEdit={canEdit} />}
         {activeTab === 'coach-management' && <CoachManagementSection clientId={clientId} />}
         {activeTab === 'coach-application' && <CoachApplication clientId={clientId} />}
+
+        <Modal open={isOpen} onClose={() => setIsOpen(false)}>
+          <div style={{ textAlign: 'center' }}>
+            <h2 style={{ color: '#1a2e1d' }}>Delete BitFit Account?</h2>
+            <p style={{ margin: '20px 0', color: '#1a2e1d' }}>
+              This will permanently erase your progress, logs, and profile.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button onClick={handleDeleteAccount} className="btn-primary" style={{ backgroundColor: '#dc2626' }}>Yes, Delete</button>
+              <button onClick={() => setIsOpen(false)} className="btn-secondary">Cancel</button>
+            </div>
+          </div>
+        </Modal>
       </main>
     </div>
   );
@@ -142,6 +172,7 @@ const PersonalInfoSection = ({
   setEditing,
   handleSave,
   canEdit,
+  setIsOpen
 }) => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -223,6 +254,35 @@ const PersonalInfoSection = ({
             <p className="field-value-highlight">{user.phone_number}</p>
           )}
         </div>
+
+        {canEdit && !isEditing && (
+          <div style={{
+            marginTop: '40px',
+            paddingTop: '20px',
+            borderTop: '1px solid #27272a',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span style={{ color: '#71717a', fontSize: '14px' }}>
+              No longer need your BitFit account?
+            </span>
+            <button
+              onClick={() => setIsOpen(true)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#dc2626',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Delete Account
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   );
