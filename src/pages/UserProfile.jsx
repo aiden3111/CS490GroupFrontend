@@ -1,5 +1,7 @@
 import "./UserProfile.css";
 import React, { useState, useEffect } from "react";
+import { useFormik } from "formik";
+import { Form, Button } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 
 function UserProfile() {
@@ -66,11 +68,17 @@ function UserProfile() {
           <li onClick={() => setActiveTab("goals")} className={`nav-item ${activeTab === "goals" ? "active" : ""}`}> Fitness </li>
           {user.role === 'coach' && (
             <>
-            <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
-            <li onClick={() => setActiveTab('coach-management')} className={`nav-item ${activeTab === "coach-management" ? "active" : ""}`}>Coach Management</li>
-            </>)}
-
-           <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
+              <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
+              <li onClick={() => setActiveTab('coach-management')} className={`nav-item ${activeTab === "coach-management" ? "active" : ""}`}>Coach Management</li>
+            </>
+          )}
+          {user.role != 'coach' && (
+            <>
+              <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
+              <li onClick={() => setActiveTab('coach-application')} className={`nav-item ${activeTab === "coach-application" ? "active" : ""}`}>Coach Application</li>
+            </>
+          )}
+          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
         </ul>
       </nav>
 
@@ -94,6 +102,7 @@ function UserProfile() {
         )}
         {activeTab === "goals" && <FitnessGoalsSection clientId={clientId} />}
         {activeTab === 'coach-management' && <CoachManagementSection clientId={clientId} />}
+        {activeTab === 'coach-application' && <CoachApplication clientId={clientId} />}
       </main>
     </div>
   );
@@ -451,115 +460,221 @@ const FitnessGoalsSection = ({ clientId }) => {
 };
 
 const CoachManagementSection = ({ clientId }) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [coachForm, setCoachForm] = useState({
-      pricing: '',
-      specialty: '',
-      certifications: '',
-      availability: '',
-      status: ''
-    });
+  const [isEditing, setIsEditing] = useState(false);
+  const [coachForm, setCoachForm] = useState({
+    pricing: '',
+    specialty: '',
+    certifications: '',
+    availability: '',
+    status: ''
+  });
 
-    useEffect(() => {
-        if (clientId) {
-            fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`)
-                .then(res => res.json())
-                .then(data => setCoachForm(data))
-                .catch(err => console.error("Error fetching coach info:", err));
-        }
-    }, [clientId]);
+  useEffect(() => {
+    if (clientId) {
+      fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`)
+        .then(res => res.json())
+        .then(data => setCoachForm(data))
+        .catch(err => console.error("Error fetching coach info:", err));
+    }
+  }, [clientId]);
 
-    const handleSave = async () => {
-        try {
-            const response = await fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`,{
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(coachForm)
-                
-            });
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(coachForm)
 
-            if (response.ok) {
-                setIsEditing(false);
-            }
-        } catch (err) {
-            console.error("Coach update failed:", err);
-        }
-    };
+      });
 
-    return (
-        <div className="section-card">
-            <div className="section-header">
-                <div>
-                    <h2 className="section-title">Coach Management</h2>
-                    <p className="text-zinc-500 text-sm">Update your professional profile and availability.</p>
-                </div>
-                {!isEditing ? (
-                    <button onClick={() => setIsEditing(true)} className="btn-outline">Edit Management</button>
-                ) : (
-                    <div className="flex gap-2">
-                        <button onClick={handleSave} className="btn-primary">Save All Changes</button>
-                        <button onClick={() => setIsEditing(false)} className="btn-secondary">Cancel</button>
-                    </div>
-                )}
-            </div>
+      if (response.ok) {
+        setIsEditing(false);
+      }
+    } catch (err) {
+      console.error("Coach update failed:", err);
+    }
+  };
 
-            <div className="space-y-8">
-                <div className="stats-grid">
-                    <div className="field-group">
-                        <label className="field-label">Hourly Rate ($)</label>
-                        {isEditing ? (
-                            <input type="number" value={coachForm.pricing} onChange={(e) => setCoachForm({ ...coachForm, pricing: e.target.value })} className="bitfit-input" />
-                        ) : (
-                            <p className="field-value-highlight">${coachForm.pricing}</p>
-                        )}
-                    </div>
-                    <div className="field-group">
-                        <label className="field-label">Specialty</label>
-                        {isEditing ? (
-                            <select value={coachForm.specialty} onChange={(e) => setCoachForm({ ...coachForm, specialty: e.target.value })} className="bitfit-input">
-                                <option value="fitness">Fitness</option>
-                                <option value="nutrition">Nutrition</option>
-                                <option value="both">Both</option>
-                            </select>
-                        ) : (
-                            <p className="field-value capitalize">{coachForm.specialty}</p>
-                        )}
-                    </div>
-                </div>
-
-                <hr style={{ borderColor: '#27272a', margin: '2rem 0' }} />
-
-                <div className="field-group">
-                    <label className="field-label">Certifications & Qualifications</label>
-                    {isEditing ? (
-                        <textarea
-                            value={coachForm.certifications}
-                            onChange={(e) => setCoachForm({ ...coachForm, certifications: e.target.value })}
-                            className="bitfit-input"
-                            rows="3"
-                        />
-                    ) : (
-                        <p className="field-value-highlight">{coachForm.certifications || "No certifications listed."}</p>
-                    )}
-                </div>
-
-                <div className="field-group">
-                    <label className="field-label">Weekly Availability</label>
-                    {isEditing ? (
-                        <input
-                            type="text"
-                            placeholder="e.g. Mon-Fri 9am-5pm"
-                            value={coachForm.availability}
-                            onChange={(e) => setCoachForm({ ...coachForm, availability: e.target.value })}
-                            className="bitfit-input"
-                        />
-                    ) : (
-                        <p className="field-value-highlight">{coachForm.availability || "Not set"}</p>
-                    )}
-                </div>
-            </div>
+  return (
+    <div className="section-card">
+      <div className="section-header">
+        <div>
+          <h2 className="section-title">Coach Management</h2>
+          <p className="text-zinc-500 text-sm">Update your professional profile and availability.</p>
         </div>
-    );
+        {!isEditing ? (
+          <button onClick={() => setIsEditing(true)} className="btn-outline">Edit Management</button>
+        ) : (
+          <div className="flex gap-2">
+            <button onClick={handleSave} className="btn-primary">Save All Changes</button>
+            <button onClick={() => setIsEditing(false)} className="btn-secondary">Cancel</button>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-8">
+        <div className="stats-grid">
+          <div className="field-group">
+            <label className="field-label">Hourly Rate ($)</label>
+            {isEditing ? (
+              <input type="number" value={coachForm.pricing} onChange={(e) => setCoachForm({ ...coachForm, pricing: e.target.value })} className="bitfit-input" />
+            ) : (
+              <p className="field-value-highlight">${coachForm.pricing}</p>
+            )}
+          </div>
+          <div className="field-group">
+            <label className="field-label">Specialty</label>
+            {isEditing ? (
+              <select value={coachForm.specialty} onChange={(e) => setCoachForm({ ...coachForm, specialty: e.target.value })} className="bitfit-input">
+                <option value="fitness">Fitness</option>
+                <option value="nutrition">Nutrition</option>
+                <option value="both">Both</option>
+              </select>
+            ) : (
+              <p className="field-value capitalize">{coachForm.specialty}</p>
+            )}
+          </div>
+        </div>
+
+        <hr style={{ borderColor: '#27272a', margin: '2rem 0' }} />
+
+        <div className="field-group">
+          <label className="field-label">Certifications & Qualifications</label>
+          {isEditing ? (
+            <textarea
+              value={coachForm.certifications}
+              onChange={(e) => setCoachForm({ ...coachForm, certifications: e.target.value })}
+              className="bitfit-input"
+              rows="3"
+            />
+          ) : (
+            <p className="field-value-highlight">{coachForm.certifications || "No certifications listed."}</p>
+          )}
+        </div>
+
+        <div className="field-group">
+          <label className="field-label">Weekly Availability</label>
+          {isEditing ? (
+            <input
+              type="text"
+              placeholder="e.g. Mon-Fri 9am-5pm"
+              value={coachForm.availability}
+              onChange={(e) => setCoachForm({ ...coachForm, availability: e.target.value })}
+              className="bitfit-input"
+            />
+          ) : (
+            <p className="field-value-highlight">{coachForm.availability || "Not set"}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CoachApplication = ({ clientId }) => {
+  const [coachApp, setCoachApp] = useState(false);
+  const formikForm = useFormik({
+    initialValues: {
+      client_id: clientId,
+      bio: "",
+      specialty: "",
+      certifications: "",
+      pricing: ""
+    },
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit: (values) => {
+      fetch("/api/api/coach_applications/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            console.log("Success:", data);
+            setCoachApp(true);
+          }
+        })
+        .catch((err) => console.error("Error:", err));
+    },
+    validate: (values) => {
+      const errors = {};
+      if (!values.bio) errors.bio = "Required";
+      if (!values.specialty) errors.specialty = "Required";
+      if (!values.certifications) errors.certifications = "Required";
+      if (!values.pricing) errors.pricing = "Required";
+      return errors;
+    },
+  });
+
+  return (
+    <div className="section-card w-100">
+      <div className="section-header">
+        <div>
+          <h2 className="section-title">Coach Application</h2>
+        </div>
+      </div>
+
+      <Form onSubmit={formikForm.handleSubmit}>
+        <Form.Group className="mb-3" controlId="formSpecialty">
+          <Form.Label className="text-white">Specialty</Form.Label>
+          <Form.Select
+            name="specialty"
+            onChange={formikForm.handleChange}
+            value={formikForm.values.specialty}
+          >
+            <option value="">Select Specialty</option>
+            {["fitness", "nutrition", "both"].map((specialty) => (
+              <option key={specialty} value={specialty}>{specialty}</option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBio">
+          <Form.Label className="text-white">Bio</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={5}
+            name="bio"
+            onChange={formikForm.handleChange}
+            value={formikForm.values.bio}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formCertifications">
+          <Form.Label className="text-white">Certifications</Form.Label>
+          <Form.Control
+            type="text"
+            name="certifications"
+            onChange={formikForm.handleChange}
+            value={formikForm.values.certifications}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formPricing">
+          <Form.Label className="text-white">Pricing</Form.Label>
+          <Form.Control
+            type="number"
+            name="pricing"
+            onChange={formikForm.handleChange}
+            value={formikForm.values.pricing}
+          />
+        </Form.Group>
+
+        {!coachApp ? (
+          <Button variant="primary" type="submit" className="w-100">Submit</Button>
+        ) : (
+          <div>
+            <Button variant="primary" className="w-100" disabled>Submit</Button>
+            <p>Application Submitted</p>
+          </div>
+        )}
+      </Form>
+    </div>
+  );
 };
 
 export default UserProfile;

@@ -91,7 +91,7 @@ function OnboardingSurveyPage() {
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formStepGoal">
+                    <Form.Group className="mb-3" controlId="formTimeGoal">
                         <Form.Label className="text-white">How long do you plan to workout each day in minutes?</Form.Label>
                         <Form.Control
                             type="number"
