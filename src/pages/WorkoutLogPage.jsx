@@ -17,6 +17,7 @@ const WorkoutLogPage = () => {
   const { clientId } = useParams();
   const navigate = useNavigate();
   const [stepData, setStepData] = useState([]);
+  
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -32,7 +33,7 @@ const WorkoutLogPage = () => {
       return;
     }
     const encodedSearch = encodeURIComponent(searchTerm);
-    navigate(`/CoachSearch/${clientId}?search=${searchTerm}`);
+    navigate(`/WorkoutSearchPage/${clientId}?search=${searchTerm}`);
   };
 
   const handleEnter = (e) => {
@@ -55,6 +56,8 @@ const WorkoutLogPage = () => {
     fetchStepData();
   }, [clientId]);
 
+
+
   //TODO: add the links to side bar
   //TODO: Build the top bar
 
@@ -64,7 +67,7 @@ const WorkoutLogPage = () => {
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
           <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coaches </li>
+          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach </li>
           <li className="nav-item active">Workout Logs</li>
           <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
@@ -85,6 +88,19 @@ const WorkoutLogPage = () => {
         <div className="header">
           <h1>Workout Logs</h1>
         </div>
+
+         <div className="search-container">
+            <p>Search here</p>
+            <input
+              type="text"
+              className="form-control search-input"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleEnter}
+            />
+            <button onClick={handleSearch}>Search</button>
+          </div>
 
           <div className="main-content">
                 <div className="header">

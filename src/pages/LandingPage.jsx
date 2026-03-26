@@ -58,7 +58,7 @@ const LandingPage = () => {
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
           <li className="nav-item active">Dashboard</li>
-          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}> My Coaches</li>
+          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}> My Coach</li>
           <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
           <li className="nav-item"onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
