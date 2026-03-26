@@ -20,6 +20,19 @@ const LandingPage = () => {
     }
   }, [clientId, navigate]);
 
+  useEffect(() => {
+    const loggedInId = localStorage.getItem("authenticatedClientId");
+    const userRole = localStorage.getItem("userRole"); 
+    if (loggedInId !== clientId) {
+      navigate(`/UserProfile/${loggedInId}`);
+      return;
+    }
+    if (userRole === 'coach') {
+      navigate(`/CoachLanding/${clientId}`);
+      return;
+    }
+  }, [clientId, navigate]);
+
   const handleSearch = () => {
     if (searchTerm.trim().length === 0) {
       alert("Please enter a valid search term.");

@@ -32,8 +32,13 @@ function LoginPage() {
           } else {
             console.log("Success:", data);
             localStorage.setItem("authenticatedClientId", data.client_id);
-            navigate(`/LandingPage/${data.client_id}`);
-            //navigate("/LandingPage");
+            localStorage.setItem("userRole", data.role);
+
+            if (data.role === 'coach') {
+              navigate(`/CoachLanding/${data.client_id}`);
+            } else {
+              navigate(`/LandingPage/${data.client_id}`);
+            }
           }
         })
         .catch((err) => console.error("Errorrrrrrr:", err));
