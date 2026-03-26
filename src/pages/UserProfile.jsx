@@ -11,28 +11,39 @@ function UserProfile() {
   const [isEditing, setEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+  const loggedInUserRole = localStorage.getItem("userRole");
+
+
+  const loggedInId = localStorage.getItem("authenticatedClientId");
 
   useEffect(() => {
-    const loggedInId = localStorage.getItem("authenticatedClientId");
-    if (loggedInId !== clientId) {
-      navigate(`/UserProfile/${loggedInId}`);
-      return;
-    }
-    if (clientId) {
-      fetch(`http://127.0.0.1:5000/api/clients/${clientId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setUser(data);
-          setFormData({
-            first_name: data.first_name,
-            last_name: data.last_name,
-            phone_number: data.phone_number,
-            email: data.email,
-          });
-        })
-        .catch((err) => console.error("Fetch error:", err));
-    }
-  }, [clientId, navigate]);
+    if (!clientId) return;
+
+    // SINGLE FETCH LOGIC
+    fetch(`http://127.0.0.1:5000/api/clients/${clientId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        // SECURITY GATE: Redirect if not my profile AND not a coach
+        if (loggedInId !== clientId && loggedInUserRole !== 'coach') {
+          navigate(`/UserProfile/${loggedInId}`);
+          return;
+        }
+
+        setUser(data);
+        setFormData({
+          first_name: data.first_name,
+          last_name: data.last_name,
+          phone_number: data.phone_number,
+          email: data.email,
+        });
+      })
+      .catch((err) => console.error("Fetch error:", err));
+  }, [clientId, navigate, loggedInId, loggedInUserRole]);
+
+  const canEdit = loggedInId === clientId;
+
+  if (!user) return <div className="dashboard-container p-10">Loading BitFit Profile...</div>;
 
   const handleSave = async () => {
     const res = await fetch(`http://127.0.0.1:5000/api/clients/${clientId}`, {
@@ -62,27 +73,40 @@ function UserProfile() {
     <div className="dashboard-container">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
+        {loggedInId !== clientId && (
+          <div className="p-3">
+            <Button variant="outline-warning" size="sm" onClick={() => navigate(-1)}>
+              ← Back to Roster
+            </Button>
+          </div>
+        )}
         <ul className="nav-list">
           <li onClick={() => setActiveTab("personal")} className={`nav-item ${activeTab === "personal" ? "active" : ""}`}>Personal Info</li>
           <li onClick={() => setActiveTab("physical")} className={`nav-item ${activeTab === "physical" ? "active" : ""}`}> Physical Stats</li>
           <li onClick={() => setActiveTab("goals")} className={`nav-item ${activeTab === "goals" ? "active" : ""}`}> Fitness </li>
-          {user.role === 'coach' && (
+          {canEdit && user.role === 'coach' && (
             <>
               <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
               <li onClick={() => setActiveTab('coach-management')} className={`nav-item ${activeTab === "coach-management" ? "active" : ""}`}>Coach Management</li>
             </>
           )}
-          {user.role === 'client' && (
+          {canEdit && user.role === 'client' && (
             <>
               <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
               <li onClick={() => setActiveTab('coach-application')} className={`nav-item ${activeTab === "coach-application" ? "active" : ""}`}>Coach Application</li>
             </>
           )}
-          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
+          <li className="nav-item" onClick={() => navigate(`/LandingPage/${loggedInId}`)}>Dashboard</li>
         </ul>
       </nav>
 
       <main className="main-content">
+        <header className="mb-4">
+          <h1 className="welcome-text">
+            {loggedInId === clientId ? "My Profile" : `${user.first_name}'s Profile`}
+          </h1>
+        </header>
+
         {activeTab === "personal" && (
           <PersonalInfoSection
             user={user}
@@ -91,6 +115,7 @@ function UserProfile() {
             isEditing={isEditing}
             setEditing={setEditing}
             handleSave={handleSave}
+            canEdit={canEdit}
           />
         )}
         {activeTab === "physical" && (
@@ -98,9 +123,10 @@ function UserProfile() {
             user={user}
             clientId={clientId}
             setUser={setUser}
+            canEdit={canEdit}
           />
         )}
-        {activeTab === "goals" && <FitnessGoalsSection clientId={clientId} />}
+        {activeTab === "goals" && <FitnessGoalsSection clientId={clientId} canEdit={canEdit} />}
         {activeTab === 'coach-management' && <CoachManagementSection clientId={clientId} />}
         {activeTab === 'coach-application' && <CoachApplication clientId={clientId} />}
       </main>
@@ -115,6 +141,7 @@ const PersonalInfoSection = ({
   isEditing,
   setEditing,
   handleSave,
+  canEdit,
 }) => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -124,7 +151,7 @@ const PersonalInfoSection = ({
     <div className="section-card">
       <div className="section-header">
         <h2 className="section-title">Personal Information</h2>
-        {!isEditing ? (
+        {canEdit && (!isEditing ? (
           <button onClick={() => setEditing(true)} className="btn-outline">
             Edit Profile
           </button>
@@ -137,7 +164,7 @@ const PersonalInfoSection = ({
               Cancel
             </button>
           </div>
-        )}
+        ))}
       </div>
 
       <div className="stats-grid">
@@ -201,7 +228,7 @@ const PersonalInfoSection = ({
   );
 };
 
-const PhysicalStatsSection = ({ user, clientId, setUser }) => {
+const PhysicalStatsSection = ({ user, clientId, setUser, canEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [statsForm, setStatsForm] = useState({
     weight: user.weight,
@@ -240,7 +267,7 @@ const PhysicalStatsSection = ({ user, clientId, setUser }) => {
     <div className="section-card">
       <div className="section-header">
         <h2 className="section-title">Physical Stats</h2>
-        {!isEditing ? (
+        {canEdit && (!isEditing ? (
           <button onClick={() => setIsEditing(true)} className="btn-outline">
             Update Stats
           </button>
@@ -256,7 +283,7 @@ const PhysicalStatsSection = ({ user, clientId, setUser }) => {
               Cancel
             </button>
           </div>
-        )}
+        ))}
       </div>
 
       <div className="stats-grid">
@@ -300,7 +327,7 @@ const PhysicalStatsSection = ({ user, clientId, setUser }) => {
   );
 };
 
-const FitnessGoalsSection = ({ clientId }) => {
+const FitnessGoalsSection = ({ clientId, canEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [goals, setGoals] = useState(null);
   const [goalsForm, setGoalsForm] = useState({
@@ -360,7 +387,7 @@ const FitnessGoalsSection = ({ clientId }) => {
     <div className="section-card">
       <div className="section-header">
         <h2 className="section-title">Fitness Goals</h2>
-        {!isEditing ? (
+        {canEdit && (!isEditing ? (
           <button onClick={() => setIsEditing(true)} className="btn-outline">
             Edit Goals
           </button>
@@ -376,7 +403,7 @@ const FitnessGoalsSection = ({ clientId }) => {
               Cancel
             </button>
           </div>
-        )}
+        ))}
       </div>
 
       <div className="stats-grid">
