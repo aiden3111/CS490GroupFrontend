@@ -174,7 +174,7 @@ function MyCustom({ clientId }) {
 
     }else{
           
-      alert("DElete Canceled");
+      alert("Delete Canceled");
     }
  
   };
