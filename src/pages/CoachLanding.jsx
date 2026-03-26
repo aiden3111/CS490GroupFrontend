@@ -7,6 +7,10 @@ const CoachLanding = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -15,6 +19,33 @@ const CoachLanding = () => {
       return;
     }
   }, [clientId, navigate]);
+
+  useEffect(() => {
+    fetch(`/api/api/coach/${clientId}/requests`)
+      .then(res => res.json())
+      .then(data => setRequests(data.filter(req => req.status === 'pending')))
+      .catch(err => console.error("Error loading requests:", err));
+  }, [clientId]);
+
+  const handleAction = async (requestId, status, targetClientId) => {
+    try {
+      const response = await fetch(`/api/api/coach/${clientId}/requests/${requestId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          status: status,
+          client_id: targetClientId
+        }),
+      });
+
+      if (response.ok) {
+        setRequests((prev) => prev.filter((req) => req.request_id !== requestId));
+        alert(`Request ${status} successfully!`);
+      }
+    } catch (err) {
+      console.error("Update failed:", err);
+    }
+  };
 
   const handleSearch = () => {
     if (searchTerm.trim().length === 0) {
@@ -37,6 +68,7 @@ const CoachLanding = () => {
   };
 
 
+
   //TODO: add the links to side bar
   //TODO: Build the top bar
   
@@ -45,7 +77,15 @@ const CoachLanding = () => {
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
-          <li className="nav-item active">Dashboard</li>
+          <li className={`nav-item ${activeTab == 'dashboard' ? 'active' : ''}`}
+              onClick={()=> setActiveTab('dashboard')}
+          >Dashboard</li>
+          <li
+            className={`nav-item ${activeTab === 'requests' ? 'active' : ''}`}
+            onClick={() => setActiveTab('requests')}
+          >
+            Pending Requests {requests.length > 0 && `(${requests.length})`}
+          </li>
           <li className="nav-item">My Clients</li>
           <li className="nav-item">Workout Logs</li>
           <li className="nav-item">Meal Tracker</li>
@@ -64,7 +104,9 @@ const CoachLanding = () => {
 
       <main className="main-content">
         <header className="dashboard-header">
-          <h1 className="welcome-text">Welcome Back!</h1>
+          <h1 className="welcome-text">
+            {activeTab === 'dashboard' ? 'Coach Dashboard' : 'Manage Client Requests'}
+          </h1>
 
           <div className="search-container">
             <p>Search here</p>
@@ -80,31 +122,60 @@ const CoachLanding = () => {
           </div>
         </header>
 
-        <div className="dashboard-grid">
-          <div className="grid-left">
-            <div className="section-card">
-              <h3> Mood Tracker</h3>
-              <div className="chart-placeholder">TODO: put the chart here</div>
+        {activeTab === 'dashboard' ? (
+          <div className="dashboard-grid">
+            <div className="grid-left">
+              <div className="section-card">
+                <h3>Mood Tracker</h3>
+                <div className="chart-placeholder">Dashboard Analytics Here</div>
+              </div>
             </div>
-
-            <div className="section-card">
-              <h3> Mood Tracker</h3>
-              <div className="chart-placeholder">TODO: put the chart here</div>
-            </div>
-          </div>
-
-          <div className="grid-right">
-            <div className="section-card">
-              <h3>Top Coaches</h3>
-              <p>TODO: Loading coach recommendations.</p>
-            </div>
-
-            <div className="section-card">
-              <h3>Top Coaches</h3>
-              <p>TODO: Loading coach recommendations.</p>
+            <div className="grid-right">
+              <div className="section-card">
+                <h3>Top Coaches</h3>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="requests-page-view">
+            <div className="section-card" style={{ minHeight: '70vh' }}>
+              <div className="flex justify-between items-center mb-6">
+                <h3>Incoming Requests</h3>
+              </div>
+
+              {requests.length === 0 ? (
+                <div className="text-center py-20">
+                  <p className="text-zinc-500 text-lg">No pending requests.</p>
+                </div>
+              ) : (
+                <div className="request-stack" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {requests.map((req) => (
+                    <div key={req.request_id} className="coach-square" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px' }}>
+                      <div>
+                        <h4 style={{ margin: 0 }}>{req.first_name} {req.last_name}</h4>
+                        <p className="text-zinc-500">Client ID: {req.client_id}</p>
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          className="btn-primary"
+                          onClick={() => handleAction(req.request_id, 'accepted', req.client_id)}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="btn-secondary"
+                          onClick={() => handleAction(req.request_id, 'denied')}
+                        >
+                          Deny
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
