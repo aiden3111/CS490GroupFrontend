@@ -12,8 +12,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const WorkoutLogPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+const StepsTracker = () => {
+
   const { clientId } = useParams();
   const navigate = useNavigate();
   const [stepData, setStepData] = useState([]);
@@ -26,21 +26,6 @@ const WorkoutLogPage = () => {
       return;
     }
   }, [clientId, navigate]);
-
-  const handleSearch = () => {
-    if (searchTerm.trim().length === 0) {
-      alert("Please enter a valid search term.");
-      return;
-    }
-    const encodedSearch = encodeURIComponent(searchTerm);
-    navigate(`/WorkoutSearchPage/${clientId}?search=${searchTerm}`);
-  };
-
-  const handleEnter = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("authenticatedClientId");
@@ -69,11 +54,6 @@ const WorkoutLogPage = () => {
           <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
           <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach </li>
           <li className="nav-item active">Workout Logs</li>
-          <ul className="sub-nav">
-            <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}>Step Tracker </li>
-            
-
-          </ul>
           <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
           <li className="nav-item">Messages</li>
@@ -94,20 +74,19 @@ const WorkoutLogPage = () => {
           <h1>Workout Logs</h1>
         </div>
 
-         <div className="search-container">
-            <p>Search here</p>
-            <input
-              type="text"
-              className="form-control search-input"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleEnter}
-            />
-            <button onClick={handleSearch}>Search</button>
-          </div>
 
           <div className="main-content">
+                <div className="header">
+                  <h1>Steps Tracker</h1>
+                  {stepData.map((steps) => (
+                    <div key={steps.log_date} className="call-square">
+                      <p>Date: {steps.log_date}</p>
+                      <p>Steps: {steps.steps}</p>
+                      
+                      
+                    </div>
+                  ))}
+                </div>
                 <div className="callgraph">
                   <div className="calorie-graph" style={{ width: "100%", height: 300, marginTop: "20px" }}>
                     <h3>Steps Trends</h3>
@@ -144,4 +123,4 @@ const WorkoutLogPage = () => {
 };
 //TODO: Fix Styling
 //TODO: Fix Sqares content
-export default WorkoutLogPage;
+export default StepsTracker;

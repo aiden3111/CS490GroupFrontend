@@ -14,6 +14,7 @@ import WorkoutLogPage from './pages/WorkoutLogPage';
 import SwitchCoach from './pages/SwitchCoach';
 import MealTrackPage from './pages/MealTrackPage';
 import WorkoutSearchPage from './pages/WorkoutSearchPage';
+import StepsTracker from './pages/StepsTracker';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/CoachLanding/:clientId" element={ <ProtectedRoutes> <CoachLanding/> </ProtectedRoutes> } />
         <Route path="/SwitchCoach/:clientId" element={ <ProtectedRoutes> <SwitchCoach/> </ProtectedRoutes> } />
         <Route path="/WorkoutSearchPage/:clientId" element={ <ProtectedRoutes> <WorkoutSearchPage/> </ProtectedRoutes> } />
+        <Route path="/StepsTracker/:clientId" element={ <ProtectedRoutes> <StepsTracker/> </ProtectedRoutes> } />
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>
     </Router>
