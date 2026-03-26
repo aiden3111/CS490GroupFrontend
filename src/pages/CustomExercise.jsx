@@ -8,14 +8,125 @@ import { useFormik } from "formik";
 //TODO: add the links to side bar
 //TODO: Build the top bar
 
-const CustomExercise = () => {
+function CustomExercise() {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("search");
   const [workouts, setWorkouts] = useState([]);
   const navigate = useNavigate();
-  const [selectedFilters, setselectedFilters] = useState([]);
+
+  const [activeTab, setActiveTab] = useState("mycustom");
+
+  /*I will updae this to search only user made exercises*/ 
+
+  useEffect(() => {
+    const loggedInId = localStorage.getItem("authenticatedClientId");
+    if (loggedInId !== clientId) {
+      navigate(`/UserProfile/${loggedInId}`);
+    }
+  }, [clientId, navigate]);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/LoginPage/");
+  };
+
+  const handleSearch = () => {
+    if (searchTerm.trim().length === 0) {
+      alert("Please enter a valid search term.");
+      return;
+    }
+    navigate(
+      `/WorkoutSearchPage/${clientId}?search=${encodeURIComponent(searchTerm)}`,
+    );
+  };
+
+ 
+
+  useEffect(() => {
+    if (query) {
+      fetch(`http://127.0.0.1:5000/api/exercises`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            console.error("Backend Error:", data.error);
+            setWorkouts([]);
+          } else {
+            setWorkouts(data);
+          }
+        })
+        .catch((err) => console.error("Fetch error:", err));
+    }
+  }, [query]);
+
+
+
+
+  return (
+    <div className="coach-page">
+      <nav className="sidebar">
+        <div className="brand-logo">BitFit</div>
+        <ul className="nav-list">
+          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}> Dashboard </li>
+          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)} > My Profile </li>
+          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)} > Workout Logs </li>
+          <ul className="sub-nav">
+            <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}> Step Tracker </li>
+            <li className="nav-item active">Custom Exercise </li>
+            <ul className="sub-sub-nav">
+              <li onClick={() => setActiveTab("mycustom")} className={`nav-item ${activeTab === "mycustom" ? "active" : ""}`}>My Custom</li>
+              <li onClick={() => setActiveTab("create-custom")} className={`nav-item ${activeTab === "create-custom" ? "active" : ""}`}> Create exercise</li>
+            </ul>
+          </ul>
+        </ul>
+
+        <div className="sidebar-bottom">
+          <button className="nav-item" onClickCapture={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </nav>
+
+      <main className="main-content">
+        <h1 className="welcome-text"> Custom Exercise</h1>
+        
+        {activeTab === "mycustom" ? (
+          <MyCustom clientId={clientId} />
+        ) : (
+          < CustomCreation clientId={clientId} />
+        )}
+      </main>
+    </div>
+  );
+}
+
+
+function MyCustom({ clientId }) {
+  const [workouts, setWorkouts] = useState([]);
+
+  useEffect(() => {
+    fetch(`http://127.0.0.1:5000/api/my_exercises/?client_id=${clientId}`)
+      .then(res => res.json())
+      .then(data => setWorkouts(data));
+  }, [clientId]);
+
+  return (
+    <div className="exercise-section">
+      {workouts.map(ex => (
+        <div key={ex.exercise_id} className="section-card">
+          <h3>{ex.exercise_name}</h3>
+          <p>{ex.muscle_group} </p>
+          <p> {ex.equipment}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CustomCreation({ clientId }) {
+
+  const [activeTab, setActiveTab] = useState("create-custom");
 
   const formikForm = useFormik({
     initialValues: {
@@ -62,119 +173,9 @@ const CustomExercise = () => {
     },
   });
 
-  useEffect(() => {
-    const loggedInId = localStorage.getItem("authenticatedClientId");
-    if (loggedInId !== clientId) {
-      navigate(`/UserProfile/${loggedInId}`);
-    }
-  }, [clientId, navigate]);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/LoginPage/");
-  };
-
-  const handleSearch = () => {
-    if (searchTerm.trim().length === 0) {
-      alert("Please enter a valid search term.");
-      return;
-    }
-    navigate(
-      `/WorkoutSearchPage/${clientId}?search=${encodeURIComponent(searchTerm)}`,
-    );
-  };
-
-  const handleEnter = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
-  useEffect(() => {
-    if (query) {
-      fetch(`http://127.0.0.1:5000/api/exercises`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            console.error("Backend Error:", data.error);
-            setWorkouts([]);
-          } else {
-            setWorkouts(data);
-          }
-        })
-        .catch((err) => console.error("Fetch error:", err));
-    }
-  }, [query]);
-
-  const handleFilterChange = (name) => {
-    setselectedFilters((prev) =>
-      prev.includes(name)
-        ? prev.filter((item) => item !== name)
-        : [...prev, name],
-    );
-  };
-
-
-
-  return (
-    <div className="coach-page">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
-          >
-            Workout Logs
-          </li>
-          <ul className="sub-nav">
-            <li
-              className="nav-item"
-              onClick={() => navigate(`/StepsTracker/${clientId}`)}
-            >
-              Step Tracker{" "}
-            </li>
-            <li className="nav-item active">Custom Exercise </li>
-          </ul>
-        </ul>
-
-        <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </nav>
-
-      <main className="main-content">
-        <h1 className="welcome-text"> Custom Exercise</h1>
-
-        <div className="search-container">
-          <input
-            type="text"
-            className="form-control search-input"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={handleEnter}
-          />
-          <button className="btn-search" onClick={handleSearch}>
-            {" "}
-            Search{" "}
-          </button>
-        </div>
-        <div className="custom-creation">
+return(
+<div className="Outer-custom">
+  <div className="custom-creation">
           <Container>
             <div
               style={{
@@ -197,7 +198,6 @@ const CustomExercise = () => {
                   />
                 </Form.Group>
 
-                
                 <Form.Group className="mb-3" controlId="formMuscleGroup">
                   <Form.Label>Muscle Group</Form.Label>
                   <Form.Select
@@ -266,9 +266,8 @@ const CustomExercise = () => {
             </div>
           </Container>
         </div>
-      </main>
-    </div>
-  );
-};
+        </div>
+        );
+}      
 
 export default CustomExercise;
