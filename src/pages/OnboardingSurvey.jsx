@@ -30,7 +30,7 @@ function OnboardingSurveyPage() {
                         alert(data.error);
                     } else {
                         console.log("Success:", data);
-                        navigate(`/UserProfile/${clientId}`);
+                        navigate(`/LandingPage/${clientId}`);
                         //navigate("/LandingPage");
                     }
                 })
