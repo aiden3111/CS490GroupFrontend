@@ -22,7 +22,7 @@ const CoachLanding = () => {
     };
 
     try {
-      const res = await fetch("/api/workout_plans/", {
+      const res = await fetch("/api/api/workoutPlansPage/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(planData)
@@ -31,8 +31,6 @@ const CoachLanding = () => {
       const data = await res.json();
       if (res.ok) {
         alert("Plan created!");
-        // Optional: Navigate to a builder page using the new ID
-        navigate(`/WorkoutBuilder/${data.workout_plan_id}`);
       }
     } catch (err) {
       console.error("Assignment failed:", err);
