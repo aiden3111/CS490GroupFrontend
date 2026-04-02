@@ -128,8 +128,11 @@ const MyCoach = () => {
                 <b>Availability:</b> {myCoach.availability}
               </p>
               <p>
-               
-                <b>Certifications:</b> {myCoach.certifications}
+                <b>Certifications:</b> {
+                  [myCoach.fitness_certifications, myCoach.nutrition_certifications]
+                    .filter(Boolean)
+                    .join(", ") || "None listed"
+                }
               </p>
             </div>
           )}
