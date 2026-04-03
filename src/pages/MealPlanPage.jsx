@@ -1,12 +1,13 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
+import { useFormik } from "formik";
 
 const MealPlanPage = () => {
-    const [searchTerm, setSearchTerm] = useState("");
+    
     const { clientId } = useParams();
     const navigate = useNavigate();
-    const [stepData, setStepData] = useState([]);
+    
 
     useEffect(() => {
         const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -20,7 +21,8 @@ const MealPlanPage = () => {
     localStorage.removeItem("authenticatedClientId");
     navigate("/LoginPage/");
   };
-
+//TODO: add view restriction based on roles
+//TODO: this should be nutritionist only
 
     return (
         <div className="dashboard-container">

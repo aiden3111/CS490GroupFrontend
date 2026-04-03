@@ -116,14 +116,18 @@ const LandingPage = () => {
             <div className="section-card">
               <div>
               <h3> Mood Tracker</h3>
-              {landingData.trackers.map((mood) => (
+              { landingData.trackers?.length > 0 ?(
+                landingData.trackers.map((mood) => (
                 <div key={mood.log_date} className="coach-square">
                   <p> {mood.log_date} </p>
                   <p> Score: {mood.mood_score} </p>
                   <p>Feeling: {mood.mood_label}</p>
                   
                 </div>
-              ))}
+              ))
+            ):(
+              <p>No mood logs found.</p>
+            )}
             </div>
             </div>
 
@@ -136,13 +140,17 @@ const LandingPage = () => {
           <div className="grid-right">
             <div className="section-card">
               <h3>Top Coaches</h3>
-              {landingData.top_coaches.map((coach) => (
+              {landingData.top_coaches?.length > 0 ? (
+                landingData.top_coaches.map((coach) => (
                 <div key={coach.coach_id} className="coach-square">
                   <h3> {coach.first_name} {coach.last_name} </h3>
                   <p>Specialty: {coach.specialty}</p>
                   <p>Rating: {coach.average_rating } ⭐ </p>
                 </div>
-              ))}
+              ))
+            ):(
+              <p>No coach found!</p>
+            )}
             </div>
 
             <div className="section-card">
