@@ -9,7 +9,6 @@ const CoachLanding = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
 
   const handleCreatePlan = async (clientData) => {
@@ -210,7 +209,7 @@ const CoachLanding = () => {
                           onClick={() => handleAction(req.request_id, 'accepted', req.client_id)}>Accept</button>
                         <button
                           className="btn-secondary"
-                          onClick={() => handleAction(req.request_id, 'denied')}>Deny</button>
+                          onClick={() => handleAction(req.request_id, 'rejected')}>Reject</button>
                       </div>
                     </div>
                   ))}
@@ -276,7 +275,7 @@ const CoachLanding = () => {
             </div>
           </div>
         )}
-
+        
       </main>
     </div>
   );

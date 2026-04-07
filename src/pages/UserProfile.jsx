@@ -549,34 +549,72 @@ const FitnessGoalsSection = ({ clientId, canEdit }) => {
 const CoachManagementSection = ({ clientId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [coachForm, setCoachForm] = useState({
+    isFitness: false,
+    isNutrition: false,
+    fitnessData: { certifications: "" },
+    nutritionData: { certifications: "" },
     pricing: '',
-    specialty: '',
-    certifications: '',
     availability: '',
     status: ''
   });
 
   useEffect(() => {
-    if (clientId) {
-      fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`)
-        .then(res => res.json())
-        .then(data => setCoachForm(data))
-        .catch(err => console.error("Error fetching coach info:", err));
-    }
+    const fetchCoachData = async () => {
+      try {
+        const [baseRes, fitRes, nutRes] = await Promise.all([
+          fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`),
+          fetch(`http://127.0.0.1:5000/api/profile/fitness_coach/${clientId}`),
+          fetch(`http://127.0.0.1:5000/api/profile/nutrition_coach/${clientId}`)
+        ]);
+
+        const baseData = await baseRes.json();
+        const fitData = fitRes.ok ? await fitRes.json() : null;
+        const nutData = nutRes.ok ? await nutRes.json() : null;
+
+        setCoachForm({
+          isFitness: !!fitData,
+          isNutrition: !!nutData,
+          fitnessData: fitData || { certifications: "" },
+          nutritionData: nutData || { certifications: "" },
+          availability: baseData.availability || "",
+          pricing: baseData.pricing || ""
+        });
+      } catch (err) {
+        console.error("Error fetching split coach data:", err);
+      }
+    };
+
+    if (clientId) fetchCoachData();
   }, [clientId]);
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`, {
+      const updates = [];
+
+      updates.push(fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(coachForm)
+        body: JSON.stringify({ availability: coachForm.availability, pricing: coachForm.pricing })
+      }));
 
-      });
-
-      if (response.ok) {
-        setIsEditing(false);
+      if (coachForm.isFitness) {
+        updates.push(fetch(`http://127.0.0.1:5000/api/profile/fitness_coach/${clientId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ certifications: coachForm.fitnessData.certifications })
+        }));
       }
+
+      if (coachForm.isNutrition) {
+        updates.push(fetch(`http://127.0.0.1:5000/api/profile/nutrition_coach/${clientId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ certifications: coachForm.nutritionData.certifications })
+        }));
+      }
+
+      await Promise.all(updates);
+      setIsEditing(false);
     } catch (err) {
       console.error("Coach update failed:", err);
     }
@@ -600,7 +638,7 @@ const CoachManagementSection = ({ clientId }) => {
       </div>
 
       <div className="space-y-8">
-        <div className="stats-grid">
+        <div>
           <div className="field-group">
             <label className="field-label">Hourly Rate ($)</label>
             {isEditing ? (
@@ -609,33 +647,54 @@ const CoachManagementSection = ({ clientId }) => {
               <p className="field-value-highlight">${coachForm.pricing}</p>
             )}
           </div>
-          <div className="field-group">
-            <label className="field-label">Specialty</label>
-            {isEditing ? (
-              <select value={coachForm.specialty} onChange={(e) => setCoachForm({ ...coachForm, specialty: e.target.value })} className="bitfit-input">
-                <option value="fitness">Fitness</option>
-                <option value="nutrition">Nutrition</option>
-                <option value="both">Both</option>
-              </select>
-            ) : (
-              <p className="field-value capitalize">{coachForm.specialty}</p>
-            )}
-          </div>
+
         </div>
 
-        <hr style={{ borderColor: '#27272a', margin: '2rem 0' }} />
-
         <div className="field-group">
-          <label className="field-label">Certifications & Qualifications</label>
-          {isEditing ? (
-            <textarea
-              value={coachForm.certifications}
-              onChange={(e) => setCoachForm({ ...coachForm, certifications: e.target.value })}
-              className="bitfit-input"
-              rows="3"
-            />
-          ) : (
-            <p className="field-value-highlight">{coachForm.certifications || "No certifications listed."}</p>
+          {coachForm.isFitness && (
+            <div className="specialty-block" style={{ borderLeft: '4px solid #fbbf24', paddingLeft: '20px' }}>
+              <div className="field-group">
+                <label className="field-label">Fitness Certifications & Qualifications</label>
+                {isEditing ? (
+                  <textarea
+                    className="bitfit-input"
+                    value={coachForm.fitnessData.certifications}
+                    onChange={(e) => setCoachForm({
+                      ...coachForm,
+                      fitnessData: { ...coachForm.fitnessData, certifications: e.target.value }
+                    })}
+                    rows="3"
+                  />
+                ) : (
+                  <p className="field-value-highlight">
+                    {coachForm.fitnessData.certifications || "No fitness certifications listed."}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {coachForm.isNutrition && (
+            <div className="specialty-block" style={{ borderLeft: '4px solid #10b981', paddingLeft: '20px' }}>
+              <div className="field-group">
+                <label className="field-label">Nutrition Certifications & Qualifications</label>
+                {isEditing ? (
+                  <textarea
+                    className="bitfit-input"
+                    value={coachForm.nutritionData.certifications}
+                    onChange={(e) => setCoachForm({
+                      ...coachForm,
+                      nutritionData: { ...coachForm.nutritionData, certifications: e.target.value }
+                    })}
+                    rows="3"
+                  />
+                ) : (
+                  <p className="field-value-highlight">
+                    {coachForm.nutritionData.certifications || "No nutrition certifications listed."}
+                  </p>
+                )}
+              </div>
+            </div>
           )}
         </div>
 
