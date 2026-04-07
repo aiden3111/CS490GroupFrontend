@@ -16,6 +16,7 @@ import MealTrackPage from './pages/MealTrackPage';
 import OnboardingSurveyPage from './pages/OnboardingSurvey';
 import MealPlanPage from './pages/MealPlanPage';
 import WorkoutPlanPage from './pages/WorkoutPlanPage';
+import StepsTracker from './pages/StepsTracker';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="/CoachLanding/:clientId" element={<ProtectedRoutes> <CoachLanding /> </ProtectedRoutes>} />
         <Route path="/SwitchCoach/:clientId" element={<ProtectedRoutes> <SwitchCoach /> </ProtectedRoutes>} />
         <Route path="/MealPlanPage/:clientId" element={<ProtectedRoutes> <MealPlanPage /> </ProtectedRoutes>} />
+        <Route path="/StepsTracker/:clientId" element={<ProtectedRoutes> <StepsTracker /> </ProtectedRoutes>} />
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>
     </Router>
