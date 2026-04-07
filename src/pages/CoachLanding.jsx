@@ -11,6 +11,8 @@ const CoachLanding = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
+  const userRole = localStorage.getItem("userRole");
+  const coachSpecialty = localStorage.getItem("coachSpecialty");
 
   const handleCreatePlan = async (clientData) => {
     const planData = {
@@ -133,6 +135,11 @@ const CoachLanding = () => {
           </li>
           <li className="nav-item">Workout Logs</li>
           <li className="nav-item">Meal Tracker</li>
+          {(userRole === 'coach' && (coachSpecialty === 'nutrition' || coachSpecialty === 'both')) && (
+            <li className="nav-item" onClick={() => navigate(`/AssignMealPlan/${clientId}`)}>
+             Assign Meal Plans
+            </li>
+           )}
           <li className="nav-item">Mood Tracker</li>
           <li className="nav-item">Messages</li>
           <li className="nav-item">Subscriptions</li>
@@ -259,8 +266,8 @@ const CoachLanding = () => {
                           className="btn-secondary"
                           onClick={() => navigate(`/WorkoutLogPage/${client.client_id}`)}
                         >
-                          Logs
-                        </button>
+                          Logs {/*This is not redirecting to where its suposed to go*/}
+                        </button> 
                       </div>
                       <button
                         className="btn-outline-warning w-100"

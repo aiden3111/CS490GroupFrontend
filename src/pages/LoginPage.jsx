@@ -33,6 +33,7 @@ function LoginPage() {
             console.log("Success:", data);
             localStorage.setItem("authenticatedClientId", data.client_id);
             localStorage.setItem("userRole", data.role);
+            localStorage.setItem("coachSpecialty", data.specialty);
 
             if (data.role === 'coach') {
               navigate(`/CoachLanding/${data.client_id}`);
@@ -73,6 +74,7 @@ function LoginPage() {
       })
       .catch((err) => console.error("Errorrrrrrr:", err));
   };
+
   return (
     <Container>
       <div

@@ -3,7 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 
-const MealPlanPage = () => {
+const AssignMealPlan = () => {
     
     const { clientId } = useParams();
     const navigate = useNavigate();
@@ -52,7 +52,7 @@ const MealPlanPage = () => {
             </nav>
 
             <div className="main-content">
-                <h1>Create Meal Plan</h1>
+                <h1>Assingn Meal Plan</h1>
                 
             </div>
         </div>
@@ -61,4 +61,4 @@ const MealPlanPage = () => {
 
 
 
-export default MealPlanPage;
+export default AssignMealPlan;
