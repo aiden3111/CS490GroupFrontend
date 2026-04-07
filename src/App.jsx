@@ -16,6 +16,7 @@ import MealTrackPage from './pages/MealTrackPage';
 import OnboardingSurveyPage from './pages/OnboardingSurvey';
 import MealPlanPage from './pages/MealPlanPage';
 import WorkoutPlanPage from './pages/WorkoutPlanPage';
+import WorkoutSearchPage from './pages/WorkoutSearchPage';
 import StepsTracker from './pages/StepsTracker';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         <Route path="/MoodTrackPage/:clientId" element={<ProtectedRoutes> <MoodTrackPage /> </ProtectedRoutes>} />
         <Route path="/MealTrackPage/:clientId" element={<ProtectedRoutes> <MealTrackPage /> </ProtectedRoutes>} />
         <Route path="/WorkoutLogPage/:clientId" element={<ProtectedRoutes> <WorkoutLogPage /> </ProtectedRoutes>} />
+        <Route path="/WorkoutSearchPage/:clientId" element={<ProtectedRoutes> <WorkoutSearchPage /> </ProtectedRoutes>} />
         <Route path="/CoachLanding/:clientId" element={<ProtectedRoutes> <CoachLanding /> </ProtectedRoutes>} />
         <Route path="/SwitchCoach/:clientId" element={<ProtectedRoutes> <SwitchCoach /> </ProtectedRoutes>} />
         <Route path="/MealPlanPage/:clientId" element={<ProtectedRoutes> <MealPlanPage /> </ProtectedRoutes>} />
