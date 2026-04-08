@@ -11,7 +11,7 @@ const WorkoutPlanPage = () => {
     const [workoutPlans, setWorkoutPlans] = useState({});
 
     // Add workout form state
-    const [showAddForm, setShowAddForm] = useState(false);
+    const [showCreateForm, setShowCreateForm] = useState(false);
     const [createForm, setCreateForm] = useState({
         created_by: "",
         frequency: "",
@@ -101,14 +101,18 @@ const WorkoutPlanPage = () => {
         setAddForm({ ...addForm, [e.target.name]: e.target.value });
     };
 
-    const handleAddSubmit = async (e) => {
+    const handleAddSubmit = async (e, isDraft) => {
         e.preventDefault();
         setLoading(true);
         try {
             const res = await fetch(`api/api/workoutPlanPage/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ client_id: clientId, ...addForm }),
+                body: JSON.stringify({
+                    client_id: clientId,
+                    ...createForm,
+                    is_draft: isDraft
+                }),
             });
             const data = await res.json();
             if (data.error) {
@@ -131,7 +135,7 @@ const WorkoutPlanPage = () => {
                     reptitions: "",
                     exercise_id: "",
                 });
-                setShowAddForm(false);
+                setShowCreateForm(false);
                 fetchWorkoutPlans();
             }
         } catch (err) {
@@ -156,14 +160,18 @@ const WorkoutPlanPage = () => {
         setEditForm({ ...editForm, [e.target.name]: e.target.value });
     };
 
-    const handleEditSubmit = async (e) => {
+    const handleEditSubmit = async (e, isDraft) => {
         e.preventDefault();
         setLoading(true);
         try {
             const res = await fetch(`api/api/workoutLogPage/${editingPlanId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(editForm),
+                body: JSON.stringify({
+                    client_id: clientId,
+                    ...createForm,
+                    is_draft: isDraft,
+                }),
             });
             const data = await res.json();
             if (data.error) {
@@ -242,7 +250,7 @@ const WorkoutPlanPage = () => {
                 {/* Create Workout Plan Button */}
                 <div style={{ marginTop: "24px" }}>
                     <button
-                        onClick={() => setShowAddForm(!showAddForm)}
+                        onClick={() => setShowCreateForm(!showCreateForm)}
                         style={{
                             backgroundColor: "#509e54",
                             color: "white",
@@ -254,12 +262,12 @@ const WorkoutPlanPage = () => {
                             fontSize: "15px",
                         }}
                     >
-                        {showAddForm ? "Cancel" : "+ Create new Workout Plan"}
+                        {showCreateForm ? "Cancel" : "+ Create new Workout Plan"}
                     </button>
                 </div>
 
                 {/* Create Workout Plan Form */}
-                {showAddForm && (
+                {showCreateForm && (
                     <div style={{ backgroundColor: "#1e3a1e", borderRadius: "12px", padding: "20px", marginTop: "16px" }}>
                         <h3 style={{ color: "#78b47b", marginBottom: "16px" }}>Create a Workout Plan</h3>
                         <form onSubmit={handleAddSubmit}>
@@ -304,6 +312,7 @@ const WorkoutPlanPage = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
+                                onClick={(e) => handleAddSubmit(e, false)}
                                 style={{ marginTop: "16px", backgroundColor: "#509e54", color: "white", border: "none", borderRadius: "8px", padding: "10px 24px", cursor: "pointer", fontWeight: "bold" }}
                             >
                                 {loading ? "Saving..." : "Log Workout"}
@@ -311,6 +320,7 @@ const WorkoutPlanPage = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
+                                onClick={(e) => handleAddSubmit(e, true)}
                                 style={{ marginTop: "16px", backgroundColor: "#509e54", color: "white", border: "none", borderRadius: "8px", padding: "10px 24px", cursor: "pointer", fontWeight: "bold" }}
                             >
                                 {loading ? "Saving..." : "Save as Draft"}
