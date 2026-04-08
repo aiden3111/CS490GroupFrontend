@@ -51,19 +51,20 @@ const CoachSearch = () => {
 
 
   useEffect(() => {
-    if (query) {
-      fetch(`http://127.0.0.1:5000/api/coaches_search/?search=${query}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            console.error("Backend Error:", data.error);
-            setCoaches([]);
-          } else {
-            setCoaches(data);
-          }
-        })
-        .catch((err) => console.error("Fetch error:", err));
-    }
+    const url = query
+      ? `http://127.0.0.1:5000/api/coaches_search/?search=${query}`
+      : `http://127.0.0.1:5000/api/coaches_search/`;
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          console.error("Backend Error:", data.error);
+          setCoaches([]);
+        } else {
+          setCoaches(data);
+        }
+      })
+      .catch((err) => console.error("Fetch error:", err));
   }, [query]);
 
 
@@ -166,7 +167,7 @@ const displayCoaches = selectedFilters.length === 0
           <button className="btn-search" onClick={handleSearch} > Search </button>
         </div>
 
-        {query && <h2 className="section-title">Seach Results: "{query}"</h2>}
+        {query && <h2 className="section-title">Search Results: "{query}"</h2>}
 
         <div className="coach-grid">
           {displayCoaches.length > 0
@@ -189,7 +190,7 @@ const displayCoaches = selectedFilters.length === 0
                   </button>
                 </div>
               ))
-            : query && <p>No coaches found.</p>}
+            : <p>No coaches found.</p>}
         </div>
         <Modal open={selectedCoach !== null} onClose={() => setSelectedCoach(null)}>
           {selectedCoach && (
