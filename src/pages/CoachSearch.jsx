@@ -34,7 +34,7 @@ const CoachSearch = () => {
 
   const handleSearch = () => {
     if (searchTerm.trim().length === 0) {
-      alert("Please enter a valid search term.");
+      navigate(`/CoachSearch/${clientId}`);
       return;
     }
     navigate(
@@ -76,9 +76,14 @@ const CoachSearch = () => {
     : [...prev, lowerName]);
 };
 
-const displayCoaches = selectedFilters.length === 0 
-    ? coaches 
-    : coaches.filter(coach => selectedFilters.includes(coach.specialty.toLowerCase()));
+const displayCoaches = selectedFilters.length === 0
+    ? coaches
+    : coaches.filter(coach => {
+        const specialty = coach.specialty.toLowerCase();
+        return specialty === "both"
+          ? selectedFilters.some(f => f === "fitness" || f === "nutrition")
+          : selectedFilters.includes(specialty);
+      });
 
 
   const handleRequestCoach = async () => {
