@@ -19,6 +19,8 @@ import WorkoutPlanPage from './pages/WorkoutPlanPage';
 import WorkoutSearchPage from './pages/WorkoutSearchPage';
 import StepsTracker from './pages/StepsTracker';
 import CustomExercise from './pages/CustomExercise';
+import LogTodaysMeal from './pages/LogTodaysMeal';
+import EditTodaysMeal from './pages/EditTodaysMeal';
 
 function App() {
   return (
@@ -42,6 +44,9 @@ function App() {
         <Route path="/AssignMealPlan/:clientId" element={<ProtectedRoutes> <AssignMealPlan /> </ProtectedRoutes>} />
         <Route path="/StepsTracker/:clientId" element={<ProtectedRoutes> <StepsTracker /> </ProtectedRoutes>} />
         <Route path="/CustomExercise/:clientId" element={<ProtectedRoutes> <CustomExercise /> </ProtectedRoutes>} />
+        <Route path="/LogTodaysMeal/:clientId" element={<ProtectedRoutes> <LogTodaysMeal /> </ProtectedRoutes>} />
+        <Route path="/EditTodaysMeal/:clientId" element={<ProtectedRoutes> <EditTodaysMeal/></ProtectedRoutes>} />
+
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>
     </Router>
