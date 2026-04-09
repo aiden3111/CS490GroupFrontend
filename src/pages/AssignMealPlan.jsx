@@ -21,6 +21,8 @@ const AssignMealPlan = () => {
     localStorage.removeItem("authenticatedClientId");
     navigate("/LoginPage/");
   };
+
+ 
 //TODO: add view restriction based on roles
 //TODO: this should be nutritionist only
 
