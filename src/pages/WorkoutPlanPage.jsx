@@ -1,53 +1,119 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const WorkoutPlanPage = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const { clientId } = useParams();
     const navigate = useNavigate();
 
-    // History state
-    const [workoutPlans, setWorkoutPlans] = useState({});
+    const [workoutPlans, setWorkoutPlans] = useState([]);
+    const [expandedPlanId, setExpandedPlanId] = useState(null);
+    const [planDetail, setPlanDetail] = useState(null);
+    const [planDetailLoading, setPlanDetailLoading] = useState(false);
 
-    // Add workout form state
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [createForm, setCreateForm] = useState({
-        created_by: "",
         frequency: "",
-        client_id: "",
-        difficulty: "",
-        is_draft: "",
-        nutition_plan_id: "",
-    });
-    const [addForm, setAddForm] = useState({
-        workout_plan_id: "",
-        order_in_day: "",
-        sets: "",
-        day_of_week: "",
-        reptitions: "",
-        exercise_id: "",
+        difficulty: "Intermediate",
     });
 
-    // Edit workout Plan state
+    const [addExerciseForm, setAddExerciseForm] = useState({
+        exercise_id: "",
+        day_of_week: "Mon",
+        order_in_day: "",
+        sets: "",
+        repetitions: "",
+    });
+
     const [editingPlanId, setEditingPlanId] = useState(null);
     const [editForm, setEditForm] = useState({
         frequency: "",
         difficulty: "",
-        is_draft: "",
-        nutrition_plan_id: ""
+        is_draft: "0",
     });
+
+    const [editingEntryId, setEditingEntryId] = useState(null);
     const [editExerciseForm, setEditExerciseForm] = useState({
         exercise_id: "",
         day_of_week: "",
         order_in_day: "",
         sets: "",
-        repetitions: ""
+        repetitions: "",
     });
 
     const [exercises, setExercises] = useState([]);
+    const [assignedCoachId, setAssignedCoachId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+
+    const showMessage = (text, isError = false) => {
+        setMessage(isError ? `Error: ${text}` : text);
+        setTimeout(() => setMessage(""), 4000);
+    };
+
+    const fetchWorkoutPlans = useCallback(async () => {
+        try {
+            const res = await fetch(`/api/api/workoutPlansPage/client/${clientId}`);
+            const data = await res.json();
+            if (data.error) {
+                console.error(data.error);
+                setWorkoutPlans([]);
+                return;
+            }
+            setWorkoutPlans(Array.isArray(data.workout_plans) ? data.workout_plans : []);
+        } catch (err) {
+            console.error("Error fetching Workout Plans:", err);
+            setWorkoutPlans([]);
+        }
+    }, [clientId]);
+
+    const fetchExercises = useCallback(async () => {
+        try {
+            const res = await fetch(`/api/api/exercises/`);
+            const data = await res.json();
+            setExercises(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.error("Error fetching exercises:", err);
+            setExercises([]);
+        }
+    }, []);
+
+    const fetchAssignedCoach = useCallback(async () => {
+        try {
+            const res = await fetch(`/api/api/my_coach/${clientId}`);
+            if (!res.ok) {
+                setAssignedCoachId(null);
+                return;
+            }
+            const data = await res.json();
+            setAssignedCoachId(data.coach_id || null);
+        } catch {
+            setAssignedCoachId(null);
+        }
+    }, [clientId]);
+
+    const loadPlanDetail = async (workoutPlanId) => {
+        setPlanDetailLoading(true);
+        try {
+            const res = await fetch(`/api/api/workoutPlansPage/${workoutPlanId}`);
+            const data = await res.json();
+            if (data.error) {
+                showMessage(data.error, true);
+                setPlanDetail(null);
+            } else {
+                setPlanDetail(data);
+            }
+        } catch (err) {
+            console.error(err);
+            showMessage("Failed to load plan details.", true);
+            setPlanDetail(null);
+        } finally {
+            setPlanDetailLoading(false);
+        }
+    };
 
     useEffect(() => {
         const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -57,34 +123,23 @@ const WorkoutPlanPage = () => {
         }
         fetchWorkoutPlans();
         fetchExercises();
-    }, [clientId, navigate]);
+        fetchAssignedCoach();
+    }, [clientId, navigate, fetchWorkoutPlans, fetchExercises, fetchAssignedCoach]);
 
-    const fetchWorkoutPlans = async () => {
-        try {
-            const res = await fetch(`api/api/workoutPlansPage/client/${clientId}`);
-            const data = await res.json();
-            setWorkoutPlans(data.workout_history || {});
-        } catch (err) {
-            console.error("Error fetching history:", err);
+    useEffect(() => {
+        if (expandedPlanId) {
+            loadPlanDetail(expandedPlanId);
+        } else {
+            setPlanDetail(null);
         }
-    };
-
-    const fetchExercises = async () => {
-        try {
-            const res = await fetch(`api/api/exercises`);
-            const data = await res.json();
-            setExercises(data || []);
-        } catch (err) {
-            console.error("Error fetching exercises:", err);
-        }
-    };
+    }, [expandedPlanId]);
 
     const handleSearch = () => {
         if (searchTerm.trim().length === 0) {
             alert("Please enter a valid search term.");
             return;
         }
-        navigate(`/WorkoutSearchPage/${clientId}?search=${searchTerm}`);
+        navigate(`/WorkoutSearchPage/${clientId}?search=${encodeURIComponent(searchTerm)}`);
     };
 
     const handleEnter = (e) => {
@@ -96,63 +151,54 @@ const WorkoutPlanPage = () => {
         navigate("/LoginPage/");
     };
 
-    // --- Add Workout ---
-    const handleAddChange = (e) => {
-        setAddForm({ ...addForm, [e.target.name]: e.target.value });
+    const handleCreateField = (e) => {
+        setCreateForm({ ...createForm, [e.target.name]: e.target.value });
     };
 
-    const handleAddSubmit = async (e, isDraft) => {
+    const handleCreateSubmit = async (e, isDraft) => {
         e.preventDefault();
+        const { frequency, difficulty } = createForm;
+        if (!frequency?.trim() || !difficulty?.trim()) {
+            showMessage("Frequency and difficulty are required.", true);
+            return;
+        }
         setLoading(true);
         try {
-            const res = await fetch(`api/api/workoutPlanPage/`, {
+            const res = await fetch(`/api/api/workoutPlansPage/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    created_by: assignedCoachId,
                     client_id: clientId,
-                    ...createForm,
-                    is_draft: isDraft
+                    frequency: frequency.trim(),
+                    difficulty: difficulty.trim(),
+                    is_draft: isDraft ? 1 : 0,
                 }),
             });
             const data = await res.json();
-            if (data.error) {
-                setMessage(`Error: ${data.error}`);
+            if (!res.ok || data.error) {
+                showMessage(data.error || "Could not create plan.", true);
             } else {
-                setMessage("Workoutplan successfully created!");
-                setCreateForm({
-                    created_by: "",
-                    frequency: "",
-                    client_id: "",
-                    difficulty: "",
-                    is_draft: "",
-                    nutition_plan_id: "",
-                });
-                setAddForm({
-                    workout_plan_id: "",
-                    order_in_day: "",
-                    sets: "",
-                    day_of_week: "",
-                    reptitions: "",
-                    exercise_id: "",
-                });
+                showMessage("Workout plan created. Add exercises below.");
+                setCreateForm({ frequency: "", difficulty: "Intermediate" });
                 setShowCreateForm(false);
-                fetchWorkoutPlans();
+                await fetchWorkoutPlans();
+                if (data.workout_plan_id) {
+                    setExpandedPlanId(data.workout_plan_id);
+                }
             }
-        } catch (err) {
-            setMessage("Failed to create workout plan.");
+        } catch {
+            showMessage("Failed to create workout plan.", true);
         }
         setLoading(false);
-        setTimeout(() => setMessage(""), 3000);
     };
 
-    // --- Edit Workout ---
     const handleEditClick = (plan) => {
         setEditingPlanId(plan.workout_plan_id);
         setEditForm({
             frequency: plan.frequency || "",
             difficulty: plan.difficulty || "",
-            is_draft: plan.is_draft || "",
-            nutrition_plan_id: plan.nutition_plan_id || "",
+            is_draft: String(plan.is_draft ?? 0),
         });
     };
 
@@ -160,37 +206,369 @@ const WorkoutPlanPage = () => {
         setEditForm({ ...editForm, [e.target.name]: e.target.value });
     };
 
-    const handleEditSubmit = async (e, isDraft) => {
+    const handleEditSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch(`api/api/workoutLogPage/${editingPlanId}`, {
+            const res = await fetch(`/api/api/workoutPlansPage/${editingPlanId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    client_id: clientId,
-                    ...createForm,
-                    is_draft: isDraft,
+                    frequency: editForm.frequency,
+                    difficulty: editForm.difficulty,
+                    is_draft: parseInt(editForm.is_draft, 10) ? 1 : 0,
                 }),
             });
             const data = await res.json();
-            if (data.error) {
-                setMessage(`Error: ${data.error}`);
+            if (!res.ok || data.error) {
+                showMessage(data.error || "Update failed.", true);
             } else {
-                setMessage("Workout updated successfully!");
+                showMessage("Workout plan updated.");
                 setEditingPlanId(null);
-                fetchWorkoutPlans();
+                await fetchWorkoutPlans();
+                if (expandedPlanId === editingPlanId) {
+                    await loadPlanDetail(editingPlanId);
+                }
             }
-        } catch (err) {
-            setMessage("Failed to update workout.");
+        } catch {
+            showMessage("Failed to update workout plan.", true);
         }
         setLoading(false);
-        setTimeout(() => setMessage(""), 3000);
     };
 
-    const getExerciseName = (id) => {
-        const ex = exercises.find((e) => e.exercise_id === id);
-        return ex ? ex.exercise_name : `Exercise #${id}`;
+    const handleDeletePlan = async (workoutPlanId) => {
+        if (!window.confirm("Delete this workout plan and all of its exercises?")) return;
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/api/workoutPlansPage/${workoutPlanId}`, { method: "DELETE" });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                showMessage(data.error || "Delete failed.", true);
+            } else {
+                showMessage("Workout plan deleted.");
+                if (expandedPlanId === workoutPlanId) {
+                    setExpandedPlanId(null);
+                }
+                await fetchWorkoutPlans();
+            }
+        } catch {
+            showMessage("Failed to delete plan.", true);
+        }
+        setLoading(false);
+    };
+
+    const handleAddExerciseField = (e) => {
+        setAddExerciseForm({ ...addExerciseForm, [e.target.name]: e.target.value });
+    };
+
+    const handleAddExerciseSubmit = async (e, workoutPlanId) => {
+        e.preventDefault();
+        const { exercise_id, day_of_week, order_in_day, sets, repetitions } = addExerciseForm;
+        if (!exercise_id) {
+            showMessage("Choose an exercise.", true);
+            return;
+        }
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/api/workoutPlanExercisesPage/${workoutPlanId}/exercises`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    exercise_id: parseInt(exercise_id, 10),
+                    day_of_week,
+                    order_in_day: parseInt(order_in_day, 10),
+                    sets: parseInt(sets, 10),
+                    repetitions: parseInt(repetitions, 10),
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                showMessage(data.error || "Could not add exercise.", true);
+            } else {
+                showMessage("Exercise added to plan.");
+                setAddExerciseForm({
+                    exercise_id: "",
+                    day_of_week: "Mon",
+                    order_in_day: "1",
+                    sets: "3",
+                    repetitions: "10",
+                });
+                await loadPlanDetail(workoutPlanId);
+                await fetchWorkoutPlans();
+            }
+        } catch {
+            showMessage("Failed to add exercise.", true);
+        }
+        setLoading(false);
+    };
+
+    const startEditEntry = (entry) => {
+        setEditingEntryId(entry.id);
+        setEditExerciseForm({
+            exercise_id: String(entry.exercise_id),
+            day_of_week: entry.day_of_week,
+            order_in_day: String(entry.order_in_day),
+            sets: String(entry.sets),
+            repetitions: String(entry.repetitions),
+        });
+    };
+
+    const handleEditExerciseField = (e) => {
+        setEditExerciseForm({ ...editExerciseForm, [e.target.name]: e.target.value });
+    };
+
+    const handleEditExerciseSubmit = async (e, workoutPlanId) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/api/workoutPlanExercisesPage/entry/${editingEntryId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    exercise_id: parseInt(editExerciseForm.exercise_id, 10),
+                    day_of_week: editExerciseForm.day_of_week,
+                    order_in_day: parseInt(editExerciseForm.order_in_day, 10),
+                    sets: parseInt(editExerciseForm.sets, 10),
+                    repetitions: parseInt(editExerciseForm.repetitions, 10),
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                showMessage(data.error || "Update failed.", true);
+            } else {
+                showMessage("Exercise updated.");
+                setEditingEntryId(null);
+                await loadPlanDetail(workoutPlanId);
+            }
+        } catch {
+            showMessage("Failed to update exercise.", true);
+        }
+        setLoading(false);
+    };
+
+    const handleDeleteEntry = async (entryId, workoutPlanId) => {
+        if (!window.confirm("Remove this exercise from the plan?")) return;
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/api/workoutPlanExercisesPage/entry/${entryId}`, {
+                method: "DELETE",
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                showMessage(data.error || "Remove failed.", true);
+            } else {
+                showMessage("Exercise removed.");
+                if (editingEntryId === entryId) setEditingEntryId(null);
+                await loadPlanDetail(workoutPlanId);
+            }
+        } catch {
+            showMessage("Failed to remove exercise.", true);
+        }
+        setLoading(false);
+    };
+
+    const toggleExpand = (planId) => {
+        setExpandedPlanId((prev) => (prev === planId ? null : planId));
+        setEditingEntryId(null);
+    };
+
+    const renderPlanExercises = (workoutPlanId) => {
+        if (planDetailLoading) {
+            return <p style={{ color: "#aaa", padding: "12px" }}>Loading exercises…</p>;
+        }
+        if (!planDetail?.exercises_by_day) {
+            return null;
+        }
+        const byDay = planDetail.exercises_by_day;
+        return (
+            <div style={{ padding: "12px 0", borderTop: "1px solid #2e5c2e" }}>
+                {DAYS.map((day) => {
+                    const entries = byDay[day] || [];
+                    if (entries.length === 0) return null;
+                    return (
+                        <div key={day} style={{ marginBottom: "16px" }}>
+                            <h4 style={{ color: "#78b47b", fontSize: "14px", marginBottom: "8px" }}>{day}</h4>
+                            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                                {entries.map((entry) => (
+                                    <li
+                                        key={entry.id}
+                                        style={{
+                                            display: "flex",
+                                            flexWrap: "wrap",
+                                            alignItems: "center",
+                                            gap: "8px",
+                                            padding: "8px 0",
+                                            borderBottom: "1px solid #1e3a1e",
+                                            color: "#ddd",
+                                            fontSize: "13px",
+                                        }}
+                                    >
+                                        {editingEntryId === entry.id ? (
+                                            <form
+                                                onSubmit={(e) => handleEditExerciseSubmit(e, workoutPlanId)}
+                                                style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", width: "100%" }}
+                                            >
+                                                <select
+                                                    name="exercise_id"
+                                                    value={editExerciseForm.exercise_id}
+                                                    onChange={handleEditExerciseField}
+                                                    style={inputStyle}
+                                                >
+                                                    {exercises.map((ex) => (
+                                                        <option key={ex.exercise_id} value={ex.exercise_id}>
+                                                            {ex.exercise_name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    name="day_of_week"
+                                                    value={editExerciseForm.day_of_week}
+                                                    onChange={handleEditExerciseField}
+                                                    style={{ ...inputStyle, maxWidth: "90px" }}
+                                                >
+                                                    {DAYS.map((d) => (
+                                                        <option key={d} value={d}>
+                                                            {d}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <input
+                                                    name="order_in_day"
+                                                    type="number"
+                                                    min={1}
+                                                    value={editExerciseForm.order_in_day}
+                                                    onChange={handleEditExerciseField}
+                                                    style={{ ...inputStyle, width: "70px" }}
+                                                    title="Order"
+                                                />
+                                                <input
+                                                    name="sets"
+                                                    type="number"
+                                                    min={1}
+                                                    value={editExerciseForm.sets}
+                                                    onChange={handleEditExerciseField}
+                                                    style={{ ...inputStyle, width: "60px" }}
+                                                />
+                                                <input
+                                                    name="repetitions"
+                                                    type="number"
+                                                    min={1}
+                                                    value={editExerciseForm.repetitions}
+                                                    onChange={handleEditExerciseField}
+                                                    style={{ ...inputStyle, width: "70px" }}
+                                                />
+                                                <button type="submit" disabled={loading} style={saveButtonStyle}>
+                                                    Save
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setEditingEntryId(null)}
+                                                    style={cancelButtonStyle}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        ) : (
+                                            <>
+                                                <span style={{ flex: "1 1 200px" }}>
+                                                    <strong>{entry.exercise_name}</strong>
+                                                    <span style={{ color: "#888", marginLeft: "8px" }}>
+                                                        {entry.sets}×{entry.repetitions} (order {entry.order_in_day})
+                                                    </span>
+                                                </span>
+                                                <button type="button" onClick={() => startEditEntry(entry)} style={editButtonStyle}>
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteEntry(entry.id, workoutPlanId)}
+                                                    style={{ ...editButtonStyle, borderColor: "#c44", color: "#e88" }}
+                                                >
+                                                    Remove
+                                                </button>
+                                            </>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    );
+                })}
+                <form
+                    onSubmit={(e) => handleAddExerciseSubmit(e, workoutPlanId)}
+                    style={{
+                        marginTop: "16px",
+                        padding: "12px",
+                        backgroundColor: "#0f200f",
+                        borderRadius: "8px",
+                    }}
+                >
+                    <h4 style={{ color: "#78b47b", fontSize: "14px", marginBottom: "10px" }}>Add exercise</h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "10px" }}>
+                        <div>
+                            <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Exercise</label>
+                            <select name="exercise_id" value={addExerciseForm.exercise_id} onChange={handleAddExerciseField} style={inputStyle}>
+                                <option value="">Exercise</option>
+                                {exercises.map((ex) => (
+                                    <option key={ex.exercise_id} value={ex.exercise_id}>
+                                        {ex.exercise_name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Day</label>
+                            <select name="day_of_week" value={addExerciseForm.day_of_week} onChange={handleAddExerciseField} style={inputStyle}>
+                                {DAYS.map((d) => (
+                                    <option key={d} value={d}>
+                                        {d}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Order</label>
+                            <input
+                                name="order_in_day"
+                                type="number"
+                                min={1}
+                                placeholder="Order"
+                                value={addExerciseForm.order_in_day}
+                                onChange={handleAddExerciseField}
+                                style={inputStyle}
+                            />
+                        </div>
+                        <div>
+                            <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Sets</label>
+                            <input
+                                name="sets"
+                                type="number"
+                                min={1}
+                                placeholder="Sets"
+                                value={addExerciseForm.sets}
+                                onChange={handleAddExerciseField}
+                                style={inputStyle}
+                            />
+                        </div>
+                        <div>
+                            <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Reps</label>
+                            <input
+                                name="repetitions"
+                                type="number"
+                                min={1}
+                                placeholder="Reps"
+                                value={addExerciseForm.repetitions}
+                                onChange={handleAddExerciseField}
+                                style={inputStyle}
+                            />
+                        </div>
+                    </div>
+                    <button type="submit" disabled={loading} style={{ ...saveButtonStyle, marginTop: "12px" }}>
+                        Add to plan
+                    </button>
+                </form>
+            </div>
+        );
     };
 
     return (
@@ -223,7 +601,6 @@ const WorkoutPlanPage = () => {
                     <h1>Workout Plan</h1>
                 </div>
 
-                {/* Search */}
                 <div className="search-container">
                     <p>Search here</p>
                     <input
@@ -237,17 +614,20 @@ const WorkoutPlanPage = () => {
                     <button onClick={handleSearch}>Search</button>
                 </div>
 
-                {/* Status message */}
                 {message && (
-                    <div style={{ backgroundColor: "#509e54", color: "white", padding: "10px", borderRadius: "8px", margin: "10px 0" }}>
+                    <div
+                        style={{
+                            backgroundColor: message.startsWith("Error:") ? "#8b3a3a" : "#509e54",
+                            color: "white",
+                            padding: "10px",
+                            borderRadius: "8px",
+                            margin: "10px 0",
+                        }}
+                    >
                         {message}
                     </div>
                 )}
 
-                {/* WorkoutCalendar */}
-
-
-                {/* Create Workout Plan Button */}
                 <div style={{ marginTop: "24px" }}>
                     <button
                         onClick={() => setShowCreateForm(!showCreateForm)}
@@ -266,99 +646,116 @@ const WorkoutPlanPage = () => {
                     </button>
                 </div>
 
-                {/* Create Workout Plan Form */}
                 {showCreateForm && (
                     <div style={{ backgroundColor: "#1e3a1e", borderRadius: "12px", padding: "20px", marginTop: "16px" }}>
                         <h3 style={{ color: "#78b47b", marginBottom: "16px" }}>Create a Workout Plan</h3>
-                        <form onSubmit={handleAddSubmit}>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                                <div>
-                                    <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Title *</label>
-                                    <input
-                                        type="text"
-                                        name="created_by"
-                                        value={createForm.created_by}
-                                        onChange={handleAddChange}
-                                        required
-                                        style={inputStyle}
-                                    />
-                                </div>
-                                <div>
-                                    <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Exercise *</label>
-                                    <select
-                                        name="exercise_id"
-                                        value={addForm.exercise_id}
-                                        onChange={handleAddChange}
-                                        required
-                                        style={inputStyle}
-                                    >
-                                        <option value="">Select an exercise</option>
-                                        {exercises.map((ex) => (
-                                            <option key={ex.exercise_id} value={ex.exercise_id}>
-                                                {ex.exercise_name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Frequency</label>
-                                    <input type="number" name="Frequency" value={addForm.sets} onChange={handleAddChange} placeholder="e.g. 3" style={inputStyle} />
-                                </div>
-                                <div>
-                                    <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Difficulty</label>
-                                    <input type="text" name="difficulty" value={addForm.reps} onChange={handleAddChange} placeholder="e.g. 10" style={inputStyle} />
-                                </div>
+                        <p style={{ color: "#aaa", fontSize: "13px", marginBottom: "12px" }}>
+                            Add exercises after the plan is created.
+                        </p>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                            <div>
+                                <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Frequency</label>
+                                <input
+                                    type="text"
+                                    name="frequency"
+                                    value={createForm.frequency}
+                                    onChange={handleCreateField}
+                                    placeholder="e.g. 4x/week"
+                                    style={inputStyle}
+                                />
                             </div>
+                            <div>
+                                <label style={{ color: "#ccc", display: "block", marginBottom: "4px" }}>Difficulty</label>
+                                <select name="difficulty" value={createForm.difficulty} onChange={handleCreateField} style={inputStyle}>
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style={{ marginTop: "16px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
                             <button
-                                type="submit"
+                                type="button"
                                 disabled={loading}
-                                onClick={(e) => handleAddSubmit(e, false)}
-                                style={{ marginTop: "16px", backgroundColor: "#509e54", color: "white", border: "none", borderRadius: "8px", padding: "10px 24px", cursor: "pointer", fontWeight: "bold" }}
+                                onClick={(e) => handleCreateSubmit(e, false)}
+                                style={{
+                                    backgroundColor: "#509e54",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    padding: "10px 24px",
+                                    cursor: "pointer",
+                                    fontWeight: "bold",
+                                }}
                             >
-                                {loading ? "Saving..." : "Log Workout"}
+                                {loading ? "Saving…" : "Create Workout Plan"}
                             </button>
                             <button
-                                type="submit"
+                                type="button"
                                 disabled={loading}
-                                onClick={(e) => handleAddSubmit(e, true)}
-                                style={{ marginTop: "16px", backgroundColor: "#509e54", color: "white", border: "none", borderRadius: "8px", padding: "10px 24px", cursor: "pointer", fontWeight: "bold" }}
+                                onClick={(e) => handleCreateSubmit(e, true)}
+                                style={{
+                                    backgroundColor: "#3d7a40",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    padding: "10px 24px",
+                                    cursor: "pointer",
+                                    fontWeight: "bold",
+                                }}
                             >
-                                {loading ? "Saving..." : "Save as Draft"}
+                                {loading ? "Saving…" : "Save as Draft"}
                             </button>
-                        </form>
+                        </div>
                     </div>
                 )}
 
-                {/* Workout Plans */}
                 <div style={{ marginTop: "32px" }}>
-                    <h2 style={{ color: "#78b47b", marginBottom: "16px" }}>Workout Plans</h2>
-                    {Object.keys(workoutPlans).length === 0 ? (
-                        <p style={{ color: "#aaa" }}>No workout plans found. Create one!</p>
+                    <h2 style={{ color: "#78b47b", marginBottom: "16px" }}>Your Workout Plans</h2>
+                    {workoutPlans.length === 0 ? (
+                        <p style={{ color: "#aaa" }}>No workout plans yet. Create one or ask your coach to assign a plan.</p>
                     ) : (
                         <div style={{ marginBottom: "12px", borderRadius: "10px", overflow: "hidden", border: "1px solid #2e5c2e" }}>
-                            {/* Exercises under this date */}
                             <div style={{ backgroundColor: "#152815" }}>
                                 {workoutPlans.map((plan) => (
                                     <div key={plan.workout_plan_id} style={{ padding: "14px 20px", borderTop: "1px solid #2e5c2e" }}>
                                         {editingPlanId === plan.workout_plan_id ? (
-                                            // Edit Form
                                             <form onSubmit={handleEditSubmit}>
                                                 <p style={{ color: "#78b47b", fontWeight: "bold", marginBottom: "10px" }}>
-                                                    Editing: {plan.created_by}
+                                                    Edit plan #{plan.workout_plan_id}
                                                 </p>
                                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                                                     <div>
-                                                        <label style={{ color: "#ccc", fontSize: "13px" }}>Sets</label>
-                                                        <input type="number" name="frequency" value={editForm.frequency} onChange={handleEditChange} style={inputStyle} />
+                                                        <label style={{ color: "#ccc", fontSize: "13px" }}>Frequency</label>
+                                                        <input
+                                                            type="text"
+                                                            name="frequency"
+                                                            value={editForm.frequency}
+                                                            onChange={handleEditChange}
+                                                            style={inputStyle}
+                                                        />
                                                     </div>
                                                     <div>
-                                                        <label style={{ color: "#ccc", fontSize: "13px" }}>Reps</label>
-                                                        <input type="difficulty" name="difficulty" value={editForm.reps} onChange={handleEditChange} style={inputStyle} />
+                                                        <label style={{ color: "#ccc", fontSize: "13px" }}>Difficulty</label>
+                                                        <input
+                                                            type="text"
+                                                            name="difficulty"
+                                                            value={editForm.difficulty}
+                                                            onChange={handleEditChange}
+                                                            style={inputStyle}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label style={{ color: "#ccc", fontSize: "13px" }}>Draft</label>
+                                                        <select name="is_draft" value={editForm.is_draft} onChange={handleEditChange} style={inputStyle}>
+                                                            <option value="0">Published</option>
+                                                            <option value="1">Draft</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
                                                     <button type="submit" disabled={loading} style={saveButtonStyle}>
-                                                        {loading ? "Saving..." : "Save"}
+                                                        {loading ? "Saving…" : "Save"}
                                                     </button>
                                                     <button type="button" onClick={() => setEditingPlanId(null)} style={cancelButtonStyle}>
                                                         Cancel
@@ -366,26 +763,54 @@ const WorkoutPlanPage = () => {
                                                 </div>
                                             </form>
                                         ) : (
-                                            // Display Row
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                <div>
-                                                    <p style={{ color: "white", fontWeight: "bold", margin: 0 }}>
-                                                        {getExerciseName(plan.created_by)}
-                                                    </p>
-                                                    <p style={{ color: "#aaa", fontSize: "13px", margin: "4px 0 0 0" }}>
-                                                        {plan.frequency && `Frequency: ${plan.frequency}`}
-                                                        {plan.difficulty && `Difficulty: × ${plan.difficulty}`}
-                                                    </p>
+                                            <>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "10px" }}>
+                                                    <div>
+                                                        <p style={{ color: "white", fontWeight: "bold", margin: 0 }}>
+                                                            Plan #{plan.workout_plan_id}
+                                                            {plan.is_draft ? (
+                                                                <span style={{ color: "#daa520", fontSize: "12px", marginLeft: "8px" }}>(draft)</span>
+                                                            ) : null}
+                                                        </p>
+                                                        <p style={{ color: "#aaa", fontSize: "13px", margin: "4px 0 0 0" }}>
+                                                            {plan.frequency ? `Frequency: ${plan.frequency}` : ""}
+                                                            {plan.frequency && plan.difficulty ? " · " : ""}
+                                                            {plan.difficulty ? `Difficulty: ${plan.difficulty}` : ""}
+                                                        </p>
+                                                        {plan.created && (
+                                                            <p style={{ color: "#666", fontSize: "12px", margin: "4px 0 0 0" }}>
+                                                                Created {new Date(plan.created).toLocaleString()}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                                                        <button type="button" onClick={() => toggleExpand(plan.workout_plan_id)} style={editButtonStyle}>
+                                                            {expandedPlanId === plan.workout_plan_id ? "Hide exercises" : "View / edit exercises"}
+                                                        </button>
+                                                        <button type="button" onClick={() => handleEditClick(plan)} style={editButtonStyle}>
+                                                            Edit plan
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeletePlan(plan.workout_plan_id)}
+                                                            style={{ ...editButtonStyle, borderColor: "#c44", color: "#e88" }}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <button onClick={() => handleEditClick(plan)} style={editButtonStyle}>
-                                                    Edit
-                                                </button>
-                                            </div>
+                                                {expandedPlanId === plan.workout_plan_id &&
+                                                    planDetail?.workout_plan?.workout_plan_id === plan.workout_plan_id &&
+                                                    renderPlanExercises(plan.workout_plan_id)}
+                                                {expandedPlanId === plan.workout_plan_id &&
+                                                    planDetail?.workout_plan?.workout_plan_id !== plan.workout_plan_id &&
+                                                    planDetailLoading &&
+                                                    renderPlanExercises(plan.workout_plan_id)}
+                                            </>
                                         )}
                                     </div>
                                 ))}
                             </div>
-
                         </div>
                     )}
                 </div>
