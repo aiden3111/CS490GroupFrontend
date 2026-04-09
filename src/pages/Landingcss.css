@@ -173,28 +173,29 @@ body {
 }
 
 .dashboard-grid {
-  display: grid;
-  grid-template-columns: 2fr 2fr;
-  gap: 25px;                     
-  margin-top: 30px;
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    gap: 25px;
+    margin-top: 30px;
 }
 
 .section-card {
-  background-color: #1a1a1a;
-  border-radius: 20px;
-  padding: 25px;
-  height: 100%; 
-  border: 1px solid #333;
+    background-color: #1a1a1a;
+    border-radius: 20px;
+    padding: 25px;
+    height: 100%;
+    border: 1px solid #333;
 }
 
-.coach-page{
+.coach-page {
     display: flex;
     height: 100vh;
     background-color: #09090b;
     color: #ffffff;
 
 }
-.checkbox{
+
+.checkbox {
     border-color: #43704e;
     border-width: 1px;
     border-style: solid;
@@ -203,13 +204,13 @@ body {
     margin-bottom: 45px;
 }
 
-.search-containerR{
+.search-containerR {
     margin-top: 15px;
-    
- 
+
+
 }
 
-.coach-removal{
+.coach-removal {
     border-color: #22c55e;
     border-width: 1px;
     border-style: solid;
@@ -217,7 +218,7 @@ body {
     padding: 25px;
 }
 
-.mood-square{
+.mood-square {
     border-color: #22c55e;
     border-width: 1px;
     border-style: solid;
@@ -226,7 +227,7 @@ body {
     margin-bottom: 15px;
 }
 
-.call-square{
+.call-square {
     border-color: #22c55e;
     border-width: 1px;
     border-style: solid;
@@ -235,17 +236,18 @@ body {
     margin-bottom: 15px;
 }
 
-.delete-btn{
+.delete-btn {
     background-color: rgb(151, 89, 89);
     margin-left: 5%;
 }
-.edit-btn{
+
+.edit-btn {
     background-color: #43704e;
 }
 
 .sidebarb {
     width: 260px;
-    background-color:  #020e06;
+    background-color: #020e06;
     padding: 2rem;
     border-right: 1px solid #27272a;
     display: flex;

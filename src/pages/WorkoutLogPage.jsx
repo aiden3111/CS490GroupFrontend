@@ -17,6 +17,7 @@ const WorkoutLogPage = () => {
   const navigate = useNavigate();
   const [stepData, setStepData] = useState([]);
 
+
   // History state
   const [workoutHistory, setWorkoutHistory] = useState({});
   const [expandedDates, setExpandedDates] = useState({});
@@ -48,6 +49,11 @@ const WorkoutLogPage = () => {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const showMessage = (text, isError = false) => {
+    setMessage(isError ? `Error: ${text}` : text);
+    setTimeout(() => setMessage(""), 4000);
+  };
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -152,6 +158,25 @@ const WorkoutLogPage = () => {
     });
   };
 
+  // --- Delete Workout ---
+  const handleDeleteLog = async (log) => {
+    if (!window.confirm("Are you sure you want to delete this workout log? This action cannot be undone.")) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/api/workoutLogPage/${log.log_id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        showMessage(data.error || "Delete failed.", true);
+      } else {
+        showMessage("Workout plan deleted.");
+        await fetchHistory();
+      }
+    } catch {
+      showMessage("Failed to delete plan.", true);
+    }
+    setLoading(false);
+  };
+
   const handleEditChange = (e) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
@@ -215,7 +240,7 @@ const WorkoutLogPage = () => {
           <h1>Workout Logs</h1>
         </div>
 
-        {/* Search */}
+        {/* Search */}plan.workout_plan_id
         <div className="search-container">
           <p>Search here</p>
           <input
@@ -229,9 +254,16 @@ const WorkoutLogPage = () => {
           <button onClick={handleSearch}>Search</button>
         </div>
 
-        {/* Status message */}
         {message && (
-          <div style={{ backgroundColor: "#509e54", color: "white", padding: "10px", borderRadius: "8px", margin: "10px 0" }}>
+          <div
+            style={{
+              backgroundColor: message.startsWith("Error:") ? "#8b3a3a" : "#509e54",
+              color: "white",
+              padding: "10px",
+              borderRadius: "8px",
+              margin: "10px 0",
+            }}
+          >
             {message}
           </div>
         )}
@@ -436,6 +468,13 @@ const WorkoutLogPage = () => {
                             </div>
                             <button onClick={() => handleEditClick(log)} style={editButtonStyle}>
                               Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteLog(log)}
+                              style={{ ...editButtonStyle, borderColor: "#c44", color: "#e88", margin: "0px 4px 0px 4px" }}
+                            >
+                              Delete
                             </button>
                           </div>
                         )}
