@@ -17,7 +17,7 @@ const StepsTracker = () => {
   const { clientId } = useParams();
   const navigate = useNavigate();
   const [stepData, setStepData] = useState([]);
-  
+
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -55,16 +55,17 @@ const StepsTracker = () => {
           <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach </li>
           <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
           <ul className="sub-nav">
+            <li className="nav-item" onClick={() => navigate(`/WorkoutPlan/${clientId}`)}>Workout Plan</li>
             <li className="nav-item active">Step Tracker </li>
             <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}>Custom Exercise </li>
-            
+
           </ul>
           <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
           <li className="nav-item">Messages</li>
           <li className="nav-item">Subscriptions</li>
           <li className="nav-item">Analytics</li>
-          <li className="nav-item"onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
+          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
         </ul>
 
         <div className="sidebar-bottom">
@@ -80,42 +81,42 @@ const StepsTracker = () => {
         </div>
 
 
-          <div className="main-content">
-                <div className="header">
-                  <h1>Steps Tracker</h1>
-                  {stepData.map((steps) => (
-                    <div key={steps.log_date} className="call-square">
-                      <p>Date: {steps.log_date}</p>
-                      <p>Steps: {steps.steps}</p>
-                      
-                      
-                    </div>
-                  ))}
-                </div>
-                <div className="callgraph">
-                  <div className="calorie-graph" style={{ width: "100%", height: 300, marginTop: "20px" }}>
-                    <h3>Steps Trends</h3>
-                    {stepData.length > 0 ? (
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={stepData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="log_date" />
-                          <YAxis />
-                          <Tooltip />
-                          <Line
-                            type="monotone"
-                            dataKey="steps"
-                            stroke="#509e54"
-                            fill="#78b47b"
-                          />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    ) : (
-                      <p>No calorie data found.</p>
-                    )}
-                  </div>
-                </div>
+        <div className="main-content">
+          <div className="header">
+            <h1>Steps Tracker</h1>
+            {stepData.map((steps) => (
+              <div key={steps.log_date} className="call-square">
+                <p>Date: {steps.log_date}</p>
+                <p>Steps: {steps.steps}</p>
+
+
               </div>
+            ))}
+          </div>
+          <div className="callgraph">
+            <div className="calorie-graph" style={{ width: "100%", height: 300, marginTop: "20px" }}>
+              <h3>Steps Trends</h3>
+              {stepData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={stepData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="log_date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line
+                      type="monotone"
+                      dataKey="steps"
+                      stroke="#509e54"
+                      fill="#78b47b"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <p>No calorie data found.</p>
+              )}
+            </div>
+          </div>
+        </div>
         <div className="mood-graph">
 
         </div>

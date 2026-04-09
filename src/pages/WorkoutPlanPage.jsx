@@ -578,9 +578,9 @@ const WorkoutPlanPage = () => {
                 <ul className="nav-list">
                     <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
                     <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach</li>
-                    <li className="nav-item active">Workout Logs</li>
+                    <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
                     <ul className="sub-nav">
-                        <li className="nav-item" onClick={() => navigate(`/WorkoutPlan/${clientId}`)}>Workout Plan</li>
+                        <li className="nav-item active" onClick={() => navigate(`/WorkoutPlan/${clientId}`)}>Workout Plan</li>
                         <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}>Step Tracker</li>
                         <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}>Custom Exercise</li>
                     </ul>
