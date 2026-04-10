@@ -225,7 +225,7 @@ const WorkoutLogPage = () => {
           </ul>
           <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
-          <li className="nav-item">Messages</li>
+          <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
           <li className="nav-item">Subscriptions</li>
           <li className="nav-item">Analytics</li>
           <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>

@@ -140,7 +140,7 @@ const CoachLanding = () => {
             </li>
            )}
           <li className="nav-item">Mood Tracker</li>
-          <li className="nav-item">Messages</li>
+          <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
           <li className="nav-item">Subscriptions</li>
           <li className="nav-item">Analytics</li>
           <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>

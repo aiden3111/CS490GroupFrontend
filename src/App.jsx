@@ -21,6 +21,7 @@ import StepsTracker from './pages/StepsTracker';
 import CustomExercise from './pages/CustomExercise';
 import LogTodaysMeal from './pages/LogTodaysMeal';
 import EditTodaysMeal from './pages/EditTodaysMeal';
+import MessagingPage from './pages/MessagingPage';
 
 function App() {
   return (
@@ -46,7 +47,8 @@ function App() {
         <Route path="/CustomExercise/:clientId" element={<ProtectedRoutes> <CustomExercise /> </ProtectedRoutes>} />
         <Route path="/LogTodaysMeal/:clientId" element={<ProtectedRoutes> <LogTodaysMeal /> </ProtectedRoutes>} />
         <Route path="/EditTodaysMeal/:clientId" element={<ProtectedRoutes> <EditTodaysMeal/></ProtectedRoutes>} />
-
+        <Route path="/MessagingPage/:clientId" element={<ProtectedRoutes> <MessagingPage /> </ProtectedRoutes>} />
+        
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>
     </Router>
