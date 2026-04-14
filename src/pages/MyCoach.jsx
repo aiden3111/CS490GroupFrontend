@@ -61,26 +61,32 @@ const MyCoach = () => {
     <div className="dashboard-container">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
+        <span className="nav-section-label">Main</span>
+
         <ul className="nav-list">
           <li
             className="nav-item"
             onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
+          >Dashboard
           </li>
           <li className="nav-item active">My Coach</li>
           <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
           <li className="nav-item"onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
+          <span className="nav-section-label">Insights</span>
+
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
+          <li className="nav-item">Analytics</li>     
+          <span className="nav-section-label">Account</span>
+     
           <li className="nav-item">Subscriptions</li>
-          <li className="nav-item">Analytics</li>
           <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
         </ul>
 
         <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={handleLogout}>
-            Logout
+          
+          <button className="logout-btn" onClickCapture={handleLogout}>
+            <span></span>Logout
           </button>
         </div>
       </nav>
@@ -90,7 +96,7 @@ const MyCoach = () => {
           <h1 className="welcome-text">My Coach</h1>
 
           <div className="search-container">
-            <p>Search here</p>
+            <span className="search-icon">⌕</span>
             <input
               type="text"
               className="form-control search-input"
@@ -99,45 +105,64 @@ const MyCoach = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleEnter}
             />
-            <button onClick={handleSearch}>Search</button>
+            <button className="search-btn" onClick={handleSearch}>Search</button>
           </div>
         </header>
-        <div className="section-card">
           { !myCoach ? (
-            <div className="coach-info-display">
-              <p>No Coach Found</p>
+            <div className="card coach-empty-card">
+              <div className="coach-empty-avatar">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                </svg>
+              </div>
+              <p className="coach-empty-text">No Coach Found</p>
               <button
-                className="btn-search"
+                className="coach-find-btn"
                 onClick={() => navigate(`/CoachSearch/${clientId}`)}
-              >
-                Find a Coach!
+              >Find a Coach!
               </button>
             </div>
           ) : (
-            <div className="coach-info-display">
-              <h4> {myCoach.first_name} {myCoach.last_name}</h4>
-              <p><b>Specialty:</b>
-                {myCoach?.specialty?.toLowerCase() === "both"
-                  ? "Fitness & Nutrition"
-                  : myCoach.specialty}</p>
-              <p>
-                <b>Pricing:</b> ${myCoach.pricing}
-              </p>
-              <p>
-                
-                <b>Availability:</b> {myCoach.availability}
-              </p>
-              <p>
-                <b>Certifications:</b> {
-                  [myCoach.fitness_certifications, myCoach.nutrition_certifications]
-                    .filter(Boolean)
-                    .join(", ") || "None listed"
-                }
-              </p>
-            </div>
+              <div className="card coach-detail-card">
+                <div className="coach-detail-header">
+                  <div className="coach-detail-avatar">
+                    {myCoach.first_name[0]}{myCoach.last_name[0]}
+                  </div>
+                  <div>
+                    <h2 className="coach-detail-name">{myCoach.first_name} {myCoach.last_name}</h2>
+                    <span className="coach-detail-badge">
+                      {myCoach?.specialty?.toLowerCase() === "both" ? "Fitness & Nutrition" : myCoach.specialty}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="coach-detail-fields">
+                  <div className="coach-detail-row">
+                    <span className="coach-detail-label">Pricing</span>
+                    <span className="coach-detail-value">${myCoach.pricing}<span className="coach-detail-per">/mo</span></span>
+                  </div>
+                  <div className="coach-detail-row">
+                    <span className="coach-detail-label">Availability</span>
+                    <span className="coach-detail-value">{myCoach.availability}</span>
+                  </div>
+                  <div className="coach-detail-row">
+                    <span className="coach-detail-label">Certifications</span>
+                    <span className="coach-detail-value">
+                      {[myCoach.fitness_certifications, myCoach.nutrition_certifications]
+                        .filter(Boolean).join(", ") || "None listed"}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  className="coach-remove-btn"
+                  onClick={() => navigate(`/SwitchCoach/${clientId}`)}
+                >
+                  Remove / Switch Coach
+                </button>
+              </div>
           )}
-          <button className="btn-outline" onClick={() => navigate(`/SwitchCoach/${clientId}`)}>Remove/Switch Coach</button>
-        </div>
       </main>
     </div>
   );

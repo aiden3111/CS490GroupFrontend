@@ -113,41 +113,41 @@ const LogTodaysMeal = () => {
                         <li className="nav-item" onClick={() => navigate(`/EditTodaysMeal/${clientId}`)}>Edit Today's Meals</li>
                     </ul>
                     <div className="sidebar-bottom">
-                        <button className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>← Back to Tracker</button>
+                        <button className="back-btn" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>← Back to Tracker</button>
                     </div>
                 </ul>
             </nav>
 
             <div className="main-content">
                 <header className="header">
-                    <h1 style={{ color: "#fbbf24" }}>Log Today's Intake</h1>
-                    <p style={{ color: "#00ff44", fontWeight: 'bold', margin: 0 }}>{today}</p>
-                    <p className="text-zinc-400">Record your meals.</p>
+                    <h1 style={{ fontSize: "32px", fontWeight: 700, color: "#fbbf24", letterSpacing: "-0.5px" }}>Log Today's Intake</h1>
+                    <p style={{ color: "#00ff44", fontSize: "15px", fontWeight: 600, marginTop: "4px" }}>{today}</p>
+                    {/* <p style={{ color: "var(--text)", fontSize: "13px", marginTop: "2px" }}>Record your meals.</p> */}
                 </header>
 
-                <section className="section-card mt-6">
-                    <h3 style={{ color: "#00ff44", marginBottom: "20px" }}>Your Assigned Plan</h3>
+                <div className="card" style={{ gap:0}}>
+                    <h3 className="card-title" style={{ color: "#00ff44", marginBottom: "16px" }}>Your Assigned Plan</h3>
                     {assignedMeals.length > 0 ? (
                         <div className="space-y-4">
                             {assignedMeals.map((meal) => (
-                                <div key={meal.meal_id} className="log-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #27272a' }}>
+                                <div key={meal.meal_id} className="meal-plan-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #27272a' }}>
                                     <div>
-                                        <h4 style={{ margin: 0, color: "#fff" }}>{meal.meal_name}</h4>
-                                        <p style={{ fontSize: "14px", color: "#a1a1aa" }}>{meal.time_of_day} | {meal.calories} calories</p>
-                                        <p style={{ fontSize: "14px", color: "#a1a1aa" }}>{meal.description}</p>
+                                        <h4 className="meal-plan-name">{meal.meal_name}</h4>
+                                        <p className="meal-plan-meta">{meal.time_of_day} | {meal.calories} calories</p>
+                                        <p className="meal-plan-meta">{meal.description}</p>
                                     </div>
-                                    <button className="btn-primary" onClick={() => handleLogSubmit(meal)}>Log Meal</button>
+                                    <button className="meal-log-btn" onClick={() => handleLogSubmit(meal)}>Log Meal</button>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-zinc-500 italic">No meals assigned for today. Use custom entry below.</p>
+                            <p style={{ color: "var(--muted)", fontSize: "13px" }}>No meals assigned for today. Use custom entry below.</p>
                     )}
-                </section>
+                </div>
 
                 <div className="mt-8">
                     <button
-                        className="btn-secondary w-100"
+                        className="meal-custom-toggle"
                         onClick={() => setIsCustomMode(!isCustomMode)}
                         style={{ border: '1px dashed #52525b', background: 'transparent' }}
                     >
@@ -155,8 +155,8 @@ const LogTodaysMeal = () => {
                     </button>
 
                     {isCustomMode && (
-                        <div className="section-card mt-4" style={{ backgroundColor: "#111" }}>
-                            <h4 style={{ marginBottom: "15px" }}>Manual Entry</h4>
+                        <div className="card" style={{ gap: "12px" }}>
+                            <h4 className="card-title" style={{ color: "#00ff44", marginBottom: "16px", fontWeight: 500 }}>Manual Entry</h4>
                             <div className="grid-container" style={{ display: 'grid', gap: '15px' }}>
                                 <div style={{ display: 'flex', gap: '10px' }}>
                                     <input type="number" className="bitfit-input" placeholder="Cals" style={{ backgroundColor: "#000" }} onChange={(e) => setCustomMeal({ ...customMeal, calories: e.target.value })} />
@@ -169,8 +169,7 @@ const LogTodaysMeal = () => {
                                     onChange={(e) => setCustomMeal({ ...customMeal, notes: e.target.value })}
                                 ></textarea>
                                 <button
-                                    className="btn-primary"
-                                    style={{ backgroundColor: "#509e54", color: "#000" }}
+                                    className="meal-save-btn"
                                     onClick={() => handleLogSubmit(customMeal, false)}
                                 >
                                     Save Custom Log

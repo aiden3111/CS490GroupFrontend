@@ -64,7 +64,7 @@ const EditTodaysMeal = () => {
                         <li className="nav-item active">Edit Today's Meals</li>
                     </ul>
                     <div className="sidebar-bottom">
-                    <button className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>← Back to Tracker</button>
+                    <button className="back-btn" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>← Back to Tracker</button>
                 </div>
                 </ul>
                 
@@ -72,11 +72,11 @@ const EditTodaysMeal = () => {
 
             <div className="main-content">
                 <header className="header" style={{ marginBottom: "30px" }}>
-                    <h1 style={{ color: "#fbbf24", margin: 0 }}>Edit Todays Logs</h1>
-                    <p style={{ color: "#a1a1aa" }}>Manage logs for: <strong>{todayDate}</strong></p>
+                    <h1 style={{fontSize: "32px", fontWeight: 700, color: "#fbbf24", letterSpacing: "-0.5px"}} >Edit Today's Logs</h1>
+                    <p style={{ color: "#00ff44", fontSize: "15px", fontWeight: 600, marginTop: "4px" }}>Manage logs for: <strong style={{ color: "#a1a1aa" }}>{todayDate}</strong></p>
                 </header>
 
-                <div className="edit-list">
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                     {todaysLogs.length > 0 ? (
                         todaysLogs.map((log) => (
                             <EditableLogCard
@@ -87,9 +87,9 @@ const EditTodaysMeal = () => {
                             />
                         ))
                     ) : (
-                        <div className="section-card" style={{ textAlign: 'center', padding: '40px' }}>
-                            <p className="italic" style={{ color: '#71717a' }}>No logs recorded for today yet.</p>
-                            <button className="btn-primary" onClick={() => navigate(`/LogTodaysMeal/${clientId}`)}>
+                            <div className="card" style={{ alignItems: "center", padding: "48px", gap: "12px", textAlign: "center" }}>
+                                <p style={{ color: "var(--muted)", fontSize: "15px" }}>No logs recorded for today yet.</p>
+                            <button className="meal-log-btn" onClick={() => navigate(`/LogTodaysMeal/${clientId}`)}>
                                 Go to Logging
                             </button>
                         </div>
@@ -105,61 +105,56 @@ const EditableLogCard = ({ log, onSave, onDelete }) => {
     const [calories, setCalories] = useState(log.actual_calories);
     const [notes, setNotes] = useState(log.notes);
 
-    if (!isEditing) {
+    const handleSave = async () => {
+        await onSave(log.meal_log_id, { calories, notes });
+        setIsEditing(false);
+    };
         return (
-            <div className="section-card mb-4"
-                style={{ borderLeft: '4px solid #509e54', background: '#111', cursor: 'pointer' }}
-                onClick={() => setIsEditing(true)}
-            >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <h4 style={{ margin: 0, color: '#fff' }}>{log.actual_calories} calories</h4>
-                        <p style={{ color: '#a1a1aa', margin: '5px 0 0', fontSize: '14px' }}>{log.notes}</p>
+            <div className="log-card">
+                <div className="log-view" onClick={() => !isEditing && setIsEditing(true)}>
+                    <div className="log-accent"></div>
+                    <div style={{ flex: 1 }}>
+                        <p className="log-cals">{log.actual_calories} calories</p>
+                        <p className="log-notes">{log.notes || "—"}</p>
                     </div>
-                    <span style={{ color: '#509e54', fontSize: '12px' }}>Click to Edit</span>
+                    {!isEditing && <span className="log-edit-hint">Click to edit</span>}
                 </div>
+
+                {isEditing && (
+                    <div className="log-edit-form">
+                        <div className="edit-header">
+                            <span className="editing-badge">Editing Entry</span>
+                            <button className="del-btn" onClick={() => onDelete(log.meal_log_id)}>
+                                Delete Log
+                            </button>
+                        </div>
+                        <div>
+                            <div className="edit-label">Calories</div>
+                            <input
+                                className="bitfit-input"
+                                type="number"
+                                value={calories}
+                                onChange={(e) => setCalories(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <div className="edit-label">Notes</div>
+                            <textarea
+                                className="bitfit-input"
+                                rows="2"
+                                style={{ resize: "none" }}
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                            />
+                        </div>
+                        <div className="btn-row">
+                            <button className="meal-save-btn" onClick={handleSave}>Save Changes</button>
+                            <button className="meal-cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+                        </div>
+                    </div>
+                )}
             </div>
         );
-    }
-
-    return (
-        <div className="section-card mb-4" style={{ borderLeft: '4px solid #fbbf24', background: '#18181b' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span style={{ color: '#fbbf24', fontWeight: 'bold' }}>Editing Entry</span>
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(log.meal_log_id);
-                    }}
-                    style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
-                >
-                    Delete Log
-                </button>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <input
-                    type="number"
-                    className="bitfit-input"
-                    value={calories}
-                    onChange={(e) => setCalories(e.target.value)}
-                />
-                <textarea
-                    className="bitfit-input"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                />
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <button className="btn-primary" style={{ flex: 1 }} onClick={() => onSave(log.meal_log_id, { calories, notes }) && setIsEditing(false)}>
-                        Save Changes
-                    </button>
-                    <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setIsEditing(false)}>
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
+    };
 
 export default EditTodaysMeal;
