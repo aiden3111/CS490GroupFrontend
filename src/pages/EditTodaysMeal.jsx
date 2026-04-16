@@ -7,7 +7,7 @@ const EditTodaysMeal = () => {
     const navigate = useNavigate();
     const [todaysLogs, setTodaysLogs] = useState([]);
 
-    const todayDate = new Date().toISOString().split('T')[0];
+    const todayDate = new Date().toLocaleDateString('en-CA');
 
     const fetchTodaysLogs = async () => {
         try {
