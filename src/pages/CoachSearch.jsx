@@ -109,7 +109,7 @@ const displayCoaches = selectedFilters.length === 0
 
 
  return (
-    <div className="coach-page">
+    <div className="dashboard-container">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">

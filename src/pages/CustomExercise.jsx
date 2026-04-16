@@ -59,7 +59,7 @@ function CustomExercise() {
   }, [query]);
 
   return (
-    <div className="coach-page">
+    <div className="dashboard-container">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
@@ -108,7 +108,7 @@ function CustomExercise() {
         </ul>
 
         <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={handleLogout}>
+          <button className="logout-btn" onClickCapture={handleLogout}>
             Logout
           </button>
         </div>
@@ -320,7 +320,7 @@ function EditModal({ show, onHide, exercise, clientId, onSuccess }) {
             />
           </Form.Group>
 
-          <Button variant="success" type="submit" className="w-100">  Edit </Button>
+          <Button variant="success" type="submit" className="meal-save-btn">  Edit </Button>
         </Form>
       </Modal.Body>
     </Modal>

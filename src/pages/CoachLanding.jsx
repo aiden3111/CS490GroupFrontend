@@ -229,7 +229,7 @@ const CoachLanding = () => {
 
         {activeTab === 'clients' && (
           <div className="clients-page-view">
-            <div className="section-card" style={{ minHeight: '75vh' }}>
+            <div className="card" style={{ minHeight: '75vh' }}>
               <div className="flex justify-between items-center mb-6">
                 <h3>Current Roster</h3>
                 <p className="text-zinc-500">{clients.length} total active clients</p>
@@ -243,20 +243,20 @@ const CoachLanding = () => {
               ) : (
                 <div className="client-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
                   {clients.map(client => (
-                    <div key={client.client_id} className="coach-square client-card">
+                    <div key={client.client_id} className="card">
                       <div className="mb-4">
                         <h4 style={{ margin: 0, color: '#fbbf24' }}>{client.first_name} {client.last_name}</h4>
-                        <p className="text-sm text-zinc-400">{client.email}</p>
+                        <p style={{ margin: 0, color: '#fbbf24' }} className="text-sm text-zinc-400">{client.email}</p>
                       </div>
 
                       <div className="client-meta mb-4" style={{ fontSize: '13px', borderTop: '1px solid #27272a', paddingTop: '10px' }}>
-                        <p><strong>Weight:</strong> {client.weight} lbs</p>
-                        <p><strong>Joined:</strong> {new Date(client.signup_date).toLocaleDateString()}</p>
+                        <p style={{color: '#ffffff' }}><strong>Weight:</strong> {client.weight} lbs</p>
+                        <p style={{color: '#ffffff' }}><strong>Joined:</strong> {new Date(client.signup_date).toLocaleDateString()}</p>
                       </div>
 
                       <div className="flex gap-2">
                         <button
-                          className="btn-primary"
+                          className="meal-save-btn"
                           style={{ flex: 1 }}
                           onClick={() => navigate(`/UserProfile/${client.client_id}`)}
                         >
