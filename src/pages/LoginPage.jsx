@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { GoogleLogin } from "@react-oauth/google";
 import { useFormik } from "formik";
 import { useNavigate, Link } from "react-router-dom";
@@ -76,64 +75,63 @@ function LoginPage() {
   };
 
   return (
-    <Container>
-      <div
-        style={{
-          backgroundColor: "#385e38",
-          padding: "20px",
-          borderRadius: "15px",
-        }}
-      >
-        <h1 className="text-center mb-4">Login here my friend</h1>
-        <Form onSubmit={formikForm.handleSubmit}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              onChange={formikForm.handleChange}
-              value={formikForm.values.email}
-            />
-          </Form.Group>
+    <div className="login-page">
+      <div className="login-box">
+        <div className="login-box-top">
+          <div className="login-brand">BitFit</div>
 
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              onChange={formikForm.handleChange}
-              value={formikForm.values.password}
-            />
-          </Form.Group>
+        <h1 className="login-title">Welcome back</h1>
+          <p className="login-sub">Sign in to your account to continue</p>
 
-          <Button variant="primary" type="submit" className="w-100">
-            Login
-          </Button>
-        </Form>
-        <h2 className="text-center mb-4">Login with Google</h2>
-        <GoogleLogin
-          onSuccess={HandleGoogleLogin}
-          onError={() => console.log("Login Failed")}
-        />
+
+          <form onSubmit={formikForm.handleSubmit}>
+            <div className="login-field">
+              <label>Email address</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                value={formikForm.values.email}
+                onChange={formikForm.handleChange}
+              />
+            </div>
+            <div className="login-field">
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                value={formikForm.values.password}
+                onChange={formikForm.handleChange}
+              />
+            </div>
+            <button type="submit" className="login-submit-btn">Sign In</button>
+          </form>
+
+          <div className="login-divider">
+            <span className="login-divider-line"></span>
+            <span className="login-divider-text">or continue with</span>
+            <span className="login-divider-line"></span>
+          </div>
+
+          <div className="login-google-wrap">
+            <GoogleLogin
+              onSuccess={HandleGoogleLogin}
+              onError={() => console.log("Login failed")}
+              theme="filled_black"
+              size="large"
+              width="348"
+            />
+          </div>
+        </div>
+
+        <div className="login-box-footer">
+          New here?{" "}
+          <Link to="/RegistrationPage">Create an account</Link>
+        </div>
       </div>
-      <div
-        className="text-center mt-3"
-        style={{
-          backgroundColor: "#385e38",
-          marginBottom: 50,
-        }}
-      >
-        <p>
-          New Here? Create an account:
-          <Link
-            to="/RegistrationPage"
-            style={{ color: "#1d271d", fontWeight: "bold" }}
-          >
-            Register here
-          </Link>
-        </p>
-      </div>
-    </Container>
+    </div>
   );
 }
+
 export default LoginPage;

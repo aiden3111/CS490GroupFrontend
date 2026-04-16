@@ -148,7 +148,7 @@ const CoachLanding = () => {
         </ul>
 
         <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={ handleLogout }>Logout</button>
+          <button className="logout-btn" onClickCapture={ handleLogout }>Logout</button>
         </div>
       </nav>
 
@@ -162,6 +162,7 @@ const CoachLanding = () => {
 
           {(activeTab === 'dashboard' || activeTab === 'clients') && (
             <div className="search-container">
+              <span className="search-icon">⌕</span>
               <input
                 type="text"
                 className="form-control search-input"
@@ -170,7 +171,7 @@ const CoachLanding = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={handleEnter}
               />
-              <button className="btn-primary" onClick={handleSearch}>Search</button>
+              <button className="search-btn" onClick={handleSearch}>Search</button>
             </div>
           )}
         </header>

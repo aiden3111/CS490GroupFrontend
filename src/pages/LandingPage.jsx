@@ -227,7 +227,11 @@ const LandingPage = () => {
                       <div className="coach-name">{coach.first_name} {coach.last_name}</div>
                       <div className="coach-spec">{coach.specialty}</div>
                     </div>
-                    <span className="coach-rating">★ {coach.average_rating}</span>
+                    <span className="coach-rating">
+                      ★ {coach.average_rating != null
+                        ? Number(coach.average_rating).toFixed(2)
+                        : "0.00"}
+                    </span>
                   </div>
                 ))
               ) : (

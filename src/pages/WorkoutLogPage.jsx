@@ -231,7 +231,7 @@ const WorkoutLogPage = () => {
           <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
         </ul>
         <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={handleLogout}>Logout</button>
+          <button className="logout-btn" onClickCapture={handleLogout}>Logout</button>
         </div>
       </nav>
 
@@ -242,7 +242,7 @@ const WorkoutLogPage = () => {
 
         {/* Search */}plan.workout_plan_id
         <div className="search-container">
-          <p>Search here</p>
+          <span className="search-icon">⌕</span>
           <input
             type="text"
             className="form-control search-input"
@@ -251,7 +251,7 @@ const WorkoutLogPage = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleEnter}
           />
-          <button onClick={handleSearch}>Search</button>
+          <button className="search-btn" onClick={handleSearch}>Search</button>
         </div>
 
         {message && (
