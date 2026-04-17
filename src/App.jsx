@@ -22,6 +22,7 @@ import CustomExercise from './pages/CustomExercise';
 import LogTodaysMeal from './pages/LogTodaysMeal';
 import EditTodaysMeal from './pages/EditTodaysMeal';
 import MessagingPage from './pages/MessagingPage';
+import AddMealstoPlan from './pages/AddMealstoPlan';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         <Route path="/LogTodaysMeal/:clientId" element={<ProtectedRoutes> <LogTodaysMeal /> </ProtectedRoutes>} />
         <Route path="/EditTodaysMeal/:clientId" element={<ProtectedRoutes> <EditTodaysMeal/></ProtectedRoutes>} />
         <Route path="/MessagingPage/:clientId" element={<ProtectedRoutes> <MessagingPage /> </ProtectedRoutes>} />
+        <Route path="/AddMealstoPlan/:clientId" element={<ProtectedRoutes> <AddMealstoPlan /> </ProtectedRoutes>} />
         
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>
