@@ -11,6 +11,7 @@ const AssignMealPlan = () => {
     
     const [clients, setClients] = useState([]);
     const [mealPlans, setMealPlans] = useState([]);
+    const [currentMeals, setCurrentMeals] = useState([]);
 
     useEffect(() => {
         fetch(`/api/api/clients/coach/${clientId}`)
@@ -19,36 +20,57 @@ const AssignMealPlan = () => {
             .catch(err => console.error("Error loading clients:", err));
             
         
-        fetch(`/api/api/nutrition_plans/coach/${clientId}`)
-            .then(res => res.json())
-            .then(data => setMealPlans(Array.isArray(data) ? data : []))
-            .catch(err => console.error("Error loading meal plans:", err));
+        fetch(`/api/api/nutrition_plan_modifications/${clientId}`) 
+        .then(res => res.json())
+        .then(data => {
+            console.log("Plans found:", data);
+            setMealPlans(Array.isArray(data) ? data : []);
+        })
+        .catch(err => console.error("Fetch error:", err));
     }, [clientId]);
+
+    const handlePlanChange = (e) => {
+        const planId = e.target.value;
+        formik.setFieldValue("selectedMealPlanId", planId);
+        if (planId) {
+            fetch(`/api/nutrition_plan/${clientId}/${planId}`)
+                .then(res => res.json())
+                .then(data => setCurrentMeals(Array.isArray(data) ? data : []));
+        }
+    };
+
+    const deleteMeal = async (mealId) => {
+        const res = await fetch(`/api/nutrition_plan_modifications/${clientId}/${formik.values.selectedClientId}/${formik.values.selectedMealPlanId}/meals/${mealId}`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            setCurrentMeals(prev => prev.filter(m => m.meal_id !== mealId));
+        }
+    };
     
 
     const formik = useFormik({
         initialValues: {
             client_id: "",
-            plan_name: "", 
-            meals: [
-                { meal_name: "", calories: "", time_of_day: "", description: "", protein: "", carbs: "", fats: "", day_number: 1 }
-            ]
+            created_by: "", 
+            category: "",
         },
         onSubmit: async (values) => {
-            if (!values.selectedClientId || !values.selectedMealPlanId) {
-                alert("Please select both a client and a meal plan.");
+            if (!values.selectedClientId) {
+                alert("Please select both a client.");
                 return;
             }
 
             try {
                 
-                const res = await fetch(``, {
+                const res = await fetch(`/api/api/nutrition_plan_modifications/create_plan`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        coach_id: clientId,
+                        coach_id: clientId, 
                         client_id: values.selectedClientId,
-                        nutrition_plan_id: values.selectedMealPlanId
+                        plan_name: values.category
+                        
                     })
                 });
 
@@ -115,44 +137,36 @@ const AssignMealPlan = () => {
                 <main className="main-content">
                 <Container className="mt-5">
                     <div style={{ backgroundColor: "#2a472a", padding: "30px", borderRadius: "15px", color: "white" }}>
-                        <Form onSubmit={formik.handleSubmit}>
-                            
-                            
+                        <Form onSubmit={formik.handleSubmit}> 
                             <Form.Group className="mb-4">
-                                <Form.Label>Select Client</Form.Label>
-                                <Form.Select 
-                                    name="selectedClientId"
+                                <Form.Label>New Plan Category Name</Form.Label>
+                                <Form.Control 
+                                    type="text"
+                                    name="category"
+                                    placeholder="e.g., Maintenance"
                                     onChange={formik.handleChange}
-                                    value={formik.values.selectedClientId}
-                                >
-                                    <option value=""> Choose a Client </option>
-                                    {clients.map(client => (
-                                        <option key={client.client_id} value={client.client_id}>
-                                            {client.first_name} {client.last_name} (ID: {client.client_id})
-                                        </option>
-                                    ))}
-                                </Form.Select>
+                                    value={formik.values.category}
+                                />
                             </Form.Group>
-                            
+            
                             <Form.Group className="mb-4">
-                                <Form.Label>Select Meal Plan</Form.Label>
-                                <Form.Select 
-                                    name="selectedMealPlanId"
-                                    onChange={formik.handleChange}
-                                    value={formik.values.selectedMealPlanId}
-                                >
-                                    <option value=""> Choose a Plan </option>
-                                    {mealPlans.map(plan => (
-                                        <option key={plan.nutrition_plan_id} value={plan.nutrition_plan_id}>
-                                            {plan.plan_name || `Plan #${plan.nutrition_plan_id}`}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
-
-                            <Button variant="success" type="submit" className="w-100">
-                                Assign Plan
-                            </Button>
+                                    <Form.Label>Select Client</Form.Label>
+                                    <Form.Select 
+                                        name="selectedClientId"
+                                        onChange={formik.handleChange}
+                                        value={formik.values.selectedClientId}
+                                    >
+                                        <option value=""> Choose a Client </option>
+                                        {clients.map(client => (
+                                            <option key={client.client_id} value={client.client_id}>
+                                                {client.first_name} {client.last_name}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                             <Button variant="primary" type="submit" className="w-100">
+                                            Create Meal Plan
+                                          </Button>
                         </Form>
                     </div>
                 </Container>
