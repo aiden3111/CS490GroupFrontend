@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import { Form, Button, Container } from "react-bootstrap";
+import { Form, Button, Container, Row, Col } from "react-bootstrap";
 
 const AddMealstoPlan = () => {
     const { clientId } = useParams(); 
@@ -108,25 +108,19 @@ const AddMealstoPlan = () => {
                 <div className="brand-logo">BitFit</div>
                 <ul className="nav-list">
                     <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-                    <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach</li>
-                    <li className="nav-item" onClick={() => navigate(`/WourkoutPlanPage/${clientId}`)}>Workout Logs</li>
-                    <ul className="sub-nav">
-                        <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}>Step Tracker</li>
-                        <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}>Custom Exercise</li>
-                    </ul>
+                    
                    
                     <ul className="sub-sub-nav">
                         <li className="nav-item active"> Clients Meal Plan</li>
                            <li className="nav-item " onClick={() => navigate(`/AssignMealPlan//${clientId}`)}> Assign Meal Plan </li>
                             <li className="nav-item active">Create Meal  </li>
-                            <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}> Delete Meal </li>
                             <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}> Edit Meal </li>
                     </ul>
-                    <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
+                   
                     <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
                     <li className="nav-item">Subscriptions</li>
                     <li className="nav-item">Analytics</li>
-                    <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
+                 
                 </ul>
                 <div className="sidebar-bottom">
                     <button className="nav-item" onClickCapture={handleLogout}>Logout</button>
@@ -190,7 +184,8 @@ const AddMealstoPlan = () => {
                                 value={formik.values.description} />
                             </Form.Group>
 
-                            <div className="d-flex gap-3">
+                            <Row>
+                                <Col>
                                 <Form.Group className="mb-3 flex-fill">
                                     <Form.Label>Calories</Form.Label>
                                     <Form.Control 
@@ -199,6 +194,8 @@ const AddMealstoPlan = () => {
                                     onChange={formik.handleChange} 
                                     value={formik.values.calories} />
                                 </Form.Group>
+                                </Col>
+                                <Col>
                                 <Form.Group className="mb-3 flex-fill">
                                     <Form.Label>Protein (g)</Form.Label>
                                     <Form.Control 
@@ -207,9 +204,11 @@ const AddMealstoPlan = () => {
                                         onChange={formik.handleChange} 
                                         value={formik.values.protein} />
                                 </Form.Group>
-                            </div>
+                                </Col>
+                            </Row>
 
-                            <div className="d-flex gap-3">
+                            <Row>
+                                <Col>
                                 <Form.Group className="mb-3 flex-fill">
                                     <Form.Label>Carbs (g)</Form.Label>
                                     <Form.Control 
@@ -218,6 +217,8 @@ const AddMealstoPlan = () => {
                                         onChange={formik.handleChange} 
                                         value={formik.values.carbs} />
                                 </Form.Group>
+                                </Col>
+                                <Col>
                                 <Form.Group className="mb-3 flex-fill">
                                     <Form.Label>Fats (g)</Form.Label>
                                     <Form.Control 
@@ -226,25 +227,30 @@ const AddMealstoPlan = () => {
                                         onChange={formik.handleChange} 
                                         value={formik.values.fats} />
                                 </Form.Group>
-                            </div>
-
-                            <Form.Group className="mb-3">
-                                <Form.Label>Time of Day</Form.Label>
-                                <Form.Control 
-                                    name="time_of_day" 
-                                    onChange={formik.handleChange} 
-                                    value={formik.values.time_of_day} 
-                                    placeholder="e.g. Breakfast" />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Day</Form.Label>
-                                <Form.Control 
-                                    name="day_number" 
-                                    onChange={formik.handleChange} 
-                                    value={formik.values.day_number} 
-                                    placeholder="Day" />
-                            </Form.Group>
-
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Time of Day</Form.Label>
+                                    <Form.Control 
+                                        name="time_of_day" 
+                                        onChange={formik.handleChange} 
+                                        value={formik.values.time_of_day} 
+                                        placeholder="e.g. 10:35" />
+                                </Form.Group>
+                                </Col>
+                                <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Day</Form.Label>
+                                    <Form.Control 
+                                        name="day_number" 
+                                        onChange={formik.handleChange} 
+                                        value={formik.values.day_number} 
+                                        placeholder="Day" />
+                                </Form.Group>
+                                </Col>
+                                    </Row>
                             <Button variant="primary" type="submit" className="w-100 mt-3">
                                 Add Meal to Plan
                             </Button>

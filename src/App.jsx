@@ -23,7 +23,7 @@ import LogTodaysMeal from './pages/LogTodaysMeal';
 import EditTodaysMeal from './pages/EditTodaysMeal';
 import MessagingPage from './pages/MessagingPage';
 import AddMealstoPlan from './pages/AddMealstoPlan';
-import DeleteMealsfromPlan from './pages/DeleteMealsfromPlan';
+
 import EditMealsfromPlan from './pages/EditMealsfromPlan';
 
 function App() {
@@ -52,7 +52,7 @@ function App() {
         <Route path="/EditTodaysMeal/:clientId" element={<ProtectedRoutes> <EditTodaysMeal/></ProtectedRoutes>} />
         <Route path="/MessagingPage/:clientId" element={<ProtectedRoutes> <MessagingPage /> </ProtectedRoutes>} />
         <Route path="/AddMealstoPlan/:clientId" element={<ProtectedRoutes> <AddMealstoPlan /> </ProtectedRoutes>} />
-        <Route path="/DeleteMealsfromPlan/:clientId" element={<ProtectedRoutes> <DeleteMealsfromPlan /> </ProtectedRoutes>} />
+        
         <Route path="/EditMealsfromPlan/:clientId" element={<ProtectedRoutes> <EditMealsfromPlan /> </ProtectedRoutes>} />
         
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />

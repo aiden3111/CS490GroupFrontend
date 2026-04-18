@@ -88,7 +88,7 @@ const AssignMealPlan = () => {
                            <li className="nav-item active"> Assign Meal Plan </li>
                             <li className="nav-item" onClick={() => navigate(`/AddMealstoPlan/${clientId}`)}>Create Meal  </li>
                             <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}> Delete Meal </li>
-                            <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}> Edit Meal </li>
+                            <li className="nav-item" onClick={() => navigate(`/EditMealsfromPlan/${clientId}`)}> Edit Meal </li>
                     </ul>
 
                     <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
