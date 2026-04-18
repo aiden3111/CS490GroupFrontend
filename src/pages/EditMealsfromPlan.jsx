@@ -1,0 +1,259 @@
+import { useNavigate, useParams } from "react-router-dom";
+import "./Landingcss.css";
+import React, { useState, useEffect } from "react";
+import { useFormik } from "formik";
+import { Form, Button, Container } from "react-bootstrap";
+
+const EditMealsfromPlan = () => {
+    const { clientId } = useParams(); 
+    const navigate = useNavigate();
+    
+    
+    const [clients, setClients] = useState([]);
+    const [plans, setPlans] = useState([]);
+
+  
+    useEffect(() => {
+        fetch(`/api/api/clients/coach/${clientId}`)
+            .then(res => res.json())
+            .then(data => setClients(Array.isArray(data) ? data : []))
+            .catch(err => console.error("Error loading clients:", err));
+    }, [clientId]);
+
+   
+    useEffect(() => {
+        const loggedInId = localStorage.getItem("authenticatedClientId");
+        if (loggedInId !== clientId) {
+          navigate(`/UserProfile/${loggedInId}`);
+        }
+    }, [clientId, navigate]);
+
+    const formik = useFormik({
+        initialValues: {
+            selectedClientId: "", 
+            selectedPlanId: "",   
+            meal_name: "",
+            description: "",
+            calories: "",
+            protein: "",
+            carbs: "",
+            fats: "",             
+            time_of_day: "",
+            day_number: "",
+        },
+        onSubmit: async (values) => {
+            if (!values.selectedPlanId) {
+                alert("Please select a meal plan first.");
+                return;
+            }
+
+            try {
+                
+                const res = await fetch(`/api/api/nutrition_plan_modifications/${clientId}/${values.selectedClientId}/${values.selectedPlanId}/meals`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        meals: [{
+                            meal_name: values.meal_name,
+                            description: values.description,
+                            calories: values.calories,
+                            protein: values.protein,
+                            carbs: values.carbs,
+                            fats: values.fats,
+                            time_of_day: values.time_of_day,
+                            day_number: values.day_number 
+                        }]
+                    })
+                });
+
+                if (res.ok) {
+                    alert("Meal added to the plan!");
+                    formik.resetForm({ values: { ...formik.initialValues, selectedClientId: values.selectedClientId, selectedPlanId: values.selectedPlanId } });
+                } else {
+                    const err = await res.json();
+                    alert(`Error: ${err.error}`);
+                }
+            } catch (err) {
+                console.error("Failed to add meal:", err);
+            }
+        }
+    });
+
+    
+    const handleClientChange = (e) => {
+        const selectedId = e.target.value;
+        formik.setFieldValue("selectedClientId", selectedId);
+        
+        if (selectedId) {
+            
+            fetch(`/api/api/nutrition_plan_modifications/${clientId}`) 
+                .then(res => res.json())
+                .then(data => {
+                    
+                    const clientPlans = Array.isArray(data) ? data.filter(p => p.client_id === selectedId) : [];
+                    setPlans(clientPlans);
+                })
+                .catch(err => console.error("Fetch error:", err));
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("authenticatedClientId");
+        navigate("/LoginPage/");
+    };
+
+    return (
+        <div className="dashboard-container">
+        <nav className="sidebar">
+                <div className="brand-logo">BitFit</div>
+                <ul className="nav-list">
+                    <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
+                    <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach</li>
+                    <li className="nav-item" onClick={() => navigate(`/WourkoutPlanPage/${clientId}`)}>Workout Logs</li>
+                    <ul className="sub-nav">
+                        <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}>Step Tracker</li>
+                        <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}>Custom Exercise</li>
+                    </ul>
+                   
+                    <ul className="sub-sub-nav">
+                        <li className="nav-item active"> Clients Meal Plan</li>
+                           <li className="nav-item " onClick={() => navigate(`/AssignMealPlan//${clientId}`)}> Assign Meal Plan </li>
+                            <li className="nav-item active">Create Meal  </li>
+                            <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}> Delete Meal </li>
+                            <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}> Edit Meal </li>
+                    </ul>
+                    <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
+                    <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
+                    <li className="nav-item">Subscriptions</li>
+                    <li className="nav-item">Analytics</li>
+                    <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
+                </ul>
+                <div className="sidebar-bottom">
+                    <button className="nav-item" onClickCapture={handleLogout}>Logout</button>
+                </div>
+            </nav>
+
+            <div className="main-content">
+                <h1>Add Meals to Plan</h1>
+                <Container className="mt-5">
+                    <div style={{ backgroundColor: "#2a472a", padding: "30px", borderRadius: "15px", color: "white" }}>
+                        <Form onSubmit={formik.handleSubmit}> 
+                            <Form.Group className="mb-4">
+                                <Form.Label>Select Client</Form.Label>
+                                <Form.Select 
+                                    name="selectedClientId"
+                                    onChange={handleClientChange}
+                                    value={formik.values.selectedClientId}
+                                >
+                                    <option value=""> Choose a Client </option>
+                                    {clients.map(client => (
+                                        <option key={client.client_id} value={client.client_id}>
+                                            {client.first_name} {client.last_name}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+
+                            <Form.Group className="mb-4">
+                                <Form.Label>Select Meal Plan</Form.Label>
+                                <Form.Select 
+                                    name="selectedPlanId"
+                                    onChange={formik.handleChange}
+                                    value={formik.values.selectedPlanId}
+                                    disabled={!formik.values.selectedClientId}
+                                >
+                                    <option value=""> Choose a Plan </option>
+                                    {plans.map(plan => (
+                                        <option key={plan.nutrition_plan_id} value={plan.nutrition_plan_id}>
+                                            Plan #{plan.nutrition_plan_id} - {plan.category}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+
+                            <hr />
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Meal Name</Form.Label>
+                                <Form.Control 
+                                name="meal_name" 
+                                onChange={formik.handleChange} 
+                                value={formik.values.meal_name} 
+                                placeholder="e.g. Grilled Chicken" />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Description</Form.Label>
+                                <Form.Control 
+                                name="description" 
+                                onChange={formik.handleChange} 
+                                value={formik.values.description} />
+                            </Form.Group>
+
+                            <div className="d-flex gap-3">
+                                <Form.Group className="mb-3 flex-fill">
+                                    <Form.Label>Calories</Form.Label>
+                                    <Form.Control 
+                                    type="number" 
+                                    name="calories" 
+                                    onChange={formik.handleChange} 
+                                    value={formik.values.calories} />
+                                </Form.Group>
+                                <Form.Group className="mb-3 flex-fill">
+                                    <Form.Label>Protein (g)</Form.Label>
+                                    <Form.Control 
+                                        type="number" 
+                                        name="protein" 
+                                        onChange={formik.handleChange} 
+                                        value={formik.values.protein} />
+                                </Form.Group>
+                            </div>
+
+                            <div className="d-flex gap-3">
+                                <Form.Group className="mb-3 flex-fill">
+                                    <Form.Label>Carbs (g)</Form.Label>
+                                    <Form.Control 
+                                        type="number" 
+                                        name="carbs" 
+                                        onChange={formik.handleChange} 
+                                        value={formik.values.carbs} />
+                                </Form.Group>
+                                <Form.Group className="mb-3 flex-fill">
+                                    <Form.Label>Fats (g)</Form.Label>
+                                    <Form.Control 
+                                        type="number" 
+                                        name="fats" 
+                                        onChange={formik.handleChange} 
+                                        value={formik.values.fats} />
+                                </Form.Group>
+                            </div>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Time of Day</Form.Label>
+                                <Form.Control 
+                                    name="time_of_day" 
+                                    onChange={formik.handleChange} 
+                                    value={formik.values.time_of_day} 
+                                    placeholder="e.g. Breakfast" />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Day</Form.Label>
+                                <Form.Control 
+                                    name="day_number" 
+                                    onChange={formik.handleChange} 
+                                    value={formik.values.day_number} 
+                                    placeholder="Day" />
+                            </Form.Group>
+
+                            <Button variant="primary" type="submit" className="w-100 mt-3">
+                                Add Meal to Plan
+                            </Button>
+                        </Form>
+                    </div>
+                </Container>
+            </div>
+        </div>
+    );
+};
+
+export default EditMealsfromPlan;

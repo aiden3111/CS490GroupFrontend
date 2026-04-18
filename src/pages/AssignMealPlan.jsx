@@ -20,7 +20,6 @@ const AssignMealPlan = () => {
             .catch(err => console.error("Error loading clients:", err));
     }, [clientId]);
 
-    
 
     const formik = useFormik({
         initialValues: {

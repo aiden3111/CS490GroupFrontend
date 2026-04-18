@@ -120,7 +120,7 @@ function CustomExercise() {
         {activeTab === "mycustom" ? (
           <MyCustom clientId={clientId} />
         ) : (
-          <CustomCreation clientId={clientId} />
+          <CustomCreation clientId={clientId} navigate={navigate} />
         )}
       </main>
     </div>
@@ -147,35 +147,29 @@ function MyCustom({ clientId }) {
     setModalEdit(true);
   };
 
-  const handleDelete = async (exer) => {
+  const handleDelete = async (exerId) => {
     const confirm = window.confirm("The Exercise will be permanently removed");
-    if (confirm) {
-      try {
-        const response = await fetch(
-          `http://127.0.0.1:5000/api/exercises/${exer}`,
-          {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ client_id: clientId }),
-          },
-        );
+    if (!confirm) return;
 
-        const data = await response.json();
-        if (response.ok) {
-          alert("Exercise Deleted");
-          setSelectedExercise(null);
-          window.location.reload();
-        } else {
-          alert(data.error || "Error");
-        }
-      } catch (err) {
-        console.error("Error:", err);
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/api/exercises/${exerId}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ client_id: clientId }),
+        },
+      );
+
+      if (response.ok) {
+        alert("Exercise Deleted");
+
+        setWorkouts((prev) => prev.filter((ex) => ex.exercise_id !== exerId));
       }
-    } else {
-      alert("Delete Canceled");
+    } catch (err) {
+      console.error("Error:", err);
     }
   };
-
   return (
     <div className="first-section">
       <div className="exercise-section">
@@ -222,6 +216,7 @@ function EditModal({ show, onHide, exercise, clientId, onSuccess }) {
       example_video: exercise?.example_video || "",
     },
     enableReinitialize: true,
+
     onSubmit: async (values) => {
       try {
         const res = await fetch(
@@ -229,11 +224,14 @@ function EditModal({ show, onHide, exercise, clientId, onSuccess }) {
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...values, client_id: clientId }),
+            body: JSON.stringify({
+              ...values,
+              created_by: clientId,
+            }),
           },
         );
         if (res.ok) {
-          alert("Exercisse Updated");
+          alert("Exercise Updated");
           onSuccess();
           onHide();
         }
@@ -320,7 +318,10 @@ function EditModal({ show, onHide, exercise, clientId, onSuccess }) {
             />
           </Form.Group>
 
-          <Button variant="success" type="submit" className="meal-save-btn">  Edit </Button>
+          <Button variant="success" type="submit" className="meal-save-btn">
+            {" "}
+            Edit{" "}
+          </Button>
         </Form>
       </Modal.Body>
     </Modal>
