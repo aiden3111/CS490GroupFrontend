@@ -123,6 +123,9 @@ const MoodTrackPage = () => {
             Meal Tracker
           </li>
           <li className="nav-item active">Mood Tracker</li>
+          <ul>
+            <li className="nav-item" onClick={() => navigate(`/DeleteMoodPage/${clientId}`)}> Edit Mood</li>
+          </ul>
           <li
             className="nav-item"
             onClick={() => navigate(`/MessagingPage/${clientId}`)}

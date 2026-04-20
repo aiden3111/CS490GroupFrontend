@@ -58,7 +58,6 @@ const EditMealsfromPlan = () => {
     });
 
    const fetchMeals = (planId) => {
-   
     fetch(`/api/api/nutrition_plan_modifications/meals/${planId}`) 
         .then(res => {
             if (!res.ok) throw new Error("Help!");
@@ -66,7 +65,7 @@ const EditMealsfromPlan = () => {
         })
         .then(data => setMeals(data))
         .catch(err => console.error("Error fetching meals:", err));
-};
+    };
 
     const handleClientChange = (e) => {
         const selectedId = e.target.value;
