@@ -79,11 +79,19 @@ const CoachSearch = () => {
 const displayCoaches = selectedFilters.length === 0
     ? coaches
     : coaches.filter(coach => {
-        const specialty = coach.specialty.toLowerCase();
-        return specialty === "both"
-          ? selectedFilters.some(f => f === "fitness" || f === "nutrition")
-          : selectedFilters.includes(specialty);
-      });
+        
+        const specialty = coach.specialty ? coach.specialty.toLowerCase().trim() : "";
+
+        const wantsFitness = selectedFilters.includes("fitness");
+        const wantsNutrition = selectedFilters.includes("nutrition");
+
+  
+        if (specialty === "both" || specialty.includes("fitness & nutrition")) {
+            return wantsFitness || wantsNutrition;
+        }
+
+        return selectedFilters.includes(specialty);
+    });
 
 
   const handleRequestCoach = async () => {
@@ -129,6 +137,7 @@ const displayCoaches = selectedFilters.length === 0
 
         {/* Checkbox not checkboxing*/}
         <div className="checkbox">
+          <p >Filters</p>
           <label className="checkbox-container1">
             <input
               type="checkbox"
@@ -147,6 +156,7 @@ const displayCoaches = selectedFilters.length === 0
             />
             Nutrition
           </label>
+          
           </div>
           
 
