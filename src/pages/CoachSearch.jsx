@@ -156,7 +156,6 @@ const displayCoaches = selectedFilters.length === 0
             />
             Nutrition
           </label>
-          
           </div>
           
 
