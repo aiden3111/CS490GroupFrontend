@@ -15,11 +15,11 @@ const CoachLanding = () => {
 
   const handleCreatePlan = async (clientData) => {
     const planData = {
-      created_by: localStorage.getItem("authenticatedClientId"), 
-      client_id: clientData.client_id, 
+      created_by: localStorage.getItem("authenticatedClientId"),
+      client_id: clientData.client_id,
       frequency: 3,
       difficulty: "Intermediate",
-      is_draft: 0 
+      is_draft: 0
     };
 
     try {
@@ -67,14 +67,14 @@ const CoachLanding = () => {
       const response = await fetch(`/api/api/coach/${clientId}/requests/${requestId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           status: status,
           client_id: targetClientId
         }),
       });
       if (!response.ok) {
         const errorData = await response.json();
-        alert(errorData.error); 
+        alert(errorData.error);
         return;
       }
 
@@ -103,22 +103,22 @@ const CoachLanding = () => {
   };
 
   const handleLogout = () => {
-     localStorage.removeItem("authenticatedClientId");
-      navigate("/LoginPage/");
+    localStorage.removeItem("authenticatedClientId");
+    navigate("/LoginPage/");
   };
 
 
 
   //TODO: add the links to side bar
   //TODO: Build the top bar
-  
+
   return (
     <div className="dashboard-container">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
           <li className={`nav-item ${activeTab == 'dashboard' ? 'active' : ''}`}
-              onClick={()=> setActiveTab('dashboard')}
+            onClick={() => setActiveTab('dashboard')}
           >Dashboard</li>
           <li
             className={`nav-item ${activeTab === 'requests' ? 'active' : ''}`}
@@ -132,13 +132,13 @@ const CoachLanding = () => {
           >
             My Clients
           </li>
-          <li className="nav-item">Workout Logs</li>
+          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
           <li className="nav-item">Meal Tracker</li>
           {(userRole === 'coach' && (coachSpecialty === 'nutrition' || coachSpecialty === 'both')) && (
             <li className="nav-item" onClick={() => navigate(`/AssignMealPlan/${clientId}`)}>
-             Assign Meal Plans
+              Assign Meal Plans
             </li>
-           )}
+          )}
           <li className="nav-item">Mood Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
           <li className="nav-item">Subscriptions</li>
@@ -148,7 +148,7 @@ const CoachLanding = () => {
         </ul>
 
         <div className="sidebar-bottom">
-          <button className="logout-btn" onClickCapture={ handleLogout }>Logout</button>
+          <button className="logout-btn" onClickCapture={handleLogout}>Logout</button>
         </div>
       </nav>
 
@@ -250,8 +250,8 @@ const CoachLanding = () => {
                       </div>
 
                       <div className="client-meta mb-4" style={{ fontSize: '13px', borderTop: '1px solid #27272a', paddingTop: '10px' }}>
-                        <p style={{color: '#ffffff' }}><strong>Weight:</strong> {client.weight} lbs</p>
-                        <p style={{color: '#ffffff' }}><strong>Joined:</strong> {new Date(client.signup_date).toLocaleDateString()}</p>
+                        <p style={{ color: '#ffffff' }}><strong>Weight:</strong> {client.weight} lbs</p>
+                        <p style={{ color: '#ffffff' }}><strong>Joined:</strong> {new Date(client.signup_date).toLocaleDateString()}</p>
                       </div>
 
                       <div className="flex gap-2">
@@ -267,7 +267,7 @@ const CoachLanding = () => {
                           onClick={() => navigate(`/WorkoutLogPage/${client.client_id}`)}
                         >
                           Logs {/*This is not redirecting to where its suposed to go*/}
-                        </button> 
+                        </button>
                       </div>
                       <button
                         className="btn-outline-warning w-100"
@@ -283,7 +283,7 @@ const CoachLanding = () => {
             </div>
           </div>
         )}
-        
+
       </main>
     </div>
   );

@@ -85,6 +85,12 @@ function CustomExercise() {
           <ul className="sub-nav">
             <li
               className="nav-item"
+              onClick={() => navigate(`/WorkoutPlan/${clientId}`)}
+            >
+              Workout Plan{" "}
+            </li>
+            <li
+              className="nav-item"
               onClick={() => navigate(`/StepsTracker/${clientId}`)}
             >
               Step Tracker{" "}
@@ -105,6 +111,9 @@ function CustomExercise() {
               </li>
             </ul>
           </ul>
+          <div className="sidebar-bottom">
+            <button className="back-btn" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>← Back to Workout Logs</button>
+          </div>
         </ul>
 
         <div className="sidebar-bottom">

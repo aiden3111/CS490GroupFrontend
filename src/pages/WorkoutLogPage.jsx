@@ -214,6 +214,7 @@ const WorkoutLogPage = () => {
     <div className="dashboard-container">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
+        <span className="nav-section-label">Main</span>
         <ul className="nav-list">
           <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
           <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach</li>
@@ -224,14 +225,19 @@ const WorkoutLogPage = () => {
             <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}>Custom Exercise</li>
           </ul>
           <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
+          <span className="nav-section-label">Insights</span>
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
           <li className="nav-item">Subscriptions</li>
           <li className="nav-item">Analytics</li>
+          <span className="nav-section-label">Account</span>
           <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
         </ul>
         <div className="sidebar-bottom">
-          <button className="logout-btn" onClickCapture={handleLogout}>Logout</button>
+          <button className="logout-btn" onClickCapture={handleLogout}>
+            <span></span>
+            Logout
+          </button>
         </div>
       </nav>
 
@@ -242,7 +248,7 @@ const WorkoutLogPage = () => {
 
         {/* Search */}plan.workout_plan_id
         <div className="search-container">
-          <span className="search-icon">⌕</span>
+          <p>Search here</p>
           <input
             type="text"
             className="form-control search-input"
@@ -251,7 +257,7 @@ const WorkoutLogPage = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleEnter}
           />
-          <button className="search-btn" onClick={handleSearch}>Search</button>
+          <button onClick={handleSearch}>Search</button>
         </div>
 
         {message && (

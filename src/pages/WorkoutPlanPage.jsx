@@ -7,6 +7,7 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const WorkoutPlanPage = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const { clientId } = useParams();
+    const userRole = localStorage.getItem("userRole");
     const navigate = useNavigate();
 
     const [workoutPlans, setWorkoutPlans] = useState([]);
@@ -577,23 +578,16 @@ const WorkoutPlanPage = () => {
                 <div className="brand-logo">BitFit</div>
                 <ul className="nav-list">
                     <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-                    <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach</li>
                     <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
                     <ul className="sub-nav">
-                        <li className="nav-item active" onClick={() => navigate(`/WorkoutPlan/${clientId}`)}>Workout Plan</li>
+                        <li className="nav-item active">Workout Plan</li>
                         <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}>Step Tracker</li>
                         <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}>Custom Exercise</li>
                     </ul>
-                    <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
-                    <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
-                    <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-                    <li className="nav-item">Subscriptions</li>
-                    <li className="nav-item">Analytics</li>
-                    <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
+                    <div className="sidebar-bottom">
+                        <button className="back-btn" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>← Back to Workout Logs</button>
+                    </div>
                 </ul>
-                <div className="sidebar-bottom">
-                    <button className="logout-btn" onClickCapture={handleLogout}>Logout</button>
-                </div>
             </nav>
 
             <div className="main-content">
@@ -602,7 +596,7 @@ const WorkoutPlanPage = () => {
                 </div>
 
                 <div className="search-container">
-                    <span className="search-icon">⌕</span>
+                    <p>Search here</p>
                     <input
                         type="text"
                         className="form-control search-input"
@@ -611,7 +605,7 @@ const WorkoutPlanPage = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onKeyDown={handleEnter}
                     />
-                    <button className="search-btn" onClick={handleSearch}>Search</button>
+                    <button onClick={handleSearch}>Search</button>
                 </div>
 
                 {message && (
@@ -858,3 +852,4 @@ const cancelButtonStyle = {
 };
 
 export default WorkoutPlanPage;
+
