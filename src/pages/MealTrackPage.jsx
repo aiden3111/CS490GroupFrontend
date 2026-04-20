@@ -98,10 +98,11 @@ const MealTrackPage = () => {
       </nav>
 
       <div className="main-content">
-        <div className="header">
-          <h1>Meal Tracker</h1>
+        <h1>Meal Tracker</h1>
+        <div className="meal-tracker-header">
+          <h2>Meal & calories</h2>
           {calorieData.map((cal) => (
-            <div key={cal.log_date} className="call-square">
+            <div key={cal.meal_log_id} className="meal-square">
               <p>Date: {cal.log_date}</p>
               <p>Calories: {cal.actual_calories}</p>
               <p>Notes: {cal.notes}</p>

@@ -66,15 +66,17 @@ const StepsTracker = () => {
 
       <div className="main-content">
         <div className="header">
-          <h1>Workout Logs</h1>
+          <h2>Workout Logs</h2>
+           <h1>Steps Tracker</h1>
         </div>
 
 
         <div className="main-content">
-          <div className="header">
-            <h1>Steps Tracker</h1>
+         
+          <div className="meal-tracker-header">
+            
             {stepData.map((steps) => (
-              <div key={steps.log_date} className="call-square">
+              <div key={steps.log_date} className="meal-square">
                 <p>Date: {steps.log_date}</p>
                 <p>Steps: {steps.steps}</p>
 

@@ -788,3 +788,29 @@ h3{
     color: var(--text);
     border-color: rgba(255, 255, 255, 0.2);
 }
+
+.meal-tracker-header{
+    max-height: 400px;
+    overflow-y: auto;  
+    padding: 10px;
+    border: 1px solid #143f24; 
+    border-radius: 8px;
+
+}
+
+.meal-tracker-header::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #17b93f; 
+  border-radius: 4px;
+}
+.meal-square{
+    background: #3f5244; 
+      border-radius: 15px;
+      padding: 10px; 
+      margin-bottom: 15px; 
+      color: white; 
+     
+ }
