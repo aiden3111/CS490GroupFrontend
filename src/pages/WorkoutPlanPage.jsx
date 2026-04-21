@@ -373,6 +373,77 @@ const WorkoutPlanPage = () => {
         setEditingEntryId(null);
     };
 
+    const WeeklyCalendar = ({ exercisesByDay }) => {
+        return (
+            <div style={{ marginBottom: "20px" }}>
+                <p style={{ color: "#aaa", fontSize: "13px", margin: "0 0 10px 0" }}>Weekly overview</p>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(7, 1fr)",
+                        gap: "6px",
+                    }}
+                >
+                    {DAYS.map((day) => {
+                        const entries = exercisesByDay[day] || [];
+                        const hasEx = entries.length > 0;
+                        return (
+                            <div
+                                key={day}
+                                style={{
+                                    backgroundColor: "#0f200f",
+                                    border: `1px solid ${hasEx ? "#509e54" : "#1e3a1e"}`,
+                                    borderRadius: "8px",
+                                    padding: "8px 6px",
+                                    minHeight: "90px",
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        fontSize: "11px",
+                                        fontWeight: "bold",
+                                        color: hasEx ? "#78b47b" : "#555",
+                                        marginBottom: "6px",
+                                        textTransform: "uppercase",
+                                        letterSpacing: "0.04em",
+                                    }}
+                                >
+                                    {day}
+                                </div>
+                                {hasEx ? (
+                                    entries.map((entry) => (
+                                        <div
+                                            key={entry.id}
+                                            title={`${entry.exercise_name} — ${entry.sets}×${entry.repetitions}`}
+                                            style={{
+                                                backgroundColor: "#1e3a1e",
+                                                color: "#78b47b",
+                                                fontSize: "10px",
+                                                borderRadius: "4px",
+                                                padding: "2px 5px",
+                                                marginBottom: "3px",
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                            }}
+                                        >
+                                            {entry.exercise_name}
+                                            <span style={{ color: "#509e54", marginLeft: "4px" }}>
+                                                {entry.sets}×{entry.repetitions}
+                                            </span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <span style={{ fontSize: "11px", color: "#444" }}>Rest</span>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    };
+
     const renderPlanExercises = (workoutPlanId) => {
         if (planDetailLoading) {
             return <p style={{ color: "#aaa", padding: "12px" }}>Loading exercises…</p>;
@@ -383,6 +454,7 @@ const WorkoutPlanPage = () => {
         const byDay = planDetail.exercises_by_day;
         return (
             <div style={{ padding: "12px 0", borderTop: "1px solid #2e5c2e" }}>
+                <WeeklyCalendar exercisesByDay={byDay} />
                 {DAYS.map((day) => {
                     const entries = byDay[day] || [];
                     if (entries.length === 0) return null;
