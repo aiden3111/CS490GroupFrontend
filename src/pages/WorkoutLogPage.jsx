@@ -246,9 +246,9 @@ const WorkoutLogPage = () => {
           <h1>Workout Logs</h1>
         </div>
 
-        {/* Search */}plan.workout_plan_id
+        {/* Search plan.workout_plan_id*/}
         <div className="search-container">
-          <p>Search here</p>
+          
           <input
             type="text"
             className="form-control search-input"

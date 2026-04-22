@@ -218,6 +218,7 @@ const MoodTrackPage = () => {
           </div>
 
           <h3>Previous logs</h3>
+          <div className="meal-tracker-header">
           {mooddata.map((mood) => (
             <div key={mood.log_date} className="mood-square">
               <p>Date: {mood.log_date}</p>
@@ -226,6 +227,7 @@ const MoodTrackPage = () => {
               <p>Aditional notes: {mood.notes}</p>
             </div>
           ))}
+          </div>
         </div>
 
         <div className="mood-graph"></div>
