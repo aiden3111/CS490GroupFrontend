@@ -5,7 +5,18 @@ import { useFormik } from "formik";
 import "./Regcss.css";
 import { useNavigate, Link } from "react-router-dom";
 
-
+const Field = ({ label, name, type = "text", placeholder, value, onChange }) => (
+  <div className="reg-field">
+    <label>{label}</label>
+    <input
+      type={type}
+      name={name}
+      placeholder={placeholder}
+      value={value || ""}
+      onChange={onChange}
+    />
+  </div>
+);
 function RegistrationPage() {
   const navigate = useNavigate();
   const formikForm = useFormik({
@@ -83,188 +94,85 @@ function RegistrationPage() {
   };
 
   return (
-    <Container>
-      <Row>
-        <Col>
-          <div className="singup-instructions">
-            <h1>Join 10,0000 members reaching theis goals today</h1>
-            <div className="step-list">
-              <div className="step-item">
-                <span className="step-num">1 - </span>
-                <span className="step-text">Sign up</span>
-              </div>
+    <div className="reg-page">
+      <div className="reg-left">
+        <div className="reg-left-logo">BitFit</div>
+        <h1 className="reg-left-headline">
+          Join 10,000+<br />members reaching<br />their goals today
+        </h1>
+        <div className="reg-steps">
+          {["Create your account", "Fill out your entry survey", "Start your fitness journey"].map((text, i) => (
+            <div className="reg-step" key={i}>
+              <div className="reg-step-num">{i + 1}</div>
+              <div className="reg-step-text">{text}</div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-              <div className="step-item">
-                <span className="step-num">2 - </span>
-                <span className="step-text">Fill out entry survey</span>
-              </div>
+      <div className="reg-right">
+        <div className="reg-brand">BitFit</div>
+        <h2 className="reg-title">Create an account</h2>
+        <p className="reg-sub">Get started! It only takes a minute.</p>
 
-              <div className="step-item">
-                <span className="step-num">3 - </span>
-                <span className="step-text"> Start your fitness journey</span>
-              </div>
+        <div className="reg-google-wrap">
+          <GoogleLogin
+            onSuccess={handleGoogleSignup}
+            onError={() => console.log("Signup failed")}
+            theme="filled_black"
+            size="large"
+            width="100%"
+          />
+        </div>
+
+        <div className="reg-divider">
+          <span className="reg-divider-line"></span>
+          <span className="reg-divider-text">or fill in your details</span>
+          <span className="reg-divider-line"></span>
+        </div>
+
+        <form onSubmit={formikForm.handleSubmit}>
+          <div className="reg-field-row">
+            <Field label="First Name" name="first_name" placeholder="John" value={formikForm.values.first_name}
+              onChange={formikForm.handleChange} />
+            <Field label="Last Name" name="last_name" placeholder="Smith" value={formikForm.values.last_name}
+              onChange={formikForm.handleChange} />
+          </div>
+          <Field label="Email" name="email" type="email" placeholder="name@example.com" value={formikForm.values.email}
+            onChange={formikForm.handleChange} />
+          <Field label="Password" name="password" type="password" placeholder="••••••••" value={formikForm.values.password}
+            onChange={formikForm.handleChange}/>
+          <div className="reg-field-row">
+            <Field label="Date of Birth" name="dob" type="date" value={formikForm.values.dob}
+              onChange={formikForm.handleChange} />
+            <div className="reg-field">
+              <label>Gender</label>
+              <select name="gender" value={formikForm.values.gender} onChange={formikForm.handleChange}>
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
             </div>
           </div>
-        </Col>
-        <Col>
-          <div
-            className="containerdiv"
-            style={{
-              backgroundColor: "#376337",
-              padding: "20px",
-              borderRadius: "15px",
-            }}
-          >
-            <h1 className="text-center mb-4">Join here my friend</h1>
-
-            <div className="GoogleButton">
-              <h2 className="text-center mb-4">Sign up with Google</h2>
-              <GoogleLogin
-                onSuccess={handleGoogleSignup}
-                onError={() => console.log("Login Failed")}
-              />
-            </div>
-            <Form onSubmit={formikForm.handleSubmit}>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control
-                  type="email"
-                  name="email"
-                  onChange={formikForm.handleChange}
-                  value={formikForm.values.email}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  name="password"
-                  onChange={formikForm.handleChange}
-                  value={formikForm.values.password}
-                />
-              </Form.Group>
-
-              <Row className="mb-3">
-                <Col md={6}>
-                  <Form.Group className="mb-3" controlId="formBasicFName">
-                    <Form.Label>First Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="first_name"
-                      onChange={formikForm.handleChange}
-                      value={formikForm.values.first_name}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3" controlId="formBasicLName">
-                    <Form.Label>Last Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="last_name"
-                      onChange={formikForm.handleChange}
-                      value={formikForm.values.last_name}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Row className="mb-3">
-                <Col md={6}>
-                  <Form.Group className="mb-3" controlId="formBasicDob">
-                    <Form.Label>Date of Birth</Form.Label>
-                    <Form.Control
-                      type="date"
-                      name="dob"
-                      onChange={formikForm.handleChange}
-                      value={formikForm.values.dob}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3" controlId="formBasicGender">
-                    <Form.Label>Gender</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="gender"
-                      onChange={formikForm.handleChange}
-                      value={formikForm.values.gender}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Form.Group className="mb-3" controlId="formBasicPhone">
-                <Form.Label>Phone Number</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="phone_number"
-                  onChange={formikForm.handleChange}
-                  value={formikForm.values.phone_number}
-                />
-              </Form.Group>
-              <Row className="mb-3">
-                <Col md={6}>
-                  <Form.Group className="mb-3" controlId="formBasicHeight">
-                    <Form.Label>Height</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="height"
-                      onChange={formikForm.handleChange}
-                      value={formikForm.values.height}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3" controlId="formBasicWeight">
-                    <Form.Label>Weight</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="weight"
-                      onChange={formikForm.handleChange}
-                      value={formikForm.values.weight}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              <Button variant="primary" type="submit" className="w-100">
-                Sign In
-              </Button>
-            </Form>
+          <Field label="Phone Number" name="phone_number" placeholder="+1 (555) 000-0000" value={formikForm.values.phone_number}
+            onChange={formikForm.handleChange} />
+          <div className="reg-field-row">
+            <Field label="Height (in)" name="height" type="number" placeholder="70" value={formikForm.values.height} 
+      onChange={formikForm.handleChange}/>
+            <Field label="Weight (lbs)" name="weight" type="number" placeholder="160" value={formikForm.values.weight}
+              onChange={formikForm.handleChange} />
           </div>
-          <div
-            className="text-center mt-3"
-            style={{
-              backgroundColor: "#385e38",
-              marginBottom: 50,
-            }}
-          ></div>
 
-          <div
-            className="text-center mt-3"
-            style={{
-              backgroundColor: "#385e38",
-              marginBottom: 50,
-            }}
-          >
-            <p>
-              Already have an account?
-              <Link
-                to="/LoginPage"
-                style={{ color: "#1d271d", fontWeight: "bold" }}
-              >
-                Login here
-              </Link>
-            </p>
-          </div>
-        </Col>
-      </Row>
-    </Container>
+          <button type="submit" className="reg-submit-btn">Create Account</button>
+        </form>
+
+        <p className="reg-footer">
+          Already have an account? <Link to="/LoginPage">Log in</Link>
+        </p>
+      </div>
+    </div>
   );
 }
-//TODO: Add create account with google
-//TODO: check unitos for height and weight
-//TODO: Terms and conditions
-
 
 export default RegistrationPage;
