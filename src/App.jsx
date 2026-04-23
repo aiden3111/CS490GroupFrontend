@@ -27,6 +27,7 @@ import DeleteMoodPage from './pages/DeleteMoodPage';
 import EditMealsfromPlan from './pages/EditMealsfromPlan';
 import AdminUserManagement from './pages/AdminUserManagement';
 import AdminReports from './pages/AdminReports';
+import ReportUserPage from './pages/ReportUserPage';
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
         <Route path="/EditMealsfromPlan/:clientId" element={<ProtectedRoutes> <EditMealsfromPlan /> </ProtectedRoutes>} />
         <Route path="/AdminUsers/:clientId" element={<ProtectedRoutes> <AdminUserManagement /> </ProtectedRoutes>} />
         <Route path="/AdminReports/:clientId" element={<ProtectedRoutes> <AdminReports /> </ProtectedRoutes>} />
+        <Route path="/ReportUserPage/:clientId" element={<ProtectedRoutes><ReportUserPage/></ProtectedRoutes>}/>
 
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>

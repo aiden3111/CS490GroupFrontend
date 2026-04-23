@@ -46,78 +46,74 @@ const DeleteMoodPage = () => {
     };
     fetchLandingData();
   }, [clientId]);
-  
-  
-    const date = new Date().toISOString().split('T')[0];
-    const formik = useFormik({
-        initialValues: {
-            
-            log_date: "",
-            mood_score: "",
-            mood_label: "",
-            notes: "",
-          },
-          enableReinitialize: true,
-          onSubmit: async (values) => {
-              try {
-                  
-                  const res = await fetch(`/api/api/mood/${values.mood_log_id}`, {
-                      method: "PUT",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        client_id: clientId,
-                        mood_score: values.mood_score,
-                        mood_label: values.mood_label,
-                        notes: values.notes, 
-                      })
-                  });
-  
-                  if (res.ok) {
-                      alert("Mood updated successfully!");
-                      fetchMood(values.selectedDate);
-                  }
-              } catch (err) {
-                  console.error("Update failed:", err);
-              }
-          }
+
+  const date = new Date().toISOString().split("T")[0];
+  const formik = useFormik({
+    initialValues: {
+      log_date: "",
+      mood_score: "",
+      mood_label: "",
+      notes: "",
+    },
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      try {
+        const res = await fetch(`/api/api/mood/${values.mood_log_id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            client_id: clientId,
+            mood_score: values.mood_score,
+            mood_label: values.mood_label,
+            notes: values.notes,
+          }),
+        });
+
+        if (res.ok) {
+          alert("Mood updated successfully!");
+          fetchMood(values.selectedDate);
+        }
+      } catch (err) {
+        console.error("Update failed:", err);
+      }
+    },
+  });
+
+  const handleEditClick = (mood) => {
+    formik.setValues({
+      ...formik.values,
+      ...mood,
+    });
+  };
+
+  const fetchMood = (clientId) => {
+    fetch(`/api/api/mood${clientId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Help!");
+        return res.json();
+      })
+      .then((data) => setMood(data))
+      .catch((err) => console.error("Error fetching loogs", err));
+  };
+
+  const handleDeleteMood = async (logId) => {
+    if (!window.confirm("Are you sure you want to delete this entry?")) return;
+
+    try {
+      const res = await fetch(`/api/api/mood/${logId}`, {
+        method: "DELETE",
       });
 
-      const handleEditClick = (mood) => {
-        formik.setValues({
-            ...formik.values,
-            ...mood 
-        });
-    };
+      if (res.ok) {
+        alert("Mood deleted!");
+        setLandingData((prev) => prev.filter((m) => m.mood_log_id !== logId));
+      }
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
+  };
 
-    const fetchMood = (clientId) => {
-    fetch(`/api/api/mood${clientId}`) 
-        .then(res => {
-            if (!res.ok) throw new Error("Help!");
-            return res.json();
-        })
-        .then(data => setMood(data))
-        .catch(err => console.error("Error fetching loogs", err));
-    }; 
-
-    const handleDeleteMood = async (logId) => {
-        if (!window.confirm("Are you sure you want to delete this entry?")) return;
-
-        try {
-            
-            const res = await fetch(`/api/api/mood/${logId}`, {
-                method: "DELETE"
-            });
-
-            if (res.ok) {
-                alert("Mood deleted!");
-                setLandingData(prev => prev.filter(m => m.mood_log_id !== logId));
-            }
-        } catch (err) {
-            console.error("Delete failed:", err);
-            }
-    };
-   
-const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
   //TODO: add the links to side bar
   //TODO: Build the top bar
 
@@ -150,9 +146,14 @@ const today = new Date().toISOString().split('T')[0];
           >
             Meal Tracker
           </li>
-          <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/MoodTrackPage/${clientId}`)}
+          >
+            Mood Tracker
+          </li>
           <ul>
-            <li className="nav-item active" > Edit Mood</li>
+            <li className="nav-item active"> Edit Mood</li>
           </ul>
           <li
             className="nav-item"
@@ -180,81 +181,127 @@ const today = new Date().toISOString().split('T')[0];
       <div className="main-content">
         <div className="header">
           <h1>Mood Tracker</h1>
-          
-            <Container className="mt-4" style={{ backgroundColor: "#2a472a", padding: "20px", color: "white" }}>
-                <h2>Something Changed? </h2>
-                <h2> You can update today's log!</h2>
-                    
 
-                    {mooddata.length > 0 && (
-                        <Table striped bordered hover variant="dark">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Mood Score</th>
-                                    <th>Mood Label</th>
-                                    <th>Notes</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {mooddata
-                                    .filter(m => {const formattedDate = new Date(m.log_date).toISOString().split('T')[0];
-                                                    return formattedDate === today;})
-                                    .map(m => (
-                                    <tr key={m.mood_log_id}>
-                                        <td>{new Date(m.log_date).toLocaleDateString()}</td>
-                                        <td>{m.mood_score}</td>
-                                        <td>{m.mood_label}</td>
-                                        <td>{m.notes}</td>
-                                    
-                                        <td>
-                                            <Button variant="warning" size="sm" className="me-2" onClick={() => handleEditClick(m)}>Edit</Button>
-                                            <Button variant="danger" size="sm" onClick={() => handleDeleteMood(m.mood_log_id)}>Delete</Button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    )}
+          <Container
+            className="mt-4"
+            style={{
+              backgroundColor: "#2a472a",
+              padding: "20px",
+              color: "white",
+            }}
+          >
+            <h2>Something Changed? </h2>
+            <h2> You can update today's log!</h2>
 
-                    {formik.values.mood_log_id && (
-                        <div className="section-card mt-4" style={{ backgroundColor: "#1a2e1a", padding: "20px", color: "white" }}>
-                            <h3>Editing </h3>
-                            <Form onSubmit={formik.handleSubmit}>
-                               
-                                <Form.Group className="mb-3">
-                                    <Row>
-                                        <Col>    
-                                            <Form.Label>Date is not editable</Form.Label>
-                                            <p strong> {formik.values.log_date}</p>
-                                            
-                                        </Col>
-                                        <Col>
-                                            <Form.Label>Mood Score</Form.Label>
-                                            <Form.Control name="mood_score" onChange={formik.handleChange} value={formik.values.mood_score} />
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <Form.Label>Label</Form.Label>
-                                            <Form.Control name="mood_label" onChange={formik.handleChange} value={formik.values.mood_label} />
-                                        </Col>
-                                        <Col>
-                                            <Form.Label>Notes</Form.Label>
-                                            <Form.Control name="notes" onChange={formik.handleChange} value={formik.values.notes} />
-                                        </Col>
-                                    </Row>
-                                   
-                                </Form.Group>
-                                
-                                <Button variant="success" type="submit">Save Changes</Button>
-                                <Button variant="secondary" className="ms-2" onClick={() => formik.resetForm()}>Cancel</Button>
-                            </Form>
-                        </div>
-                    )}
-                </Container>
-        
+            {mooddata.length > 0 && (
+              <Table striped bordered hover variant="dark">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Mood Score</th>
+                    <th>Mood Label</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mooddata
+                    .filter((m) => {
+                      const formattedDate = new Date(m.log_date)
+                        .toISOString()
+                        .split("T")[0];
+                      return formattedDate === today;
+                    })
+                    .map((m) => (
+                      <tr key={m.mood_log_id}>
+                        <td>{new Date(m.log_date).toLocaleDateString()}</td>
+                        <td>{m.mood_score}</td>
+                        <td>{m.mood_label}</td>
+                        <td>{m.notes}</td>
+
+                        <td>
+                          <Button
+                            variant="warning"
+                            size="sm"
+                            className="me-2"
+                            onClick={() => handleEditClick(m)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDeleteMood(m.mood_log_id)}
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            )}
+
+            {formik.values.mood_log_id && (
+              <div
+                className="section-card mt-4"
+                style={{
+                  backgroundColor: "#1a2e1a",
+                  padding: "20px",
+                  color: "white",
+                }}
+              >
+                <h3>Editing </h3>
+                <Form onSubmit={formik.handleSubmit}>
+                  <Form.Group className="mb-3">
+                    <Row>
+                      <Col>
+                        <Form.Label>Date is not editable</Form.Label>
+                        <p strong> {formik.values.log_date}</p>
+                      </Col>
+                      <Col>
+                        <Form.Label>Mood Score</Form.Label>
+                        <Form.Control
+                          name="mood_score"
+                          onChange={formik.handleChange}
+                          value={formik.values.mood_score}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <Form.Label>Label</Form.Label>
+                        <Form.Control
+                          name="mood_label"
+                          onChange={formik.handleChange}
+                          value={formik.values.mood_label}
+                        />
+                      </Col>
+                      <Col>
+                        <Form.Label>Notes</Form.Label>
+                        <Form.Control
+                          name="notes"
+                          onChange={formik.handleChange}
+                          value={formik.values.notes}
+                        />
+                      </Col>
+                    </Row>
+                  </Form.Group>
+
+                  <Button variant="success" type="submit">
+                    Save Changes
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    className="ms-2"
+                    onClick={() => formik.resetForm()}
+                  >
+                    Cancel
+                  </Button>
+                </Form>
+              </div>
+            )}
+          </Container>
         </div>
       </div>
     </div>

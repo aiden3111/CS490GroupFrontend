@@ -112,6 +112,7 @@ function UserProfile() {
             </>
           )}
           <li className="nav-item" onClick={() => navigate(`/LandingPage/${loggedInId}`)}>Dashboard</li>
+          <li className="nav-item r" onClick={() => navigate(`/ReportUserPage/${loggedInId}`)}>Report User</li>
         </ul>
       </nav>
 

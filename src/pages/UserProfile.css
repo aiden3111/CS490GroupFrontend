@@ -178,3 +178,7 @@ body {
     font-size: 1.75rem;
     font-weight: 700;
 }
+
+.nav-item.r{
+    background-color: #5c312e;
+}
