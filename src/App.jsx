@@ -25,6 +25,8 @@ import MessagingPage from './pages/MessagingPage';
 import AddMealstoPlan from './pages/AddMealstoPlan';
 import DeleteMoodPage from './pages/DeleteMoodPage';
 import EditMealsfromPlan from './pages/EditMealsfromPlan';
+import AdminUserManagement from './pages/AdminUserManagement';
+import AdminReports from './pages/AdminReports';
 
 function App() {
   return (
@@ -49,12 +51,14 @@ function App() {
         <Route path="/StepsTracker/:clientId" element={<ProtectedRoutes> <StepsTracker /> </ProtectedRoutes>} />
         <Route path="/CustomExercise/:clientId" element={<ProtectedRoutes> <CustomExercise /> </ProtectedRoutes>} />
         <Route path="/LogTodaysMeal/:clientId" element={<ProtectedRoutes> <LogTodaysMeal /> </ProtectedRoutes>} />
-        <Route path="/EditTodaysMeal/:clientId" element={<ProtectedRoutes> <EditTodaysMeal/></ProtectedRoutes>} />
+        <Route path="/EditTodaysMeal/:clientId" element={<ProtectedRoutes> <EditTodaysMeal /></ProtectedRoutes>} />
         <Route path="/MessagingPage/:clientId" element={<ProtectedRoutes> <MessagingPage /> </ProtectedRoutes>} />
         <Route path="/AddMealstoPlan/:clientId" element={<ProtectedRoutes> <AddMealstoPlan /> </ProtectedRoutes>} />
         <Route path="/DeleteMoodPage/:clientId" element={<ProtectedRoutes> <DeleteMoodPage /> </ProtectedRoutes>} />
         <Route path="/EditMealsfromPlan/:clientId" element={<ProtectedRoutes> <EditMealsfromPlan /> </ProtectedRoutes>} />
-        
+        <Route path="/AdminUsers/:clientId" element={<ProtectedRoutes> <AdminUserManagement /> </ProtectedRoutes>} />
+        <Route path="/AdminReports/:clientId" element={<ProtectedRoutes> <AdminReports /> </ProtectedRoutes>} />
+
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>
     </Router>

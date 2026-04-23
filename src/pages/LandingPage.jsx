@@ -7,6 +7,7 @@ const LandingPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
+  const userRole = localStorage.getItem("userRole");
   const [workoutHistory, setWorkoutHistory] = useState({});
   const [expandedDates, setExpandedDates] = useState({});
   const [exercises, setExercises] = useState([]);
@@ -25,7 +26,6 @@ const LandingPage = () => {
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
-    const userRole = localStorage.getItem("userRole");
     if (loggedInId !== clientId) {
       navigate(`/UserProfile/${loggedInId}`);
       return;
@@ -115,10 +115,17 @@ const LandingPage = () => {
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
           <li className="nav-item">Analytics</li>
+          {userRole === "admin" && (
+            <>
+              <span className="nav-section-label">Admin</span>
+              <li className="nav-item" onClick={() => navigate(`/AdminUsers/${clientId}`)}>User Management</li>
+              <li className="nav-item" onClick={() => navigate(`/AdminReports/${clientId}`)}>Coach Reports</li>
+            </>
+          )}
           <span className="nav-section-label">Account</span>
 
           <li className="nav-item">Subscriptions</li>
-          
+
           <li
             className="nav-item"
             onClick={() => navigate(`/UserProfile/${clientId}`)}
@@ -149,98 +156,98 @@ const LandingPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleEnter}
             />
-            <button className= "search-btn" onClick={handleSearch}>Search</button>
+            <button className="search-btn" onClick={handleSearch}>Search</button>
           </div>
         </header>
 
         <div className="dashboard-grid">
-            <div className="card">
-              <div>
-                <h3> Mood Tracker </h3>
-                {landingData.trackers?.length > 0 ? (
-                  landingData.trackers.map((mood) => (
-                    <div key={mood.log_date} className="mood-entry">
-                      <div>
-                        <div className="mood-label">{mood.mood_label}</div>
-                        <div className="mood-date">{mood.log_date}</div>
-                      </div>
-                      <span className="mood-score">{mood.mood_score} / 5</span>
+          <div className="card">
+            <div>
+              <h3> Mood Tracker </h3>
+              {landingData.trackers?.length > 0 ? (
+                landingData.trackers.map((mood) => (
+                  <div key={mood.log_date} className="mood-entry">
+                    <div>
+                      <div className="mood-label">{mood.mood_label}</div>
+                      <div className="mood-date">{mood.log_date}</div>
                     </div>
-                  ))
-                ) : (
-                  <p style={{ color: "var(--muted)", fontSize: "13px" }}>No mood logs found.</p>
-                )}
-              </div>
-            </div>
-
-            <div className="card">
-              <h3> Exercise Tracker</h3>
-              {/* Workout History */}
-              <div style={{ marginTop: "32px" }}>
-                <h4 style={{ color: "#78b47b", marginBottom: "16px" }}>Workout History</h4>
-                {Object.keys(workoutHistory).length === 0 ? (
-                <p style={{ color: "var(--muted)", fontSize: "13px" }}>No workout history found.</p>
-                ) : (
-                  Object.keys(workoutHistory).map((date) => (
-                    <div key={date} className="workout-date-group">
-                      {/* Date Header */}
-                      <div
-                        className="workout-date-header"
-                        onClick={() => toggleDate(date)}
-                      >
-                        <span className="workout-date-label">{date}</span>
-                        <span className="workout-count">
-                          {workoutHistory[date].length} exercise{workoutHistory[date].length !== 1 ? "s" : ""}{" "}
-                          {expandedDates[date] ? "▲" : "▼"}
-                        </span>
-                      </div>
-                      {expandedDates[date] && workoutHistory[date].map((log) => (
-                          <div key={log.log_id} className="workout-exercise">
-                            <span>
-                            <strong style={{ color: "var(--text)" }}>{getExerciseName(log.exercise_id)}</strong>
-                            {" · "}
-                            {log.sets_completed && `${log.sets_completed} sets`}
-                            {log.reps_completed && ` × ${log.reps_completed} reps`}
-                            {log.weight && ` @ ${log.weight} lbs`}
-                            {log.cardio_type && ` | ${log.cardio_type}`}
-                            {log.cardio_duration && ` ${log.cardio_duration} min`}
-                            {log.notes && ` — ${log.notes}`}
-                            </span>
-                          </div>
-                          ))}
-                        </div>
-                      ))
-                  )}
-              </div>
-            </div>
-
-
-            <div className="card">
-              <h3>Top Coaches</h3>
-              {landingData.top_coaches?.length > 0 ? (
-                landingData.top_coaches.map((coach) => (
-                  <div key={coach.coach_id} className="coach-square">
-                    <div className="coach-avatar">
-                      {coach.first_name[0]}{coach.last_name[0]}
-                    </div>
-                    <div className="coach-info">
-                      <div className="coach-name">{coach.first_name} {coach.last_name}</div>
-                      <div className="coach-spec">{coach.specialty}</div>
-                    </div>
-                    <span className="coach-rating">
-                      ★ {coach.average_rating != null
-                        ? Number(coach.average_rating).toFixed(2)
-                        : "0.00"}
-                    </span>
+                    <span className="mood-score">{mood.mood_score} / 5</span>
                   </div>
                 ))
               ) : (
-                <p style={{ color: "var(--muted)", fontSize: "13px" }}>No coaches found.</p>
+                <p style={{ color: "var(--muted)", fontSize: "13px" }}>No mood logs found.</p>
               )}
             </div>
+          </div>
 
           <div className="card">
-              <h3>Meal Tracker</h3>
+            <h3> Exercise Tracker</h3>
+            {/* Workout History */}
+            <div style={{ marginTop: "32px" }}>
+              <h4 style={{ color: "#78b47b", marginBottom: "16px" }}>Workout History</h4>
+              {Object.keys(workoutHistory).length === 0 ? (
+                <p style={{ color: "var(--muted)", fontSize: "13px" }}>No workout history found.</p>
+              ) : (
+                Object.keys(workoutHistory).map((date) => (
+                  <div key={date} className="workout-date-group">
+                    {/* Date Header */}
+                    <div
+                      className="workout-date-header"
+                      onClick={() => toggleDate(date)}
+                    >
+                      <span className="workout-date-label">{date}</span>
+                      <span className="workout-count">
+                        {workoutHistory[date].length} exercise{workoutHistory[date].length !== 1 ? "s" : ""}{" "}
+                        {expandedDates[date] ? "▲" : "▼"}
+                      </span>
+                    </div>
+                    {expandedDates[date] && workoutHistory[date].map((log) => (
+                      <div key={log.log_id} className="workout-exercise">
+                        <span>
+                          <strong style={{ color: "var(--text)" }}>{getExerciseName(log.exercise_id)}</strong>
+                          {" · "}
+                          {log.sets_completed && `${log.sets_completed} sets`}
+                          {log.reps_completed && ` × ${log.reps_completed} reps`}
+                          {log.weight && ` @ ${log.weight} lbs`}
+                          {log.cardio_type && ` | ${log.cardio_type}`}
+                          {log.cardio_duration && ` ${log.cardio_duration} min`}
+                          {log.notes && ` — ${log.notes}`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+
+          <div className="card">
+            <h3>Top Coaches</h3>
+            {landingData.top_coaches?.length > 0 ? (
+              landingData.top_coaches.map((coach) => (
+                <div key={coach.coach_id} className="coach-square">
+                  <div className="coach-avatar">
+                    {coach.first_name[0]}{coach.last_name[0]}
+                  </div>
+                  <div className="coach-info">
+                    <div className="coach-name">{coach.first_name} {coach.last_name}</div>
+                    <div className="coach-spec">{coach.specialty}</div>
+                  </div>
+                  <span className="coach-rating">
+                    ★ {coach.average_rating != null
+                      ? Number(coach.average_rating).toFixed(2)
+                      : "0.00"}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: "var(--muted)", fontSize: "13px" }}>No coaches found.</p>
+            )}
+          </div>
+
+          <div className="card">
+            <h3>Meal Tracker</h3>
             <div className="meal-empty">
               <span className="meal-empty-text">
                 No meals logged yet.<br />Start tracking your nutrition.

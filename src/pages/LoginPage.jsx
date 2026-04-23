@@ -33,6 +33,11 @@ function LoginPage() {
             localStorage.setItem("authenticatedClientId", data.client_id);
             localStorage.setItem("userRole", data.role);
             localStorage.setItem("coachSpecialty", data.specialty);
+            if (data.admin_id) {
+              localStorage.setItem("adminId", data.admin_id);
+            } else {
+              localStorage.removeItem("adminId")
+            }
 
             if (data.role === 'coach') {
               navigate(`/CoachLanding/${data.client_id}`);
@@ -65,10 +70,10 @@ function LoginPage() {
       .then((data) => {
         console.log("Backend Response:", data);
         if (data.client_id) {
-            navigate(`/UserProfile/${data.client_id}`);
+          navigate(`/UserProfile/${data.client_id}`);
         } else if (data["needs registration"]) {
-            alert("Account not found.");
-            navigate("/RegistrationPage");
+          alert("Account not found.");
+          navigate("/RegistrationPage");
         }
       })
       .catch((err) => console.error("Errorrrrrrr:", err));
@@ -80,7 +85,7 @@ function LoginPage() {
         <div className="login-box-top">
           <div className="login-brand">BitFit</div>
 
-        <h1 className="login-title">Welcome back</h1>
+          <h1 className="login-title">Welcome back</h1>
           <p className="login-sub">Sign in to your account to continue</p>
 
 
