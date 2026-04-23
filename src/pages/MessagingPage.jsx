@@ -133,7 +133,9 @@ const MessagingPage = () => {
             ) : (
               <>
                 <div style={{ padding: "10px", borderBottom: "1px solid #2e5c2e" }}>
-                  <h3>{selectedUser.first_name} {selectedUser.last_name}</h3>
+                  <h3>{selectedUser.first_name} {selectedUser.last_name}</h3>  
+                  <p><strong>User Id:</strong> {selectedUser.other_user_id}</p>
+                 
                 </div>
 
                 <div style={{ flex: 1, overflowY: "auto", padding: "10px" }}>
