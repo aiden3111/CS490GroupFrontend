@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
+const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 const AdminUserManagement = () => {
     const { clientId } = useParams();
@@ -11,6 +12,8 @@ const AdminUserManagement = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [users, setUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0]);
 
     useEffect(() => {
         const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -35,6 +38,7 @@ const AdminUserManagement = () => {
             const data = await res.json();
             if (!res.ok) throw new Error(data?.error || "Failed to load users");
             setUsers(data.clients || []);
+            setCurrentPage(1);
         } catch (e) {
             setMessage(e.message || "Failed to load users");
         } finally {
@@ -50,6 +54,12 @@ const AdminUserManagement = () => {
             return hay.includes(q);
         });
     }, [query, users]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [query]);
+    const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    const paginatedUsers = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     const handleLogout = () => {
         localStorage.clear();
@@ -73,6 +83,19 @@ const AdminUserManagement = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const getPageNumbers = () => {
+        if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+        const pages = [];
+        if (currentPage <= 4) {
+            pages.push(1, 2, 3, 4, 5, "...", totalPages);
+        } else if (currentPage >= totalPages - 3) {
+            pages.push(1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        } else {
+            pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+        }
+        return pages;
     };
 
     return (
@@ -126,12 +149,46 @@ const AdminUserManagement = () => {
                 )}
 
                 <div className="card" style={{ marginTop: 16 }}>
-                    <h3>Accounts</h3>
+                    {/* Card header: title + results count + page size selector */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                        <h3 style={{ margin: 0 }}>
+                            Accounts
+                            <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 400, color: "var(--muted)" }}>
+                                ({filtered.length} {filtered.length === 1 ? "result" : "results"})
+                            </span>
+                        </h3>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--muted)" }}>
+                            <label htmlFor="page-size-select">Rows per page:</label>
+                            <select
+                                id="page-size-select"
+                                value={pageSize}
+                                onChange={(e) => {
+                                    setPageSize(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
+                                style={{
+                                    background: "rgba(255,255,255,0.08)",
+                                    border: "1px solid rgba(255,255,255,0.15)",
+                                    borderRadius: 6,
+                                    color: "inherit",
+                                    padding: "3px 8px",
+                                    cursor: "pointer",
+                                    fontSize: 13,
+                                }}
+                            >
+                                {PAGE_SIZE_OPTIONS.map((n) => (
+                                    <option key={n} value={n}>{n}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* User list */}
                     <div style={{ marginTop: 10, display: "grid", gap: 10 }}>
-                        {filtered.length === 0 ? (
+                        {paginatedUsers.length === 0 ? (
                             <p style={{ color: "var(--muted)", fontSize: 13 }}>No results.</p>
                         ) : (
-                            filtered.map((u) => (
+                            paginatedUsers.map((u) => (
                                 <div
                                     key={u.client_id}
                                     style={{
@@ -148,7 +205,6 @@ const AdminUserManagement = () => {
                                         <div style={{ fontSize: 13, color: "var(--muted)" }}>{u.client_id} • {u.email} {u.role ? `• ${u.role}` : ""}</div>
                                     </div>
                                     <div style={{ display: "flex", gap: 8 }}>
-                                        <button className="btn-secondary" onClick={() => navigate(`/UserProfile/${u.client_id}`)}>View</button>
                                         <button
                                             className="btn-outline-warning"
                                             style={{ borderColor: "#ef4444", color: "#ef4444" }}
@@ -162,11 +218,71 @@ const AdminUserManagement = () => {
                             ))
                         )}
                     </div>
+
+                    {totalPages > 1 && (
+                        <div style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginTop: 16,
+                            flexWrap: "wrap",
+                            gap: 8,
+                        }}>
+                            <span style={{ fontSize: 13, color: "var(--muted)" }}>
+                                Showing {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, filtered.length)} of {filtered.length}
+                            </span>
+
+                            <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                                <button
+                                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    style={paginationBtnStyle(false, currentPage === 1)}
+                                >
+                                    ‹
+                                </button>
+
+                                {getPageNumbers().map((page, idx) =>
+                                    page === "..." ? (
+                                        <span key={`ellipsis-${idx}`} style={{ padding: "0 4px", color: "var(--muted)", fontSize: 13 }}>…</span>
+                                    ) : (
+                                        <button
+                                            key={page}
+                                            onClick={() => setCurrentPage(page)}
+                                            style={paginationBtnStyle(page === currentPage, false)}
+                                        >
+                                            {page}
+                                        </button>
+                                    )
+                                )}
+
+                                <button
+                                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    style={paginationBtnStyle(false, currentPage === totalPages)}
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>
     );
 };
 
-export default AdminUserManagement;
+const paginationBtnStyle = (isActive, isDisabled) => ({
+    minWidth: 32,
+    height: 32,
+    padding: "0 8px",
+    borderRadius: 6,
+    border: isActive ? "1px solid #509e54" : "1px solid rgba(255,255,255,0.15)",
+    background: isActive ? "#509e54" : "rgba(255,255,255,0.06)",
+    color: "#fff",
+    cursor: isDisabled ? "not-allowed" : "pointer",
+    fontSize: 14,
+    fontWeight: isActive ? 600 : 400,
+    transition: "background 0.15s, border-color 0.15s",
+});
 
+export default AdminUserManagement;

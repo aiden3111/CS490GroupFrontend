@@ -12,7 +12,6 @@ function UserProfile() {
   const [isEditing, setEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
   const loggedInUserRole = localStorage.getItem("userRole");
   const [isOpen, setIsOpen] = useState(false); 
 
@@ -109,6 +108,7 @@ function UserProfile() {
             <>
               <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
               <li onClick={() => setActiveTab('coach-application')} className={`nav-item ${activeTab === "coach-application" ? "active" : ""}`}>Coach Application</li>
+              <li onClick={() => setActiveTab('payment-methods')} className={`nav-item ${activeTab === "payment-methods" ? "active" : ""}`}>Payment Methods</li>
             </>
           )}
           <li className="nav-item" onClick={() => navigate(`/LandingPage/${loggedInId}`)}>Dashboard</li>
@@ -146,6 +146,7 @@ function UserProfile() {
         {activeTab === "goals" && <FitnessGoalsSection clientId={clientId} canEdit={canEdit} />}
         {activeTab === 'coach-management' && <CoachManagementSection clientId={clientId} />}
         {activeTab === 'coach-application' && <CoachApplication clientId={clientId} />}
+        {activeTab === 'payment-methods' && <PaymentMethodsSection clientId={clientId} canEdit={canEdit} />}
 
         <Modal open={isOpen} onClose={() => setIsOpen(false)}>
           <div style={{ textAlign: 'center' }}>
@@ -819,6 +820,338 @@ const CoachApplication = ({ clientId }) => {
           </div>
         )}
       </Form>
+    </div>
+  );
+};
+
+const PaymentMethodsSection = ({ clientId, canEdit }) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [methods, setMethods] = useState([]);
+  const [isAdding, setIsAdding] = useState(false);
+  const [addForm, setAddForm] = useState({
+    card_type: "Visa",
+    last4: "",
+    expiry_month: "",
+    expiry_year: "",
+    is_default: false,
+  });
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({
+    card_type: "",
+    last4: "",
+    expiry_month: "",
+    expiry_year: "",
+  });
+
+  const fetchMethods = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/payment/client/${clientId}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error || "Failed to load payment methods");
+        setMethods([]);
+      } else {
+        setMethods(Array.isArray(data) ? data : []);
+      }
+    } catch (_e) {
+      setError("Failed to load payment methods");
+      setMethods([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!clientId) return;
+    fetchMethods();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientId]);
+
+  const startEdit = (m) => {
+    setEditingId(m.payment_id);
+    setEditForm({
+      card_type: m.card_type || "",
+      last4: m.last4 || "",
+      expiry_month: m.expiry_month ?? "",
+      expiry_year: m.expiry_year ?? "",
+    });
+  };
+
+  const saveEdit = async (paymentId) => {
+    setError("");
+    const payload = {};
+    if (editForm.card_type !== "") payload.card_type = editForm.card_type;
+    if (editForm.last4 !== "") payload.last4 = editForm.last4;
+    if (editForm.expiry_month !== "") payload.expiry_month = Number(editForm.expiry_month);
+    if (editForm.expiry_year !== "") payload.expiry_year = Number(editForm.expiry_year);
+
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/payment/update/${paymentId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error || "Update failed");
+        return;
+      }
+      setEditingId(null);
+      await fetchMethods();
+    } catch (_e) {
+      setError("Update failed");
+    }
+  };
+
+  const setDefault = async (paymentId) => {
+    setError("");
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/payment/default/${paymentId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client_id: clientId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error || "Failed to set default");
+        return;
+      }
+      await fetchMethods();
+    } catch (_e) {
+      setError("Failed to set default");
+    }
+  };
+
+  const deleteMethod = async (paymentId) => {
+    setError("");
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/payment/delete/${paymentId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error || "Delete failed");
+        return;
+      }
+      await fetchMethods();
+    } catch (_e) {
+      setError("Delete failed");
+    }
+  };
+
+  const addMethod = async () => {
+    setError("");
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/payment/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: clientId,
+          card_type: addForm.card_type,
+          last4: String(addForm.last4),
+          expiry_month: Number(addForm.expiry_month),
+          expiry_year: Number(addForm.expiry_year),
+          is_default: !!addForm.is_default,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error || "Add failed");
+        return;
+      }
+      setIsAdding(false);
+      setAddForm({ card_type: "Visa", last4: "", expiry_month: "", expiry_year: "", is_default: false });
+      await fetchMethods();
+    } catch (_e) {
+      setError("Add failed");
+    }
+  };
+
+  return (
+    <div className="section-card">
+      <div className="section-header">
+        <div>
+          <h2 className="section-title">Payment Methods</h2>
+          <p className="text-zinc-500 text-sm">Add, edit, or choose a default payment method.</p>
+        </div>
+        {canEdit && (!isAdding ? (
+          <button className="btn-outline" onClick={() => setIsAdding(true)}>Add Method</button>
+        ) : (
+          <div className="flex gap-2">
+            <button className="btn-primary" onClick={addMethod}>Save</button>
+            <button className="btn-secondary" onClick={() => setIsAdding(false)}>Cancel</button>
+          </div>
+        ))}
+      </div>
+
+      {error && (
+        <div style={{ marginBottom: 16, color: "#fca5a5" }}>
+          {error}
+        </div>
+      )}
+
+      {isAdding && (
+        <div style={{ border: "1px solid #27272a", borderRadius: 12, padding: 16, marginBottom: 24 }}>
+          <div className="stats-grid">
+            <div className="field-group">
+              <label className="field-label">Card Type</label>
+              <select
+                className="bitfit-input"
+                value={addForm.card_type}
+                onChange={(e) => setAddForm({ ...addForm, card_type: e.target.value })}
+              >
+                {["Visa", "Mastercard", "Amex", "Discover", "Other"].map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <div className="field-group">
+              <label className="field-label">Last 4</label>
+              <input
+                className="bitfit-input"
+                value={addForm.last4}
+                maxLength={4}
+                onChange={(e) => setAddForm({ ...addForm, last4: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+              />
+            </div>
+            <div className="field-group">
+              <label className="field-label">Expiry Month</label>
+              <input
+                className="bitfit-input"
+                type="number"
+                min={1}
+                max={12}
+                value={addForm.expiry_month}
+                onChange={(e) => setAddForm({ ...addForm, expiry_month: e.target.value })}
+              />
+            </div>
+            <div className="field-group">
+              <label className="field-label">Expiry Year</label>
+              <input
+                className="bitfit-input"
+                type="number"
+                min={2024}
+                max={2100}
+                value={addForm.expiry_year}
+                onChange={(e) => setAddForm({ ...addForm, expiry_year: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div style={{ marginTop: 8 }}>
+            <label style={{ color: "#a1a1aa", display: "flex", gap: 10, alignItems: "center" }}>
+              <input
+                type="checkbox"
+                checked={addForm.is_default}
+                onChange={(e) => setAddForm({ ...addForm, is_default: e.target.checked })}
+              />
+              Set as default
+            </label>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="p-4 text-zinc-500">Loading payment methods...</div>
+      ) : methods.length === 0 ? (
+        <div className="p-4 text-zinc-500">No payment methods yet. Add one to request a coach.</div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {methods.map((m) => {
+            const isEditingRow = editingId === m.payment_id;
+            const label = `${m.card_type || "Card"} •••• ${m.last4 || "----"} (exp ${m.expiry_month ?? "--"}/${m.expiry_year ?? "----"})`;
+            return (
+              <div
+                key={m.payment_id}
+                style={{
+                  border: "1px solid #27272a",
+                  borderRadius: 12,
+                  padding: 16,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: 12,
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 700, color: "#e4e4e7" }}>
+                    {label} {m.is_default ? <span style={{ color: "#22c55e" }}>(Default)</span> : null}
+                  </div>
+                </div>
+
+                {canEdit && (
+                  <div className="flex gap-2" style={{ flexWrap: "wrap", justifyContent: "flex-end" }}>
+                    {!m.is_default && (
+                      <button className="btn-outline" onClick={() => setDefault(m.payment_id)}>Make Default</button>
+                    )}
+                    {!isEditingRow ? (
+                      <>
+                        <button className="btn-outline" onClick={() => startEdit(m)}>Edit</button>
+                        <button className="btn-secondary" onClick={() => deleteMethod(m.payment_id)}>Delete</button>
+                      </>
+                    ) : (
+                      <>
+                        <button className="btn-primary" onClick={() => saveEdit(m.payment_id)}>Save</button>
+                        <button className="btn-secondary" onClick={() => setEditingId(null)}>Cancel</button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {editingId !== null && (
+            <div style={{ border: "1px solid #27272a", borderRadius: 12, padding: 16 }}>
+              <div style={{ color: "#a1a1aa", marginBottom: 10 }}>Editing selected method</div>
+              <div className="stats-grid">
+                <div className="field-group">
+                  <label className="field-label">Card Type</label>
+                  <input
+                    className="bitfit-input"
+                    value={editForm.card_type}
+                    onChange={(e) => setEditForm({ ...editForm, card_type: e.target.value })}
+                  />
+                </div>
+                <div className="field-group">
+                  <label className="field-label">Last 4</label>
+                  <input
+                    className="bitfit-input"
+                    value={editForm.last4}
+                    maxLength={4}
+                    onChange={(e) => setEditForm({ ...editForm, last4: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                  />
+                </div>
+                <div className="field-group">
+                  <label className="field-label">Expiry Month</label>
+                  <input
+                    className="bitfit-input"
+                    type="number"
+                    min={1}
+                    max={12}
+                    value={editForm.expiry_month}
+                    onChange={(e) => setEditForm({ ...editForm, expiry_month: e.target.value })}
+                  />
+                </div>
+                <div className="field-group">
+                  <label className="field-label">Expiry Year</label>
+                  <input
+                    className="bitfit-input"
+                    type="number"
+                    min={2024}
+                    max={2100}
+                    value={editForm.expiry_year}
+                    onChange={(e) => setEditForm({ ...editForm, expiry_year: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
