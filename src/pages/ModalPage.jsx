@@ -7,8 +7,8 @@ const MODAL_STYLES = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  backgroundColor: '#9ab8a1',
-  padding: '50px',
+  backgroundColor: '#49634f',
+  padding: '70px',
   zIndex: 1000,
 }
 
