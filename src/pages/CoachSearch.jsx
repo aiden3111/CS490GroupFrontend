@@ -351,7 +351,8 @@ const CoachSearch = () => {
               </p>
               <p>
                 {" "}
-                <b>Certifications:</b> {selectedCoach.certifications}{" "}
+                <b>Certifications:</b> {selectedCoach.fitness_certifications}{" "}
+                 {selectedCoach.nutrition_certifications}{" "}
               </p>
 
               <hr />
