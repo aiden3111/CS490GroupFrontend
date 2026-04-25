@@ -18,8 +18,7 @@ const CoachSearch = () => {
   const [selectedPaymentId, setSelectedPaymentId] = useState("");
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [addPaymentForm, setAddPaymentForm] = useState({
-    card_type: "Visa",
-    last4: "",
+    card_number: "",
     expiry_month: "",
     expiry_year: "",
     is_default: false,
@@ -105,27 +104,51 @@ const CoachSearch = () => {
     fetchPaymentMethods();
     setShowAddPayment(false);
     setAddPaymentForm({
-      card_type: "Visa",
-      last4: "",
-      expiry_month: "",
-      expiry_year: "",
+      card_number: "",
+      expiry: "",
       is_default: false,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCoach]);
 
+  const isValidExpiry = (expiry) => {
+    if (!/^\d{2}\/\d{2}$/.test(expiry)) return false;
+
+    const [month, year] = expiry.split("/").map(Number);
+    if (month < 1 || month > 12) return false;
+
+    const now = new Date();
+    const currentYear = now.getFullYear() % 100;
+    const currentMonth = now.getMonth() + 1;
+
+    if (year < currentYear) return false;
+    if (year === currentYear && month < currentMonth) return false;
+
+    return true;
+  };
+
   const handleAddPayment = async () => {
     setPaymentError("");
+    const cardNumber = addPaymentForm.card_number;
+    const cardType = detectCardType(cardNumber);
+    const last4 = cardNumber.slice(-4);
+    if (!isValidExpiry(addPaymentForm.expiry)) {
+      setPaymentError("Invalid or expired card date");
+      return;
+    }
+    let val = addPaymentForm.expiry.replace(/\D/g, "").slice(0, 4);
+    let expiry_month = val.slice(0, 2)
+    let expiry_year = val.slice(2);
     try {
       const res = await fetch(`http://127.0.0.1:5000/payment/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_id: clientId,
-          card_type: addPaymentForm.card_type,
-          last4: String(addPaymentForm.last4),
-          expiry_month: Number(addPaymentForm.expiry_month),
-          expiry_year: Number(addPaymentForm.expiry_year),
+          card_type: cardType,
+          last4: last4,
+          expiry_month: Number(expiry_month),
+          expiry_year: Number(expiry_year),
           is_default: !!addPaymentForm.is_default,
         }),
       });
@@ -156,6 +179,33 @@ const CoachSearch = () => {
       setReviews([]);
     }
   };
+  const formatCardNumber = (value = "") => {
+    const cleaned = value.replace(/\D/g, "");
+
+    if (/^3[47]/.test(cleaned)) {
+      return cleaned
+        .slice(0, 15)
+        .replace(/(\d{4})(\d{6})(\d{0,5})/, (match, p1, p2, p3) =>
+          [p1, p2, p3].filter(Boolean).join(" ")
+        );
+    }
+
+    return cleaned
+      .slice(0, 16)
+      .replace(/(.{4})/g, "$1 ")
+      .trim();
+  };
+
+  const detectCardType = (number) => {
+    const cleaned = number.replace(/\D/g, "");
+
+    if (/^4/.test(cleaned)) return "Visa";
+    if (/^5[1-5]/.test(cleaned)) return "Mastercard";
+    if (/^3[47]/.test(cleaned)) return "Amex";
+    if (/^6(?:011|5)/.test(cleaned)) return "Discover";
+
+    return "Unknown";
+  };
 
   const handleFilterChange = (name) => {
     const lowerName = name.toLowerCase();
@@ -170,40 +220,32 @@ const CoachSearch = () => {
     selectedFilters.length === 0
       ? coaches
       : coaches.filter((coach) => {
-          const specialty = coach.specialty
-            ? coach.specialty.toLowerCase().trim()
-            : "";
-          const wantsFitness = selectedFilters.includes("fitness");
-          const wantsNutrition = selectedFilters.includes("nutrition");
-          if (
-            specialty === "both" ||
-            specialty.includes("fitness & nutrition")
-          ) {
-            return wantsFitness || wantsNutrition;
-          }
-          return selectedFilters.includes(specialty);
-        });
+        const specialty = coach.specialty
+          ? coach.specialty.toLowerCase().trim()
+          : "";
+        const wantsFitness = selectedFilters.includes("fitness");
+        const wantsNutrition = selectedFilters.includes("nutrition");
+        if (
+          specialty === "both" ||
+          specialty.includes("fitness & nutrition")
+        ) {
+          return wantsFitness || wantsNutrition;
+        }
+        return selectedFilters.includes(specialty);
+      });
 
   const handleRequestCoach = async () => {
     try {
       if (!selectedCoach) return;
       if (!selectedPaymentId) {
-        setPaymentError(
-          "Please select a payment method (or add a new one) before requesting a coach.",
-        );
+        setPaymentError("Please select a payment method (or add a new one) before requesting a coach.");
         return;
       }
-      const response = await fetch(
-        `http://127.0.0.1:5000/api/coach/${selectedCoach.coach_id}/request`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            client_id: clientId,
-            payment_id: Number(selectedPaymentId),
-          }),
-        },
-      );
+      const response = await fetch(`http://127.0.0.1:5000/api/coach/${selectedCoach.coach_id}/request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client_id: clientId, payment_id: Number(selectedPaymentId) })
+      });
 
       const data = await response.json();
       if (response.ok) {
@@ -211,16 +253,12 @@ const CoachSearch = () => {
         setSelectedCoach(null);
       } else {
         if (data?.code === "NO_PAYMENT_METHOD") {
-          setPaymentError(
-            "No payment method on file. Please add one to request a coach.",
-          );
+          setPaymentError("No payment method on file. Please add one to request a coach.");
           setShowAddPayment(true);
           return;
         }
         if (data?.code === "INVALID_PAYMENT_METHOD") {
-          setPaymentError(
-            "That payment method is invalid. Please select a valid method.",
-          );
+          setPaymentError("That payment method is invalid. Please select a valid method.");
           return;
         }
         alert(data.error || "Error");
@@ -352,7 +390,7 @@ const CoachSearch = () => {
               <p>
                 {" "}
                 <b>Certifications:</b> {selectedCoach.fitness_certifications}{" "}
-                 {selectedCoach.nutrition_certifications}{" "}
+                {selectedCoach.nutrition_certifications}{" "}
               </p>
 
               <hr />
@@ -393,7 +431,7 @@ const CoachSearch = () => {
                 ) : (
                   <>
                     {paymentMethods.length > 0 && (
-                      <div style={{ marginTop: 10 }}>
+                      <>
                         <select
                           value={selectedPaymentId}
                           onChange={(e) => setSelectedPaymentId(e.target.value)}
@@ -416,30 +454,15 @@ const CoachSearch = () => {
                             </option>
                           ))}
                         </select>
-                        <div
-                          style={{
-                            marginTop: 10,
-                            display: "flex",
-                            gap: 10,
-                            flexWrap: "wrap",
-                          }}
-                        >
-                          <button
-                            className="btn-outline"
-                            onClick={() => setShowAddPayment((v) => !v)}
-                          >
-                            {showAddPayment
-                              ? "Hide Add Form"
-                              : "Add New Method"}
+                        <div style={{ marginTop: 10, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                          <button className="back-btn" onClick={() => setShowAddPayment((v) => !v)}>
+                            {showAddPayment ? "Hide Add Form" : "Add New Method"}
                           </button>
-                          <button
-                            className="btn-outline"
-                            onClick={() => navigate(`/UserProfile/${clientId}`)}
-                          >
+                          <button className="back-btn" onClick={() => navigate(`/UserProfile/${clientId}`)}>
                             Manage in Profile
                           </button>
                         </div>
-                      </div>
+                      </>
                     )}
 
                     {paymentMethods.length === 0 && (
@@ -460,194 +483,59 @@ const CoachSearch = () => {
                       </div>
                     )}
 
-                    {showAddPayment && (
-                      <div
-                        style={{
-                          marginTop: 12,
-                          border: "1px solid #27272a",
-                          borderRadius: 10,
-                          padding: 12,
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gap: 10,
-                          }}
-                        >
+                    {(showAddPayment || paymentMethods.length === 0) && (
+                      <div style={{ marginTop: 12, background: "var(--card2)", border: "1px solid var(--border)", borderRadius: 12, padding: 14 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                           <div>
-                            <label
-                              style={{
-                                display: "block",
-                                fontSize: 12,
-                                color: "#a1a1aa",
-                                marginBottom: 6,
-                              }}
-                            >
-                              Card Type
-                            </label>
-                            <select
-                              className="form-control"
-                              style={{
-                                background: "#27272a",
-                                color: "white",
-                                border: "1px solid #3f3f46",
-                              }}
-                              value={addPaymentForm.card_type}
-                              onChange={(e) =>
-                                setAddPaymentForm({
-                                  ...addPaymentForm,
-                                  card_type: e.target.value,
-                                })
-                              }
-                            >
-                              {[
-                                "Visa",
-                                "Mastercard",
-                                "Amex",
-                                "Discover",
-                                "Other",
-                              ].map((t) => (
-                                <option key={t} value={t}>
-                                  {t}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <div>
-                            <label
-                              style={{
-                                display: "block",
-                                fontSize: 12,
-                                color: "#a1a1aa",
-                                marginBottom: 6,
-                              }}
-                            >
-                              Last 4
-                            </label>
+                            <div className="edit-label">Card Number</div>
                             <input
-                              className="form-control"
-                              style={{
-                                background: "#27272a",
-                                color: "white",
-                                border: "1px solid #3f3f46",
-                              }}
-                              value={addPaymentForm.last4}
-                              maxLength={4}
-                              onChange={(e) =>
+                              className="bitfit-input"
+                              placeholder="1234 5678 9012 3456"
+                              value={formatCardNumber(addPaymentForm.card_number)}
+                              onChange={(e) => {
+                                const raw = e.target.value.replace(/\D/g, "");
                                 setAddPaymentForm({
                                   ...addPaymentForm,
-                                  last4: e.target.value
-                                    .replace(/\D/g, "")
-                                    .slice(0, 4),
-                                })
-                              }
+                                  card_number: raw,
+                                });
+                              }}
                             />
+                            <div style={{ fontSize: 12, color: "#aaa" }}>
+                              Card Type: {detectCardType(addPaymentForm.card_number)}
+                            </div>
                           </div>
-                          <div>
-                            <label
-                              style={{
-                                display: "block",
-                                fontSize: 12,
-                                color: "#a1a1aa",
-                                marginBottom: 6,
-                              }}
-                            >
-                              Expiry Month
-                            </label>
+                          <div className="field-group">
+                            <label className="field-label">Expiry (MM/YY)</label>
                             <input
-                              type="number"
-                              min={1}
-                              max={12}
-                              className="form-control"
-                              style={{
-                                background: "#27272a",
-                                color: "white",
-                                border: "1px solid #3f3f46",
+                              className="bitfit-input"
+                              placeholder="MM/YY"
+                              maxLength={5}
+                              value={addPaymentForm.expiry}
+                              onChange={(e) => {
+                                let val = e.target.value.replace(/\D/g, "").slice(0, 4);
+                                if (val.length >= 3) {
+                                  val = val.slice(0, 2) + "/" + val.slice(2);
+                                }
+                                setAddPaymentForm({ ...addPaymentForm, expiry: val });
                               }}
-                              value={addPaymentForm.expiry_month}
-                              onChange={(e) =>
-                                setAddPaymentForm({
-                                  ...addPaymentForm,
-                                  expiry_month: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                          <div>
-                            <label
-                              style={{
-                                display: "block",
-                                fontSize: 12,
-                                color: "#a1a1aa",
-                                marginBottom: 6,
-                              }}
-                            >
-                              Expiry Year
-                            </label>
-                            <input
-                              type="number"
-                              min={2024}
-                              max={2100}
-                              className="form-control"
-                              style={{
-                                background: "#27272a",
-                                color: "white",
-                                border: "1px solid #3f3f46",
-                              }}
-                              value={addPaymentForm.expiry_year}
-                              onChange={(e) =>
-                                setAddPaymentForm({
-                                  ...addPaymentForm,
-                                  expiry_year: e.target.value,
-                                })
-                              }
                             />
                           </div>
                         </div>
-                        <div style={{ marginTop: 10 }}>
-                          <label
-                            style={{
-                              color: "#a1a1aa",
-                              display: "flex",
-                              gap: 10,
-                              alignItems: "center",
-                            }}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={addPaymentForm.is_default}
-                              onChange={(e) =>
-                                setAddPaymentForm({
-                                  ...addPaymentForm,
-                                  is_default: e.target.checked,
-                                })
-                              }
-                            />
-                            Set as default
-                          </label>
-                        </div>
-                        <div
-                          style={{
-                            marginTop: 12,
-                            display: "flex",
-                            gap: 10,
-                            flexWrap: "wrap",
-                          }}
-                        >
-                          <button
-                            className="rent-btn"
-                            onClick={handleAddPayment}
-                          >
-                            Save Payment Method
-                          </button>
-                          <button
-                            className="btn-outline"
-                            onClick={() => setShowAddPayment(false)}
-                          >
-                            Cancel
-                          </button>
+
+                        <label style={{ marginTop: 10, display: "flex", gap: 10, alignItems: "center", color: "var(--muted)", fontSize: 13.5 }}>
+                          <input
+                            type="checkbox"
+                            checked={addPaymentForm.is_default}
+                            onChange={(e) => setAddPaymentForm({ ...addPaymentForm, is_default: e.target.checked })}
+                          />
+                          Set as default
+                        </label>
+
+                        <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                          <button className="meal-log-btn" onClick={handleAddPayment}>Save Payment Method</button>
+                          {paymentMethods.length > 0 && (
+                            <button className="meal-cancel-btn" onClick={() => setShowAddPayment(false)}>Cancel</button>
+                          )}
                         </div>
                       </div>
                     )}
@@ -655,13 +543,14 @@ const CoachSearch = () => {
                 )}
               </div>
 
-              <button
-                className="rent-btn"
-                onClick={handleRequestCoach}
-                style={{ marginTop: 16 }}
-              >
-                Request Coach
-              </button>
+              <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button className="coach-find-btn" onClick={handleRequestCoach}>
+                  Request Coach
+                </button>
+                <button className="back-btn" onClick={() => setSelectedCoach(null)}>
+                  Close
+                </button>
+              </div>
             </div>
           )}
         </Modal>

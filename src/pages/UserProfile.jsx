@@ -13,7 +13,7 @@ function UserProfile() {
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
   const loggedInUserRole = localStorage.getItem("userRole");
-  const [isOpen, setIsOpen] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
 
   const loggedInId = localStorage.getItem("authenticatedClientId");
 
@@ -825,24 +825,33 @@ const CoachApplication = ({ clientId }) => {
   );
 };
 
+const detectCardType = (number) => {
+  const cleaned = number.replace(/\D/g, "");
+
+  if (/^4/.test(cleaned)) return "Visa";
+  if (/^(5[1-5])/.test(cleaned)) return "Mastercard";
+  if (/^3[47]/.test(cleaned)) return "Amex";
+  if (/^6(?:011|5)/.test(cleaned)) return "Discover";
+
+  return "Unknown";
+};
+
+const formatCardNumber = (value) => {
+  return value
+    .replace(/\D/g, "")
+    .slice(0, 16)
+    .replace(/(.{4})/g, "$1 ")
+    .trim();
+};
+
 const PaymentMethodsSection = ({ clientId, canEdit }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [methods, setMethods] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [addForm, setAddForm] = useState({
-    card_type: "Visa",
-    last4: "",
-    expiry_month: "",
-    expiry_year: "",
-    is_default: false,
-  });
-  const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({
-    card_type: "",
-    last4: "",
-    expiry_month: "",
-    expiry_year: "",
+    card_number: "",
+    expiry: ""
   });
 
   const fetchMethods = async () => {
@@ -870,42 +879,6 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
     fetchMethods();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientId]);
-
-  const startEdit = (m) => {
-    setEditingId(m.payment_id);
-    setEditForm({
-      card_type: m.card_type || "",
-      last4: m.last4 || "",
-      expiry_month: m.expiry_month ?? "",
-      expiry_year: m.expiry_year ?? "",
-    });
-  };
-
-  const saveEdit = async (paymentId) => {
-    setError("");
-    const payload = {};
-    if (editForm.card_type !== "") payload.card_type = editForm.card_type;
-    if (editForm.last4 !== "") payload.last4 = editForm.last4;
-    if (editForm.expiry_month !== "") payload.expiry_month = Number(editForm.expiry_month);
-    if (editForm.expiry_year !== "") payload.expiry_year = Number(editForm.expiry_year);
-
-    try {
-      const res = await fetch(`http://127.0.0.1:5000/payment/update/${paymentId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data?.error || "Update failed");
-        return;
-      }
-      setEditingId(null);
-      await fetchMethods();
-    } catch (_e) {
-      setError("Update failed");
-    }
-  };
 
   const setDefault = async (paymentId) => {
     setError("");
@@ -945,30 +918,56 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
 
   const addMethod = async () => {
     setError("");
+    const cardNumber = addForm.card_number;
+    const cardType = detectCardType(cardNumber);
+    const last4 = cardNumber.slice(-4);
+    if (!isValidExpiry(addForm.expiry)) {
+      setError("Invalid or expired card date");
+      return;
+    }
+    let val = addForm.expiry.replace(/\D/g, "").slice(0, 4);
+    let expiry_month = val.slice(0, 2)
+    let expiry_year = val.slice(2);
     try {
       const res = await fetch(`http://127.0.0.1:5000/payment/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_id: clientId,
-          card_type: addForm.card_type,
-          last4: String(addForm.last4),
-          expiry_month: Number(addForm.expiry_month),
-          expiry_year: Number(addForm.expiry_year),
+          card_type: cardType,
+          last4: last4,
+          expiry_month: Number(expiry_month),
+          expiry_year: Number(expiry_year),
           is_default: !!addForm.is_default,
         }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data?.error || "Add failed");
+        setError(data?.error || "Failed to add payment method");
         return;
       }
       setIsAdding(false);
-      setAddForm({ card_type: "Visa", last4: "", expiry_month: "", expiry_year: "", is_default: false });
+      setAddForm({ card_number: "", expiry_month: "", expiry_year: "", is_default: false });
       await fetchMethods();
     } catch (_e) {
-      setError("Add failed");
+      setError("Failed to add payment method");
     }
+  };
+
+  const isValidExpiry = (expiry) => {
+    if (!/^\d{2}\/\d{2}$/.test(expiry)) return false;
+
+    const [month, year] = expiry.split("/").map(Number);
+    if (month < 1 || month > 12) return false;
+
+    const now = new Date();
+    const currentYear = now.getFullYear() % 100;
+    const currentMonth = now.getMonth() + 1;
+
+    if (year < currentYear) return false;
+    if (year === currentYear && month < currentMonth) return false;
+
+    return true;
   };
 
   return (
@@ -976,7 +975,7 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
       <div className="section-header">
         <div>
           <h2 className="section-title">Payment Methods</h2>
-          <p className="text-zinc-500 text-sm">Add, edit, or choose a default payment method.</p>
+          <p className="text-zinc-500 text-sm">Add, or choose a default payment method.</p>
         </div>
         {canEdit && (!isAdding ? (
           <button className="btn-outline" onClick={() => setIsAdding(true)}>Add Method</button>
@@ -998,46 +997,37 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
         <div style={{ border: "1px solid #27272a", borderRadius: 12, padding: 16, marginBottom: 24 }}>
           <div className="stats-grid">
             <div className="field-group">
-              <label className="field-label">Card Type</label>
-              <select
-                className="bitfit-input"
-                value={addForm.card_type}
-                onChange={(e) => setAddForm({ ...addForm, card_type: e.target.value })}
-              >
-                {["Visa", "Mastercard", "Amex", "Discover", "Other"].map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-            <div className="field-group">
-              <label className="field-label">Last 4</label>
+              <label className="field-label">Card Number</label>
               <input
                 className="bitfit-input"
-                value={addForm.last4}
-                maxLength={4}
-                onChange={(e) => setAddForm({ ...addForm, last4: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                value={formatCardNumber(addForm.card_number)}
+                placeholder="1234 5678 9012 3456"
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "");
+                  setAddForm({
+                    ...addForm,
+                    card_number: raw,
+                  });
+                }}
               />
+              <p className="text-zinc-500 text-sm mt-1">
+                Card Type: {addForm.card_type || "Unknown"}
+              </p>
             </div>
             <div className="field-group">
-              <label className="field-label">Expiry Month</label>
+              <label className="field-label">Expiry (MM/YY)</label>
               <input
                 className="bitfit-input"
-                type="number"
-                min={1}
-                max={12}
-                value={addForm.expiry_month}
-                onChange={(e) => setAddForm({ ...addForm, expiry_month: e.target.value })}
-              />
-            </div>
-            <div className="field-group">
-              <label className="field-label">Expiry Year</label>
-              <input
-                className="bitfit-input"
-                type="number"
-                min={2024}
-                max={2100}
-                value={addForm.expiry_year}
-                onChange={(e) => setAddForm({ ...addForm, expiry_year: e.target.value })}
+                placeholder="MM/YY"
+                maxLength={5}
+                value={addForm.expiry}
+                onChange={(e) => {
+                  let val = e.target.value.replace(/\D/g, "").slice(0, 4);
+                  if (val.length >= 3) {
+                    val = val.slice(0, 2) + "/" + val.slice(2);
+                  }
+                  setAddForm({ ...addForm, expiry: val });
+                }}
               />
             </div>
           </div>
@@ -1062,7 +1052,6 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {methods.map((m) => {
-            const isEditingRow = editingId === m.payment_id;
             const label = `${m.card_type || "Card"} •••• ${m.last4 || "----"} (exp ${m.expiry_month ?? "--"}/${m.expiry_year ?? "----"})`;
             return (
               <div
@@ -1088,69 +1077,12 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
                     {!m.is_default && (
                       <button className="btn-outline" onClick={() => setDefault(m.payment_id)}>Make Default</button>
                     )}
-                    {!isEditingRow ? (
-                      <>
-                        <button className="btn-outline" onClick={() => startEdit(m)}>Edit</button>
-                        <button className="btn-secondary" onClick={() => deleteMethod(m.payment_id)}>Delete</button>
-                      </>
-                    ) : (
-                      <>
-                        <button className="btn-primary" onClick={() => saveEdit(m.payment_id)}>Save</button>
-                        <button className="btn-secondary" onClick={() => setEditingId(null)}>Cancel</button>
-                      </>
-                    )}
+                    <button className="btn-secondary" onClick={() => deleteMethod(m.payment_id)}>Delete</button>
                   </div>
                 )}
               </div>
             );
           })}
-
-          {editingId !== null && (
-            <div style={{ border: "1px solid #27272a", borderRadius: 12, padding: 16 }}>
-              <div style={{ color: "#a1a1aa", marginBottom: 10 }}>Editing selected method</div>
-              <div className="stats-grid">
-                <div className="field-group">
-                  <label className="field-label">Card Type</label>
-                  <input
-                    className="bitfit-input"
-                    value={editForm.card_type}
-                    onChange={(e) => setEditForm({ ...editForm, card_type: e.target.value })}
-                  />
-                </div>
-                <div className="field-group">
-                  <label className="field-label">Last 4</label>
-                  <input
-                    className="bitfit-input"
-                    value={editForm.last4}
-                    maxLength={4}
-                    onChange={(e) => setEditForm({ ...editForm, last4: e.target.value.replace(/\D/g, "").slice(0, 4) })}
-                  />
-                </div>
-                <div className="field-group">
-                  <label className="field-label">Expiry Month</label>
-                  <input
-                    className="bitfit-input"
-                    type="number"
-                    min={1}
-                    max={12}
-                    value={editForm.expiry_month}
-                    onChange={(e) => setEditForm({ ...editForm, expiry_month: e.target.value })}
-                  />
-                </div>
-                <div className="field-group">
-                  <label className="field-label">Expiry Year</label>
-                  <input
-                    className="bitfit-input"
-                    type="number"
-                    min={2024}
-                    max={2100}
-                    value={editForm.expiry_year}
-                    onChange={(e) => setEditForm({ ...editForm, expiry_year: e.target.value })}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
