@@ -1,5 +1,5 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import "./Landingcss.css";
+import "./WorkoutPage.css";
 import React, { useState, useEffect } from "react";
 import Modal from "./ModalPage";
 
@@ -78,8 +78,8 @@ const WorkoutSearchPage = () => {
         );
 
   return (
-    <div className="coach-page">
-      <nav className="sidebarb">
+    <div className="dashboard-container">
+      <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
           <li

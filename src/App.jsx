@@ -29,6 +29,7 @@ import AdminUserManagement from './pages/AdminUserManagement';
 import AdminReports from './pages/AdminReports';
 import ReportUserPage from './pages/ReportUserPage';
 import Analytics from './pages/Analytics';
+import NotificationsPage from './pages/NotificationsPage';
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
         <Route path="/AdminReports/:clientId" element={<ProtectedRoutes> <AdminReports /> </ProtectedRoutes>} />
         <Route path="/ReportUserPage/:clientId" element={<ProtectedRoutes><ReportUserPage/></ProtectedRoutes>}/>
         <Route path="/Analytics/:clientId" element={<ProtectedRoutes><Analytics/></ProtectedRoutes>}/>
+         <Route path="/NotificationsPage/:clientId" element={<ProtectedRoutes><NotificationsPage/></ProtectedRoutes>}/>
 
 
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
