@@ -110,8 +110,16 @@ const Analytics = () => {
               </div>
             </Col>
           </Row>
+            <Row>
+            
+            <Col md={12} className="section-card">
+              <h3>Before and after pics</h3>
+              
+            </Col>
+          </Row>
         </Container>
       </main>
+
     </div>
   );
 };
