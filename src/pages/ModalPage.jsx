@@ -7,10 +7,6 @@ const MODAL_STYLES = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-<<<<<<< HEAD
-  backgroundColor: '#49634f',
-  padding: '70px',
-=======
   backgroundColor: '#111113',
   color: '#f4f4f5',
   border: '1px solid rgba(255, 255, 255, 0.07)',
@@ -19,7 +15,6 @@ const MODAL_STYLES = {
   width: 'min(720px, calc(100vw - 32px))',
   maxHeight: 'calc(100vh - 32px)',
   overflowY: 'auto',
->>>>>>> 671a90f (Changed credit card input, added validation and changed credit card input UI)
   zIndex: 1000,
 }
 
@@ -42,9 +37,9 @@ export default function Modal({ open, children, onClose }) {
     <>
       <div style={OVERLAY_STYLES} onClick={onClose} />
       <div style={MODAL_STYLES}>
-        <button 
-           onClick={onClose} 
-           style={{
+        <button
+          onClick={onClose}
+          style={{
             marginBottom: '14px',
             cursor: 'pointer',
             background: 'transparent',
@@ -52,7 +47,7 @@ export default function Modal({ open, children, onClose }) {
             border: '1px solid rgba(255, 255, 255, 0.07)',
             borderRadius: '10px',
             padding: '8px 12px',
-           }}
+          }}
         >
           Close
         </button>
