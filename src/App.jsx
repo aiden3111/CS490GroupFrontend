@@ -28,6 +28,7 @@ import EditMealsfromPlan from './pages/EditMealsfromPlan';
 import AdminUserManagement from './pages/AdminUserManagement';
 import AdminReports from './pages/AdminReports';
 import ReportUserPage from './pages/ReportUserPage';
+import Analytics from './pages/Analytics';
 
 function App() {
   return (
@@ -60,6 +61,8 @@ function App() {
         <Route path="/AdminUsers/:clientId" element={<ProtectedRoutes> <AdminUserManagement /> </ProtectedRoutes>} />
         <Route path="/AdminReports/:clientId" element={<ProtectedRoutes> <AdminReports /> </ProtectedRoutes>} />
         <Route path="/ReportUserPage/:clientId" element={<ProtectedRoutes><ReportUserPage/></ProtectedRoutes>}/>
+        <Route path="/Analytics/:clientId" element={<ProtectedRoutes><Analytics/></ProtectedRoutes>}/>
+
 
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>

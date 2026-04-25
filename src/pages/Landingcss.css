@@ -54,7 +54,7 @@ h3{
 }
 
 .nav-section-label {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -64,6 +64,7 @@ h3{
 }
 
 .nav-item {
+    font-size: 13px;
     display: flex;
     align-items: center;
     gap: 10px;

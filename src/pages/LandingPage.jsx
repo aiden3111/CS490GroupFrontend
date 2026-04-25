@@ -114,7 +114,7 @@ const LandingPage = () => {
 
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-          <li className="nav-item">Analytics</li>
+          <li className="nav-item" onClick={() => navigate(`/Analytics/${clientId}`)}>Analytics</li>
           {userRole === "admin" && (
             <>
               <span className="nav-section-label">Admin</span>
