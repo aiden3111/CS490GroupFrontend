@@ -124,7 +124,7 @@ fetch(`http://127.0.0.1:5000/api/my_coach/${clientId}`, {
   };
 
   return (
-    <div className="coach-page">
+    <div className="dashboard-container">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
         <ul className="nav-list">
