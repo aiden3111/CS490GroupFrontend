@@ -16,6 +16,29 @@ const LandingPage = () => {
     trackers: [],
   });
 
+  const [hasUnread, setHasUnread] = useState(false);
+
+  useEffect(() => {
+    const checkUnread = async () => {
+      try {
+        const res = await fetch(
+          `http://127.0.0.1:5000/api/notifications/unread-count/${clientId}`,
+        );
+        const data = await res.json();
+        if (data.success && data.unread_count > 0) {
+          setHasUnread(true);
+        } else {
+          setHasUnread(false);
+        }
+      } catch (err) {
+        console.error("Error checking unread status:", err);
+      }
+    };
+
+    checkUnread();
+
+  }, [clientId]);
+
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
     if (loggedInId !== clientId) {
@@ -30,7 +53,7 @@ const LandingPage = () => {
       navigate(`/UserProfile/${loggedInId}`);
       return;
     }
-    if (userRole === 'coach') {
+    if (userRole === "coach") {
       navigate(`/CoachLanding/${clientId}`);
       return;
     }
@@ -69,7 +92,9 @@ const LandingPage = () => {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/workoutLogPage/history/${clientId}`);
+      const res = await fetch(
+        `http://127.0.0.1:5000/api/workoutLogPage/history/${clientId}`,
+      );
       const data = await res.json();
       setWorkoutHistory(data.workout_history || {});
     } catch (err) {
@@ -96,9 +121,6 @@ const LandingPage = () => {
     return ex ? ex.exercise_name : `Exercise #${id}`;
   };
 
-  //TODO: add the links to side bar
-  //TODO: Build the top bar
-
   return (
     <div className="dashboard-container">
       <nav className="sidebar">
@@ -107,19 +129,69 @@ const LandingPage = () => {
 
         <ul className="nav-list">
           <li className="nav-item active">Dashboard</li>
-          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}> My Coach</li>
-          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
-          <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
+          <li
+            className={`nav-item ${location.pathname.includes("NotificationsPage") ? "active" : ""}`}
+            onClick={() => navigate(`/NotificationsPage/${clientId}`)}
+          >
+            {" "}
+            Notifications{" "}
+            {hasUnread && <span className="notification-dot"></span>}{" "}
+          </li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/MyCoach/${clientId}`)}
+          >
+            {" "}
+            My Coach
+          </li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
+          >
+            Workout Logs
+          </li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/MealTrackPage/${clientId}`)}
+          >
+            Meal Tracker
+          </li>
           <span className="nav-section-label">Insights</span>
 
-          <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker</li>
-          <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-          <li className="nav-item" onClick={() => navigate(`/Analytics/${clientId}`)}>Analytics</li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/MoodTrackPage/${clientId}`)}
+          >
+            {" "}
+            Mood Tracker
+          </li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/MessagingPage/${clientId}`)}
+          >
+            Messages
+          </li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/Analytics/${clientId}`)}
+          >
+            Analytics
+          </li>
           {userRole === "admin" && (
             <>
               <span className="nav-section-label">Admin</span>
-              <li className="nav-item" onClick={() => navigate(`/AdminUsers/${clientId}`)}>User Management</li>
-              <li className="nav-item" onClick={() => navigate(`/AdminReports/${clientId}`)}>Coach Reports</li>
+              <li
+                className="nav-item"
+                onClick={() => navigate(`/AdminUsers/${clientId}`)}
+              >
+                User Management
+              </li>
+              <li
+                className="nav-item"
+                onClick={() => navigate(`/AdminReports/${clientId}`)}
+              >
+                Coach Reports
+              </li>
             </>
           )}
           <span className="nav-section-label">Account</span>
@@ -156,7 +228,9 @@ const LandingPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleEnter}
             />
-            <button className="search-btn" onClick={handleSearch}>Search</button>
+            <button className="search-btn" onClick={handleSearch}>
+              Search
+            </button>
           </div>
         </header>
 
@@ -175,7 +249,9 @@ const LandingPage = () => {
                   </div>
                 ))
               ) : (
-                <p style={{ color: "var(--muted)", fontSize: "13px" }}>No mood logs found.</p>
+                <p style={{ color: "var(--muted)", fontSize: "13px" }}>
+                  No mood logs found.
+                </p>
               )}
             </div>
           </div>
@@ -184,9 +260,13 @@ const LandingPage = () => {
             <h3> Exercise Tracker</h3>
             {/* Workout History */}
             <div style={{ marginTop: "32px" }}>
-              <h4 style={{ color: "#78b47b", marginBottom: "16px" }}>Workout History</h4>
+              <h4 style={{ color: "#78b47b", marginBottom: "16px" }}>
+                Workout History
+              </h4>
               {Object.keys(workoutHistory).length === 0 ? (
-                <p style={{ color: "var(--muted)", fontSize: "13px" }}>No workout history found.</p>
+                <p style={{ color: "var(--muted)", fontSize: "13px" }}>
+                  No workout history found.
+                </p>
               ) : (
                 Object.keys(workoutHistory).map((date) => (
                   <div key={date} className="workout-date-group">
@@ -197,30 +277,35 @@ const LandingPage = () => {
                     >
                       <span className="workout-date-label">{date}</span>
                       <span className="workout-count">
-                        {workoutHistory[date].length} exercise{workoutHistory[date].length !== 1 ? "s" : ""}{" "}
+                        {workoutHistory[date].length} exercise
+                        {workoutHistory[date].length !== 1 ? "s" : ""}{" "}
                         {expandedDates[date] ? "▲" : "▼"}
                       </span>
                     </div>
-                    {expandedDates[date] && workoutHistory[date].map((log) => (
-                      <div key={log.log_id} className="workout-exercise">
-                        <span>
-                          <strong style={{ color: "var(--text)" }}>{getExerciseName(log.exercise_id)}</strong>
-                          {" · "}
-                          {log.sets_completed && `${log.sets_completed} sets`}
-                          {log.reps_completed && ` × ${log.reps_completed} reps`}
-                          {log.weight && ` @ ${log.weight} lbs`}
-                          {log.cardio_type && ` | ${log.cardio_type}`}
-                          {log.cardio_duration && ` ${log.cardio_duration} min`}
-                          {log.notes && ` — ${log.notes}`}
-                        </span>
-                      </div>
-                    ))}
+                    {expandedDates[date] &&
+                      workoutHistory[date].map((log) => (
+                        <div key={log.log_id} className="workout-exercise">
+                          <span>
+                            <strong style={{ color: "var(--text)" }}>
+                              {getExerciseName(log.exercise_id)}
+                            </strong>
+                            {" · "}
+                            {log.sets_completed && `${log.sets_completed} sets`}
+                            {log.reps_completed &&
+                              ` × ${log.reps_completed} reps`}
+                            {log.weight && ` @ ${log.weight} lbs`}
+                            {log.cardio_type && ` | ${log.cardio_type}`}
+                            {log.cardio_duration &&
+                              ` ${log.cardio_duration} min`}
+                            {log.notes && ` — ${log.notes}`}
+                          </span>
+                        </div>
+                      ))}
                   </div>
                 ))
               )}
             </div>
           </div>
-
 
           <div className="card">
             <h3>Top Coaches</h3>
@@ -228,21 +313,27 @@ const LandingPage = () => {
               landingData.top_coaches.map((coach) => (
                 <div key={coach.coach_id} className="coach-square">
                   <div className="coach-avatar">
-                    {coach.first_name[0]}{coach.last_name[0]}
+                    {coach.first_name[0]}
+                    {coach.last_name[0]}
                   </div>
                   <div className="coach-info">
-                    <div className="coach-name">{coach.first_name} {coach.last_name}</div>
+                    <div className="coach-name">
+                      {coach.first_name} {coach.last_name}
+                    </div>
                     <div className="coach-spec">{coach.specialty}</div>
                   </div>
                   <span className="coach-rating">
-                    ★ {coach.average_rating != null
+                    ★{" "}
+                    {coach.average_rating != null
                       ? Number(coach.average_rating).toFixed(2)
                       : "0.00"}
                   </span>
                 </div>
               ))
             ) : (
-              <p style={{ color: "var(--muted)", fontSize: "13px" }}>No coaches found.</p>
+              <p style={{ color: "var(--muted)", fontSize: "13px" }}>
+                No coaches found.
+              </p>
             )}
           </div>
 
@@ -250,12 +341,12 @@ const LandingPage = () => {
             <h3>Meal Tracker</h3>
             <div className="meal-empty">
               <span className="meal-empty-text">
-                No meals logged yet.<br />Start tracking your nutrition.
+                No meals logged yet.
+                <br />
+                Start tracking your nutrition.
               </span>
             </div>
           </div>
-
-
         </div>
       </main>
     </div>
