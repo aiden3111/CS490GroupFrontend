@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,} from "react-router-dom"; 
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
@@ -9,14 +9,14 @@ import {
 const Analytics = () => {
   const { clientId } = useParams();
   const navigate = useNavigate();
-  
+
 
   const [calorieData, setCalorieData] = useState([]);
   const [stepData, setStepData] = useState([]);
   const [moodData, setMoodData] = useState([]);
 
   const [range, setRange] = useState("week");
-
+  
 
 
   useEffect(() => {

@@ -12,6 +12,7 @@ const CoachLanding = () => {
   const [clients, setClients] = useState([]);
   const userRole = localStorage.getItem("userRole");
   const coachSpecialty = localStorage.getItem("coachSpecialty");
+ 
   const [hasUnread, setHasUnread] = useState(false);
   useEffect(() => {
       const checkUnread = async () => {
@@ -128,11 +129,6 @@ const CoachLanding = () => {
     navigate("/LoginPage/");
   };
 
-
-
-  //TODO: add the links to side bar
-  //TODO: Build the top bar
-
   return (
     <div className="dashboard-container">
       <nav className="sidebar">
@@ -142,9 +138,7 @@ const CoachLanding = () => {
            <li
             className={`nav-item ${location.pathname.includes("NotificationsPage") ? "active" : ""}`}
             onClick={() => navigate(`/NotificationsPage/${clientId}`)}
-          >
-            {" "}
-            Notifications{" "}
+          > Notifications
             {hasUnread && <span className="notification-dot"></span>}{" "}
           </li>
           <li className={`nav-item ${activeTab == 'dashboard' ? 'active' : ''}`}
@@ -153,17 +147,9 @@ const CoachLanding = () => {
           <li
             className={`nav-item ${activeTab === 'requests' ? 'active' : ''}`}
             onClick={() => setActiveTab('requests')}
-          >
-            Pending Requests {requests.length > 0 && `(${requests.length})`}
-          </li>
-          <li
-            className={`nav-item ${activeTab === 'clients' ? 'active' : ''}`}
-            onClick={() => setActiveTab('clients')}
-          >
-            My Clients
-          </li>
-          
-          <li className="nav-item">Meal Tracker</li>
+          > Pending Requests {requests.length > 0 && `(${requests.length})`} </li>
+          <li className={`nav-item ${activeTab === 'clients' ? 'active' : ''}`} onClick={() => setActiveTab('clients')} > My Clients </li>
+  
           {(userRole === 'coach' && (coachSpecialty === 'nutrition' || coachSpecialty === 'both')) && (
             <li className="nav-item" onClick={() => navigate(`/AssignMealPlan/${clientId}`)}>
               Assign Meal Plans
@@ -176,8 +162,7 @@ const CoachLanding = () => {
           <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}> Meal Tracker </li>
           <li className="nav-item"  onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker </li>
           <li className="nav-item" onClick={() => navigate(`/Analytics/${clientId}`)}> Analytics </li>
-          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>
-            My Profile </li>
+          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}> My Profile </li>
         </ul>
 
         <div className="sidebar-bottom">
@@ -297,9 +282,9 @@ const CoachLanding = () => {
                         </button>
                         <button
                           className="btn-secondary"
-                          onClick={() => navigate(`/WorkoutLogPage/${client.client_id}`)}
+                          onClick={() => navigate(`/ViewClientProgress/${client.client_id}`)}
                         >
-                          Logs {/*This is not redirecting to where its suposed to go*/}
+                          View Progress
                         </button>
                       </div>
                       <button
@@ -321,6 +306,5 @@ const CoachLanding = () => {
     </div>
   );
 };
-//TODO: Fix Styling
-//TODO: Fix Sqares content
+
 export default CoachLanding;
