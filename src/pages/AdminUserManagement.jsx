@@ -46,14 +46,25 @@ const AdminUserManagement = () => {
         }
     };
 
+    const [statusFilter, setStatusFilter] = useState("all"); 
+
+
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
-        if (!q) return users;
         return users.filter((u) => {
-            const hay = `${u.client_id} ${u.first_name} ${u.last_name} ${u.email} ${u.role || ""}`.toLowerCase();
-            return hay.includes(q);
+            const hay = `${u.client_id} ${u.first_name} ${u.last_name} ${u.email} ${u.role || ""}` .toLowerCase();
+            const matchesQuery = !q || hay.includes(q);
+
+            const normalizedStatus = (!u.status || u.status.toLowerCase() === "active") ? "active" : u.status.toLowerCase();
+
+            const matchesStatus =
+                statusFilter === "all" ||
+                (statusFilter === "active" && normalizedStatus === "active") ||
+                (statusFilter === "disabled" && (normalizedStatus === "disabled" || normalizedStatus === "suspended"));
+
+            return matchesQuery && matchesStatus;
         });
-    }, [query, users]);
+    }, [query, users, statusFilter]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -65,7 +76,7 @@ const AdminUserManagement = () => {
         localStorage.clear();
         navigate("/LoginPage/");
     };
-
+    
     const handleDelete = async (id) => {
         const ok = window.confirm(`Delete account ${id}? This cannot be undone.`);
         if (!ok) return;
@@ -80,6 +91,56 @@ const AdminUserManagement = () => {
             setUsers((prev) => prev.filter((u) => u.client_id !== id));
         } catch (e) {
             setMessage(e.message || "Delete failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    const handleToggleStatus = async (user) => {
+        const isCurrentlyActive = user.status === "active";
+        const action = isCurrentlyActive ? "disable" : "reactivate";
+        const endpoint = isCurrentlyActive ? "/api/api/admin/disable_user" : "/api/api/admin/reactivate_user";
+
+        const ok = window.confirm(`Are you sure you want to ${action} account ${user.client_id}?`);
+        if (!ok) return;
+
+        setLoading(true);
+        setMessage("");
+
+        try {
+            const payload = {
+                admin_id: clientId, // Using the logged in admin's ID
+            };
+
+            // Determine if we are targeting a client or coach based on their role/data
+            if (user.role === "coach") {
+                payload.coach_id = user.client_id;
+            } else {
+                payload.client_id = user.client_id;
+            }
+
+            const res = await fetch(endpoint, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.error || `${action} failed`);
+
+            setMessage(`User ${isCurrentlyActive ? "disabled" : "reactivated"} successfully.`);
+
+            // Update local state so the button changes immediately
+            setUsers((prev) =>
+                prev.map((u) =>
+                    u.client_id === user.client_id
+                        ? { ...u, status: isCurrentlyActive ? (user.role === "coach" ? "suspended" : "disabled") : "active" }
+                        : u
+                )
+            );
+        } catch (e) {
+            setMessage(e.message);
         } finally {
             setLoading(false);
         }
@@ -180,6 +241,26 @@ const AdminUserManagement = () => {
                                     <option key={n} value={n}>{n}</option>
                                 ))}
                             </select>
+
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                style={{
+                                    background: "rgba(255,255,255,0.08)",
+                                    border: "1px solid rgba(255,255,255,0.15)",
+                                    borderRadius: "8px",
+                                    color: "white",
+                                    padding: "8px 12px",
+                                    cursor: "pointer",
+                                    outline: 'none'
+                                }}
+                            >
+                                <option value="all" style={{ background: '#18181b' }}>All Statuses</option>
+                                <option value="active" style={{ background: '#18181b' }}>Active Only</option>
+                                <option value="disabled" style={{ background: '#18181b' }}>Disabled/Suspended Only</option>
+                            </select>
+
+                            
                         </div>
                     </div>
 
@@ -188,34 +269,56 @@ const AdminUserManagement = () => {
                         {paginatedUsers.length === 0 ? (
                             <p style={{ color: "var(--muted)", fontSize: 13 }}>No results.</p>
                         ) : (
-                            paginatedUsers.map((u) => (
-                                <div
-                                    key={u.client_id}
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        gap: 12,
-                                        padding: 12,
-                                        border: "1px solid rgba(255,255,255,0.12)",
-                                        borderRadius: 10,
-                                    }}
-                                >
-                                    <div>
-                                        <div style={{ fontWeight: 700 }}>{u.first_name} {u.last_name}</div>
-                                        <div style={{ fontSize: 13, color: "var(--muted)" }}>{u.client_id} • {u.email} {u.role ? `• ${u.role}` : ""}</div>
+                            paginatedUsers.map((u) => {
+                                const isActive = u.status === "active";                                return (
+                                    <div
+                                        key={u.client_id}
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            gap: 12,
+                                            padding: 12,
+                                            border: "1px solid rgba(255,255,255,0.12)",
+                                            borderRadius: 10,
+                                            backgroundColor: isActive ? "transparent" : "rgba(239, 68, 68, 0.05)" // Light red tint for disabled
+                                        }}
+                                    >
+                                        <div>
+                                            <div style={{ fontWeight: 700, color: "#ffff"}}>
+                                                {u.first_name} {u.last_name}
+                                                {!isActive && <span style={{ marginLeft: 8, fontSize: 11, color: "#ef4444", textTransform: "uppercase" }}>[ {u.status} ]</span>}
+                                            </div>
+                                            <div style={{ fontSize: 13, color: "var(--muted)" }}>
+                                                {u.client_id} • {u.email} {u.role ? `• ${u.role}` : ""}
+                                            </div>
+                                        </div>
+                                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                            {/* NEW DISABLE/REACTIVATE BUTTON */}
+                                            <button
+                                                className={isActive ? "btn-outline-warning" : "btn-outline-success"}
+                                                style={{
+                                                    borderColor: isActive ? "#fbbf24" : "#509e54",
+                                                    color: isActive ? "#fbbf24" : "#509e54",
+                                                    minWidth: "100px"
+                                                }}
+                                                disabled={loading}
+                                                onClick={() => handleToggleStatus(u)}
+                                            >
+                                                {isActive ? "Disable" : "Reactivate"}
+                                            </button>
+
+                                            <button
+                                                className="btn-outline-warning"
+                                                style={{ borderColor: "#ef4444", color: "#ef4444" }}
+                                                disabled={loading}
+                                                onClick={() => handleDelete(u.client_id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div style={{ display: "flex", gap: 8 }}>
-                                        <button
-                                            className="btn-outline-warning"
-                                            style={{ borderColor: "#ef4444", color: "#ef4444" }}
-                                            disabled={loading}
-                                            onClick={() => handleDelete(u.client_id)}
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
 
