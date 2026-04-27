@@ -30,19 +30,27 @@ function LoginPage() {
             alert(data.error);
           } else {
             console.log("Success:", data);
-            localStorage.setItem("authenticatedClientId", data.client_id);
+
+            // 1. Determine the correct ID (Admin or Client)
+            const userId = data.admin_id || data.client_id;
+
+            // 2. Save to localStorage using a consistent key
+            localStorage.setItem("authenticatedClientId", userId);
             localStorage.setItem("userRole", data.role);
-            localStorage.setItem("coachSpecialty", data.specialty);
+
             if (data.admin_id) {
               localStorage.setItem("adminId", data.admin_id);
             } else {
-              localStorage.removeItem("adminId")
+              localStorage.removeItem("adminId");
             }
 
-            if (data.role === 'coach') {
-              navigate(`/CoachLanding/${data.client_id}`);
+            // 3. Navigate using the 'userId' variable we just created
+            if (data.role === 'admin') {
+              navigate(`/LandingPage/${userId}`);
+            } else if (data.role === 'coach') {
+              navigate(`/CoachLanding/${userId}`);
             } else {
-              navigate(`/LandingPage/${data.client_id}`);
+              navigate(`/LandingPage/${userId}`);
             }
           }
         })
