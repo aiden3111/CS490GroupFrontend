@@ -86,7 +86,7 @@ const MessagingPage = () => {
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
           <li className="nav-item active">Messages</li>
           <li className="nav-item">Subscriptions</li>
-          <li className="nav-item">Analytics</li>
+          <li className="nav-item" onClick={() => navigate(`/Analytics/${clientId}`)}>Analytics</li>
           <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
         </ul>
         <div className="sidebar-bottom">

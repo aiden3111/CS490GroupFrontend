@@ -1,21 +1,13 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+
 
 const WorkoutLogPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
   const navigate = useNavigate();
-  const [stepData, setStepData] = useState([]);
+  
 
 
   // History state
@@ -65,14 +57,7 @@ const WorkoutLogPage = () => {
     fetchExercises();
   }, [clientId, navigate]);
 
-  useEffect(() => {
-    const fetchStepData = async () => {
-      const response = await fetch(`http://127.0.0.1:5000/api/steps_graph/${clientId}`);
-      const data = await response.json();
-      setStepData(data);
-    };
-    fetchStepData();
-  }, [clientId]);
+
 
   const fetchHistory = async () => {
     try {
@@ -229,7 +214,7 @@ const WorkoutLogPage = () => {
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
           <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
           <li className="nav-item">Subscriptions</li>
-          <li className="nav-item">Analytics</li>
+          <li className="nav-item" onClick={() => navigate(`/Analytics/${clientId}`)}>Analytics</li>
           <span className="nav-section-label">Account</span>
           <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
         </ul>
@@ -274,25 +259,7 @@ const WorkoutLogPage = () => {
           </div>
         )}
 
-        {/* Steps Graph */}
-        <div className="callgraph" style={{ marginBottom: "40px" }}>
-          <div className="calorie-graph" style={{ width: "100%", height: 300, marginTop: "20px" }}>
-            <h3>Steps Trends</h3>
-            {stepData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={stepData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="log_date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="steps" stroke="#509e54" fill="#78b47b" />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <p>No step data found.</p>
-            )}
-          </div>
-        </div>
+      
 
         {/* Add Workout Button */}
         <div style={{ marginTop: "24px" }}>
@@ -386,6 +353,7 @@ const WorkoutLogPage = () => {
         {/* Workout History */}
         <div style={{ marginTop: "32px" }}>
           <h2 style={{ color: "#78b47b", marginBottom: "16px" }}>Workout History</h2>
+          <div style={{ maxHeight: "500px", overflowY: "auto", paddingRight: "10px", borderRadius: "10px" }}>
           {Object.keys(workoutHistory).length === 0 ? (
             <p style={{ color: "#aaa" }}>No workout history found.</p>
           ) : (
@@ -491,6 +459,7 @@ const WorkoutLogPage = () => {
               </div>
             ))
           )}
+          </div>
         </div>
       </div>
     </div>

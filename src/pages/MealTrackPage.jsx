@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
-import { Navbar, Nav } from "react-bootstrap";
+
 import {
   LineChart,
   Line,
@@ -13,7 +13,7 @@ import {
 } from "recharts";
 
 const MealTrackPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+ 
   const { clientId } = useParams();
   const navigate = useNavigate();
   const [calorieData, setCalorieData] = useState([]);
@@ -25,21 +25,6 @@ const MealTrackPage = () => {
       return;
     }
   }, [clientId, navigate]);
-
-  const handleSearch = () => {
-    if (searchTerm.trim().length === 0) {
-      alert("Please enter a valid search term.");
-      return;
-    }
-    const encodedSearch = encodeURIComponent(searchTerm);
-    navigate(`/CoachSearch/${clientId}?search=${searchTerm}`);
-  };
-
-  const handleEnter = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("authenticatedClientId");
@@ -100,7 +85,7 @@ const MealTrackPage = () => {
       <div className="main-content">
         <h1>Meal Tracker</h1>
         <div className="meal-tracker-header">
-          <h2>Meal & calories</h2>
+          <h2>Meal & Calories</h2>
           {calorieData.map((cal) => (
             <div key={cal.meal_log_id} className="meal-square">
               <p>Date: {cal.log_date}</p>
@@ -136,6 +121,6 @@ const MealTrackPage = () => {
     </div>
   );
 };
-//TODO: Fix Styling
+
 //TODO: Fix Sqares content
 export default MealTrackPage;

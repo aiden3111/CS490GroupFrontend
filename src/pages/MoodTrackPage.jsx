@@ -133,7 +133,12 @@ const MoodTrackPage = () => {
             Messages
           </li>
           <li className="nav-item">Subscriptions</li>
-          <li className="nav-item">Analytics</li>
+           <li
+            className="nav-item"
+            onClick={() => navigate(`/Analytics/${clientId}`)}
+          >
+            Analytics
+          </li>
           <li
             className="nav-item"
             onClick={() => navigate(`/UserProfile/${clientId}`)}

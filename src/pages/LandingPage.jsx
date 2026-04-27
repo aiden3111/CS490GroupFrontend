@@ -17,7 +17,7 @@ const LandingPage = () => {
   });
 
   const [hasUnread, setHasUnread] = useState(false);
-
+  const [calorieData, setCalorieData] = useState([]);
   useEffect(() => {
     const checkUnread = async () => {
       try {
@@ -120,6 +120,16 @@ const LandingPage = () => {
     const ex = exercises.find((e) => e.exercise_id === id);
     return ex ? ex.exercise_name : `Exercise #${id}`;
   };
+
+    useEffect(() => {
+      const fetchCalorieData = async () => {
+        const response = await fetch(`http://127.0.0.1:5000/api/calorie_graph/${clientId}`);
+        const data = await response.json();
+        setCalorieData(data);
+      };
+      fetchCalorieData();
+    }, [clientId]);
+  
 
   return (
     <div className="dashboard-container">
@@ -239,7 +249,7 @@ const LandingPage = () => {
             <div>
               <h3> Mood Tracker </h3>
               {landingData.trackers?.length > 0 ? (
-                landingData.trackers.map((mood) => (
+                landingData.trackers.slice(0, 4).map((mood) => (
                   <div key={mood.log_date} className="mood-entry">
                     <div>
                       <div className="mood-label">{mood.mood_label}</div>
@@ -268,7 +278,7 @@ const LandingPage = () => {
                   No workout history found.
                 </p>
               ) : (
-                Object.keys(workoutHistory).map((date) => (
+                Object.keys(workoutHistory).slice(0, 4).map((date) => (
                   <div key={date} className="workout-date-group">
                     {/* Date Header */}
                     <div
@@ -310,7 +320,7 @@ const LandingPage = () => {
           <div className="card">
             <h3>Top Coaches</h3>
             {landingData.top_coaches?.length > 0 ? (
-              landingData.top_coaches.map((coach) => (
+              landingData.top_coaches.slice(0, 4).map((coach) => (
                 <div key={coach.coach_id} className="coach-square">
                   <div className="coach-avatar">
                     {coach.first_name[0]}
@@ -337,21 +347,36 @@ const LandingPage = () => {
             )}
           </div>
 
-          <div className="card">
-            <h3>Meal Tracker</h3>
-            <div className="meal-empty">
-              <span className="meal-empty-text">
-                No meals logged yet.
-                <br />
-                Start tracking your nutrition.
-              </span>
+         <div className="card">
+  <h3>Meal Tracker</h3>
+  <div style={{ marginTop: "16px" }}>
+    {calorieData.length > 0 ? (
+      calorieData.slice(0, 4).map((cal) => (
+        <div key={cal.meal_log_id} className="mood-entry">
+          <div>
+            
+            <div className="mood-label">Meal Log</div>
+            <div className="mood-date">
+              {cal.log_date} {cal.notes ? `— ${cal.notes}` : ""}
             </div>
           </div>
+          <span className="mood-score" style={{ color: "#85fb24" }}>
+            {cal.actual_calories} kcal
+          </span>
+        </div>
+      ))
+    ) : (
+      <p style={{ color: "var(--muted)", fontSize: "13px" }}>
+        No meals logged yet.
+      </p>
+    )}
+  </div>
+</div>
         </div>
       </main>
     </div>
   );
 };
 //TODO: Fix Styling
-//TODO: Fix Sqares content
+
 export default LandingPage;

@@ -15,6 +15,10 @@ const Analytics = () => {
   const [stepData, setStepData] = useState([]);
   const [moodData, setMoodData] = useState([]);
 
+  const [range, setRange] = useState("week");
+
+
+
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
     if (loggedInId !== clientId) {
@@ -22,25 +26,40 @@ const Analytics = () => {
     }
   }, [clientId, navigate]);
 
-  
-  useEffect(() => {
+useEffect(() => {
     const fetchAllData = async () => {
       try {
-        const [calRes, stepRes, moodRes] = await Promise.all([
-          fetch(`http://127.0.0.1:5000/api/calorie_graph/${clientId}`),
-          fetch(`http://127.0.0.1:5000/api/steps_graph/${clientId}`),
-          fetch(`/api/api/mood/${clientId}`)
-        ]);
+      
+        const calRes = await fetch(`http://127.0.0.1:5000/api/calorie_graph/${clientId}?range=${range}`);
+        const rawCalorieData = await calRes.json();
 
-        setCalorieData(await calRes.json());
-        setStepData(await stepRes.json());
-        setMoodData(await moodRes.json());
+        if (Array.isArray(rawCalorieData)) {
+            const dailyTotals = rawCalorieData.reduce((acc, current) => {
+                const date = current.log_date;
+                if (!acc[date]) {
+                    acc[date] = { log_date: date, actual_calories: 0 };
+                }
+                acc[date].actual_calories += Number(current.actual_calories);
+                return acc;
+            }, {});
+            setCalorieData(Object.values(dailyTotals));
+        }
+
+
+        const stepRes = await fetch(`http://127.0.0.1:5000/api/steps_graph/${clientId}?range=${range}`);
+        const stpData = await stepRes.json();
+        setStepData(Array.isArray(stpData) ? stpData : []);
+
+        const moodRes = await fetch(`http://127.0.0.1:5000/api/mood/${clientId}`);
+        const mdData = await moodRes.json();
+        setMoodData(Array.isArray(mdData) ? mdData : []);
+
       } catch (err) {
         console.error("Failed to fetch analytics data", err);
       }
     };
     fetchAllData();
-  }, [clientId]);
+  }, [clientId, range]);
 
   return (
     <div className="dashboard-container">
@@ -51,6 +70,18 @@ const Analytics = () => {
           <li className="nav-item active">Analytics</li>
           <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
         </ul>
+
+    <p>Filter Range</p>
+    <select 
+      className="bitfit-input" 
+      value={range} 
+      onChange={(e) => setRange(e.target.value)}
+    >
+      <option value="day">Today</option>
+      <option value="week">This Week</option>
+      <option value="month">This Month</option>
+    </select>
+  
       </nav>
 
       <main className="main-content">
@@ -60,7 +91,7 @@ const Analytics = () => {
           <Row className="mb-4">
         
             <Col md={12} className="section-card">
-              <h3>Calorie Trends</h3>
+              <h3>Daily Calorie Trends</h3>
               <div style={{ width: "100%", height: 250 }}>
                 <ResponsiveContainer>
                   <LineChart data={calorieData}>
@@ -78,7 +109,7 @@ const Analytics = () => {
           <Row className="mb-4">
           
             <Col md={12} className="section-card">
-              <h3>Steps Trends</h3>
+              <h3>Daily Steps Trends</h3>
               <div style={{ width: "100%", height: 250 }}>
                 <ResponsiveContainer>
                   <LineChart data={stepData}>
@@ -96,7 +127,7 @@ const Analytics = () => {
           <Row>
             
             <Col md={12} className="section-card">
-              <h3>Mood Score Trends</h3>
+              <h3>Daily Mood Score Trends</h3>
               <div style={{ width: "100%", height: 250 }}>
                 <ResponsiveContainer>
                   <LineChart data={moodData}>
