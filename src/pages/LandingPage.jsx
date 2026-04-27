@@ -220,7 +220,7 @@ const LandingPage = () => {
 
       <main className="main-content">
         <header className="dashboard-header">
-          <h1 className="welcome-text">Welcome Back!</h1>
+          <h1 className="welcome-text">Welcome Back, {landingData.user_name}!</h1>
 
           <div className="search-container">
             <span className="search-icon">⌕</span>

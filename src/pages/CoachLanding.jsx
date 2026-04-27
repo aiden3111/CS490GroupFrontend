@@ -14,6 +14,7 @@ const CoachLanding = () => {
   const coachSpecialty = localStorage.getItem("coachSpecialty");
  
   const [hasUnread, setHasUnread] = useState(false);
+  const [landingData, setLandingData] = useState({ user_name: "" });
   useEffect(() => {
       const checkUnread = async () => {
         try {
@@ -34,6 +35,23 @@ const CoachLanding = () => {
       checkUnread();
   
     }, [clientId]);
+
+ useEffect(() => {
+  const fetchCoachData = async () => {
+    try {
+      
+      const res = await fetch(`http://127.0.0.1:5000/api/coach/${clientId}`);
+      const data = await res.json();
+      if (res.ok) {
+     
+        setLandingData({ ...data, user_name: data.first_name, user_name: data.last_name }); 
+      }
+    } catch (err) {
+      console.error("Error loading coach data:", err);
+    }
+  };
+  fetchCoachData();
+}, [clientId]);
 
   const handleCreatePlan = async (clientData) => {
     const planData = {
@@ -171,6 +189,7 @@ const CoachLanding = () => {
       </nav>
 
       <main className="main-content">
+        <h1 className="welcome-text">Welcome Back, {landingData.first_name} {landingData.last_name}!</h1>
         <header className="dashboard-header">
           <h1 className="welcome-text">
             {activeTab === 'dashboard' && 'Coach Dashboard'}
