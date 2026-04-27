@@ -24,6 +24,7 @@ const CoachSearch = () => {
     is_default: false,
   });
   const [reviews, setReviews] = useState([]);
+  const [sortOrder, setSortOrder] = useState("");
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -54,21 +55,16 @@ const CoachSearch = () => {
   };
 
   useEffect(() => {
-    const url = query
-      ? `http://127.0.0.1:5000/api/coaches_search/?search=${query}`
-      : `http://127.0.0.1:5000/api/coaches_search/`;
+    let url = `http://127.0.0.1:5000/api/coaches_search/?`;
+    if (query) url += `search=${query}&`;
+  
+    if (sortOrder) url += `sort=${sortOrder}`;
+
     fetch(url)
       .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          console.error("Backend Error:", data.error);
-          setCoaches([]);
-        } else {
-          setCoaches(data);
-        }
-      })
-      .catch((err) => console.error("Fetch error:", err));
-  }, [query]);
+      .then((data) => setCoaches(data.error ? [] : data))
+      .catch((err) => console.error(err));
+  }, [query, sortOrder]);
 
   const fetchPaymentMethods = async () => {
     setPaymentLoading(true);
@@ -137,7 +133,7 @@ const CoachSearch = () => {
       return;
     }
     let val = addPaymentForm.expiry.replace(/\D/g, "").slice(0, 4);
-    let expiry_month = val.slice(0, 2)
+    let expiry_month = val.slice(0, 2);
     let expiry_year = val.slice(2);
     try {
       const res = await fetch(`http://127.0.0.1:5000/payment/add`, {
@@ -186,7 +182,7 @@ const CoachSearch = () => {
       return cleaned
         .slice(0, 15)
         .replace(/(\d{4})(\d{6})(\d{0,5})/, (match, p1, p2, p3) =>
-          [p1, p2, p3].filter(Boolean).join(" ")
+          [p1, p2, p3].filter(Boolean).join(" "),
         );
     }
 
@@ -220,32 +216,40 @@ const CoachSearch = () => {
     selectedFilters.length === 0
       ? coaches
       : coaches.filter((coach) => {
-        const specialty = coach.specialty
-          ? coach.specialty.toLowerCase().trim()
-          : "";
-        const wantsFitness = selectedFilters.includes("fitness");
-        const wantsNutrition = selectedFilters.includes("nutrition");
-        if (
-          specialty === "both" ||
-          specialty.includes("fitness & nutrition")
-        ) {
-          return wantsFitness || wantsNutrition;
-        }
-        return selectedFilters.includes(specialty);
-      });
+          const specialty = coach.specialty
+            ? coach.specialty.toLowerCase().trim()
+            : "";
+          const wantsFitness = selectedFilters.includes("fitness");
+          const wantsNutrition = selectedFilters.includes("nutrition");
+          if (
+            specialty === "both" ||
+            specialty.includes("fitness & nutrition")
+          ) {
+            return wantsFitness || wantsNutrition;
+          }
+          return selectedFilters.includes(specialty);
+        });
 
   const handleRequestCoach = async () => {
     try {
       if (!selectedCoach) return;
       if (!selectedPaymentId) {
-        setPaymentError("Please select a payment method (or add a new one) before requesting a coach.");
+        setPaymentError(
+          "Please select a payment method (or add a new one) before requesting a coach.",
+        );
         return;
       }
-      const response = await fetch(`http://127.0.0.1:5000/api/coach/${selectedCoach.coach_id}/request`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ client_id: clientId, payment_id: Number(selectedPaymentId) })
-      });
+      const response = await fetch(
+        `http://127.0.0.1:5000/api/coach/${selectedCoach.coach_id}/request`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            client_id: clientId,
+            payment_id: Number(selectedPaymentId),
+          }),
+        },
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -253,12 +257,16 @@ const CoachSearch = () => {
         setSelectedCoach(null);
       } else {
         if (data?.code === "NO_PAYMENT_METHOD") {
-          setPaymentError("No payment method on file. Please add one to request a coach.");
+          setPaymentError(
+            "No payment method on file. Please add one to request a coach.",
+          );
           setShowAddPayment(true);
           return;
         }
         if (data?.code === "INVALID_PAYMENT_METHOD") {
-          setPaymentError("That payment method is invalid. Please select a valid method.");
+          setPaymentError(
+            "That payment method is invalid. Please select a valid method.",
+          );
           return;
         }
         alert(data.error || "Error");
@@ -287,7 +295,7 @@ const CoachSearch = () => {
           </li>
         </ul>
 
-        {/* Checkbox not checkboxing*/}
+     
         <div className="checkbox">
           <p>Filters</p>
           <label className="checkbox-container1">
@@ -310,6 +318,21 @@ const CoachSearch = () => {
           </label>
         </div>
 
+        <div className="checkbox">
+          
+
+          <span classNme="nav-section-label">Sort By</span>
+          <select
+            className="bitfit-input"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <option value="">No Sorting</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+          </select>
+        </div>
+
         <div className="sidebar-bottom">
           <button className="nav-item" onClickCapture={handleLogout}>
             Logout
@@ -330,9 +353,7 @@ const CoachSearch = () => {
             onKeyDown={handleEnter}
           />
           <button className="btn-search" onClick={handleSearch}>
-            {" "}
-            Search{" "}
-          </button>
+            Search</button>
         </div>
 
         {query && <h2 className="section-title">Search Results: "{query}"</h2>}
@@ -352,6 +373,9 @@ const CoachSearch = () => {
                 </p>
                 <p>
                   <b>Pricing:</b> ${coach.pricing}
+                </p>
+                <p>
+                  <b>Availability:</b> {coach.availability}
                 </p>
 
                 <button
@@ -381,17 +405,12 @@ const CoachSearch = () => {
                 Name: {selectedCoach.first_name} {selectedCoach.last_name}
               </h3>
               <p className="specialty-tag">
-                <b>Specialty:</b> {selectedCoach.specialty}
+              <b>Specialty:</b> {selectedCoach.specialty} </p>
+              <p><b>Pricing:</b> ${selectedCoach.pricing}</p>
+              <p><b>Certifications:</b> {selectedCoach.fitness_certifications}
+                {selectedCoach.nutrition_certifications}
               </p>
-              <p>
-                {" "}
-                <b>Pricing:</b> ${selectedCoach.pricing}{" "}
-              </p>
-              <p>
-                {" "}
-                <b>Certifications:</b> {selectedCoach.fitness_certifications}{" "}
-                {selectedCoach.nutrition_certifications}{" "}
-              </p>
+               <p><b>Availability:</b> {selectedCoach.availability}</p>
 
               <hr />
               <h4>Reviews</h4>
@@ -402,11 +421,13 @@ const CoachSearch = () => {
                     <p>
                       <strong>Rating:</strong> {r.rating}/5
                     </p>
-                    <p><strong>Comment: </strong>
+                    <p>
+                      <strong>Comment: </strong>
                       <i>"{r.comment}"</i>
                     </p>
                     <p>
-                      <small><strong>Date: </strong>
+                      <small>
+                        <strong>Date: </strong>
                         {new Date(r.created_at).toLocaleDateString()}
                       </small>
                     </p>
@@ -454,11 +475,26 @@ const CoachSearch = () => {
                             </option>
                           ))}
                         </select>
-                        <div style={{ marginTop: 10, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                          <button className="back-btn" onClick={() => setShowAddPayment((v) => !v)}>
-                            {showAddPayment ? "Hide Add Form" : "Add New Method"}
+                        <div
+                          style={{
+                            marginTop: 10,
+                            display: "flex",
+                            gap: 10,
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <button
+                            className="back-btn"
+                            onClick={() => setShowAddPayment((v) => !v)}
+                          >
+                            {showAddPayment
+                              ? "Hide Add Form"
+                              : "Add New Method"}
                           </button>
-                          <button className="back-btn" onClick={() => navigate(`/UserProfile/${clientId}`)}>
+                          <button
+                            className="back-btn"
+                            onClick={() => navigate(`/UserProfile/${clientId}`)}
+                          >
                             Manage in Profile
                           </button>
                         </div>
@@ -484,14 +520,30 @@ const CoachSearch = () => {
                     )}
 
                     {(showAddPayment || paymentMethods.length === 0) && (
-                      <div style={{ marginTop: 12, background: "var(--card2)", border: "1px solid var(--border)", borderRadius: 12, padding: 14 }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                      <div
+                        style={{
+                          marginTop: 12,
+                          background: "var(--card2)",
+                          border: "1px solid var(--border)",
+                          borderRadius: 12,
+                          padding: 14,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: 12,
+                          }}
+                        >
                           <div>
                             <div className="edit-label">Card Number</div>
                             <input
                               className="bitfit-input"
                               placeholder="1234 5678 9012 3456"
-                              value={formatCardNumber(addPaymentForm.card_number)}
+                              value={formatCardNumber(
+                                addPaymentForm.card_number,
+                              )}
                               onChange={(e) => {
                                 const raw = e.target.value.replace(/\D/g, "");
                                 setAddPaymentForm({
@@ -501,40 +553,79 @@ const CoachSearch = () => {
                               }}
                             />
                             <div style={{ fontSize: 12, color: "#aaa" }}>
-                              Card Type: {detectCardType(addPaymentForm.card_number)}
+                              Card Type:{" "}
+                              {detectCardType(addPaymentForm.card_number)}
                             </div>
                           </div>
                           <div className="field-group">
-                            <label className="field-label">Expiry (MM/YY)</label>
+                            <label className="field-label">
+                              Expiry (MM/YY)
+                            </label>
                             <input
                               className="bitfit-input"
                               placeholder="MM/YY"
                               maxLength={5}
                               value={addPaymentForm.expiry}
                               onChange={(e) => {
-                                let val = e.target.value.replace(/\D/g, "").slice(0, 4);
+                                let val = e.target.value
+                                  .replace(/\D/g, "")
+                                  .slice(0, 4);
                                 if (val.length >= 3) {
                                   val = val.slice(0, 2) + "/" + val.slice(2);
                                 }
-                                setAddPaymentForm({ ...addPaymentForm, expiry: val });
+                                setAddPaymentForm({
+                                  ...addPaymentForm,
+                                  expiry: val,
+                                });
                               }}
                             />
                           </div>
                         </div>
 
-                        <label style={{ marginTop: 10, display: "flex", gap: 10, alignItems: "center", color: "var(--muted)", fontSize: 13.5 }}>
+                        <label
+                          style={{
+                            marginTop: 10,
+                            display: "flex",
+                            gap: 10,
+                            alignItems: "center",
+                            color: "var(--muted)",
+                            fontSize: 13.5,
+                          }}
+                        >
                           <input
                             type="checkbox"
                             checked={addPaymentForm.is_default}
-                            onChange={(e) => setAddPaymentForm({ ...addPaymentForm, is_default: e.target.checked })}
+                            onChange={(e) =>
+                              setAddPaymentForm({
+                                ...addPaymentForm,
+                                is_default: e.target.checked,
+                              })
+                            }
                           />
                           Set as default
                         </label>
 
-                        <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                          <button className="meal-log-btn" onClick={handleAddPayment}>Save Payment Method</button>
+                        <div
+                          style={{
+                            marginTop: 12,
+                            display: "flex",
+                            gap: 10,
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <button
+                            className="meal-log-btn"
+                            onClick={handleAddPayment}
+                          >
+                            Save Payment Method
+                          </button>
                           {paymentMethods.length > 0 && (
-                            <button className="meal-cancel-btn" onClick={() => setShowAddPayment(false)}>Cancel</button>
+                            <button
+                              className="meal-cancel-btn"
+                              onClick={() => setShowAddPayment(false)}
+                            >
+                              Cancel
+                            </button>
                           )}
                         </div>
                       </div>
@@ -543,11 +634,21 @@ const CoachSearch = () => {
                 )}
               </div>
 
-              <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <div
+                style={{
+                  marginTop: 18,
+                  display: "flex",
+                  gap: 10,
+                  flexWrap: "wrap",
+                }}
+              >
                 <button className="coach-find-btn" onClick={handleRequestCoach}>
                   Request Coach
                 </button>
-                <button className="back-btn" onClick={() => setSelectedCoach(null)}>
+                <button
+                  className="back-btn"
+                  onClick={() => setSelectedCoach(null)}
+                >
                   Close
                 </button>
               </div>
