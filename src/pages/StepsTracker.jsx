@@ -56,7 +56,7 @@ const StepsTracker = () => {
             client_id: clientId,
             log_date: date,
             steps: values.steps,
-            calories: 0,
+           
           }),
         });
 

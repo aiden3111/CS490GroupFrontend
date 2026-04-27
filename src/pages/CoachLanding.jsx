@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
-import { Navbar, Nav } from "react-bootstrap";
+
 
 const CoachLanding = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,6 +12,27 @@ const CoachLanding = () => {
   const [clients, setClients] = useState([]);
   const userRole = localStorage.getItem("userRole");
   const coachSpecialty = localStorage.getItem("coachSpecialty");
+  const [hasUnread, setHasUnread] = useState(false);
+  useEffect(() => {
+      const checkUnread = async () => {
+        try {
+          const res = await fetch(
+            `http://127.0.0.1:5000/api/notifications/unread-count/${clientId}`,
+          );
+          const data = await res.json();
+          if (data.success && data.unread_count > 0) {
+            setHasUnread(true);
+          } else {
+            setHasUnread(false);
+          }
+        } catch (err) {
+          console.error("Error checking unread status:", err);
+        }
+      };
+  
+      checkUnread();
+  
+    }, [clientId]);
 
   const handleCreatePlan = async (clientData) => {
     const planData = {
@@ -116,7 +137,16 @@ const CoachLanding = () => {
     <div className="dashboard-container">
       <nav className="sidebar">
         <div className="brand-logo">BitFit</div>
+        <span className="nav-section-label">Coach Features</span>
         <ul className="nav-list">
+           <li
+            className={`nav-item ${location.pathname.includes("NotificationsPage") ? "active" : ""}`}
+            onClick={() => navigate(`/NotificationsPage/${clientId}`)}
+          >
+            {" "}
+            Notifications{" "}
+            {hasUnread && <span className="notification-dot"></span>}{" "}
+          </li>
           <li className={`nav-item ${activeTab == 'dashboard' ? 'active' : ''}`}
             onClick={() => setActiveTab('dashboard')}
           >Dashboard</li>
@@ -132,17 +162,20 @@ const CoachLanding = () => {
           >
             My Clients
           </li>
-          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
+          
           <li className="nav-item">Meal Tracker</li>
           {(userRole === 'coach' && (coachSpecialty === 'nutrition' || coachSpecialty === 'both')) && (
             <li className="nav-item" onClick={() => navigate(`/AssignMealPlan/${clientId}`)}>
               Assign Meal Plans
             </li>
           )}
-          <li className="nav-item">Mood Tracker</li>
+        
           <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-          <li className="nav-item">Subscriptions</li>
-          <li className="nav-item">Analytics</li>
+          <span className="nav-section-label">Client Features</span>
+          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
+          <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}> Meal Tracker </li>
+          <li className="nav-item"  onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker </li>
+          <li className="nav-item" onClick={() => navigate(`/Analytics/${clientId}`)}> Analytics </li>
           <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>
             My Profile </li>
         </ul>

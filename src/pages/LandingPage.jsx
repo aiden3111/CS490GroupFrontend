@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
-import { Navbar, Nav } from "react-bootstrap";
+
 
 const LandingPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -168,13 +168,7 @@ const LandingPage = () => {
           </li>
           <span className="nav-section-label">Insights</span>
 
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MoodTrackPage/${clientId}`)}
-          >
-            {" "}
-            Mood Tracker
-          </li>
+          <li className="nav-item"  onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker </li>
           <li
             className="nav-item"
             onClick={() => navigate(`/MessagingPage/${clientId}`)}
