@@ -176,6 +176,7 @@ const MoodTrackPage = () => {
                           name="mood_score"
                           onChange={formik.handleChange}
                           value={formik.values.mood_score}
+                          placeholder="0 - 10"
                         />
                       </Form.Group>
                     </Col>
@@ -187,6 +188,7 @@ const MoodTrackPage = () => {
                           name="mood_label"
                           onChange={formik.handleChange}
                           value={formik.values.mood_label}
+                          placeholder=" 'Happy' 'Sad' 'Tired'"
                         />
                       </Form.Group>
                     </Col>
@@ -201,6 +203,7 @@ const MoodTrackPage = () => {
                           name="notes"
                           onChange={formik.handleChange}
                           value={formik.values.notes}
+                          placeholder="'Walk in the park' 'Busy Day'"
                         />
                       </Form.Group>
                     </Col>
