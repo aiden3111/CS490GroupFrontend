@@ -174,6 +174,7 @@ const AdminUserManagement = () => {
                     <span className="nav-section-label">Admin</span>
                     <li className="nav-item active">User Management</li>
                     <li className="nav-item" onClick={() => navigate(`/AdminReports/${clientId}`)}>Coach Reports</li>
+                    <li className="nav-item" onClick={() => navigate(`/AdminCoachApplications/${clientId}`)}>Coach Applications</li>
                     <span className="nav-section-label">Account</span>
                     <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
                 </ul>
