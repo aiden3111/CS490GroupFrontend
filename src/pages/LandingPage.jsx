@@ -40,14 +40,22 @@ const LandingPage = () => {
   }, [clientId]);
 
   useEffect(() => {
-    const loggedInId = localStorage.getItem("authenticatedClientId");
-    if (loggedInId !== clientId) {
-      navigate(`/UserProfile/${loggedInId}`);
-      return;
-    }
-  }, [clientId, navigate]);
+    const checkStatus = async () => {
+      try {
+        const res = await fetch(`http://127.0.0.1:5000/api/admin/check_status/${clientId}`);
+        const data = await res.json();
 
-  useEffect(() => {
+        if (data.status === 'disabled' || data.status === 'suspended') {
+          localStorage.clear();
+          navigate(`/AccountSuspended`);
+        }
+      } catch (err) {
+        console.error("Status check failed");
+      }
+    };
+
+    checkStatus();
+    
     const loggedInId = localStorage.getItem("authenticatedClientId");
     if (loggedInId !== clientId) {
       navigate(`/UserProfile/${loggedInId}`);
@@ -57,7 +65,9 @@ const LandingPage = () => {
       navigate(`/CoachLanding/${clientId}`);
       return;
     }
-  }, [clientId, navigate]);
+
+    
+  }, [clientId, navigate, userRole]);
 
   const handleSearch = () => {
     if (searchTerm.trim().length === 0) {

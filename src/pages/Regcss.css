@@ -168,7 +168,7 @@ body {
 .reg-left {
   width: 38%;
   min-width: 260px;
-  background: #00ff44;
+  background: linear-gradient(145deg, #00ff44 0%, #00d4aa 100%);;
   padding: 52px 40px;
   display: flex;
   flex-direction: column;

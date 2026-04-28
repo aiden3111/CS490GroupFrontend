@@ -88,6 +88,22 @@ const CoachLanding = () => {
   }, [activeTab, clientId]);
 
   useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const res = await fetch(`http://127.0.0.1:5000/api/admin/check_status/${clientId}`);
+        const data = await res.json();
+
+        if (data.status === 'disabled' || data.status === 'suspended') {
+          localStorage.clear();
+          navigate(`/AccountSuspended`);
+        }
+      } catch (err) {
+        console.error("Status check failed");
+      }
+    };
+
+    checkStatus();
+
     const loggedInId = localStorage.getItem("authenticatedClientId");
     if (loggedInId !== clientId) {
       navigate(`/UserProfile/${loggedInId}`);
