@@ -44,7 +44,7 @@ const CoachLanding = () => {
       const data = await res.json();
       if (res.ok) {
      
-        setLandingData({ ...data, user_name: data.first_name, user_name: data.last_name }); 
+        setLandingData({ ...data, user_name: `${data.first_name} ${data.last_name}` }); 
       }
     } catch (err) {
       console.error("Error loading coach data:", err);
@@ -231,17 +231,28 @@ const CoachLanding = () => {
 
         {activeTab === 'dashboard' && (
           <div className="dashboard-grid">
-            <div className="grid-left">
-              <div className="section-card">
-                <h3>Mood Tracker</h3>
+              <div className="card">
+                <div className="chart-placeholder">
+                  <h3></h3>
+                  </div>
+              </div>
+            
+            
+              <div className="card">
+                <h3></h3>
+              </div>
+           
+               
+              <div className="card">
+                <h3></h3>
                 <div className="chart-placeholder">Dashboard Analytics Here</div>
               </div>
-            </div>
-            <div className="grid-right">
-              <div className="section-card">
-                <h3>Top Coaches</h3>
+            
+           
+              <div className="card">
+                <h3></h3>
               </div>
-            </div>
+           
           </div>
         )}
 

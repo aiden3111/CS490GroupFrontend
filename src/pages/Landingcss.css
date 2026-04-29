@@ -228,7 +228,8 @@ h3{
 }
 
 .card {
-    background: var(--card)!important;
+    /*ackground: var(--card)!important;*/
+    background-image: linear-gradient(rgb(26, 35, 22),rgb(26, 44, 31));
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 22px;
