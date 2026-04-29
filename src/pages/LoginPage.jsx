@@ -19,7 +19,7 @@ function LoginPage() {
         password: values.password,
       };
 
-      fetch("/api/login", {
+      fetch("/api/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(creds),
@@ -67,7 +67,7 @@ function LoginPage() {
 
   const HandleGoogleLogin = (response) => {
     const googleToken = response.credential;
-    fetch("/api/google-login", {
+    fetch("/api/api/google-login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
