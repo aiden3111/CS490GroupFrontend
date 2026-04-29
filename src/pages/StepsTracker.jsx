@@ -34,7 +34,7 @@ const StepsTracker = () => {
   useEffect(() => {
     const fetchStepData = async () => {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/steps_graph/${clientId}`,
+        `/api/steps_graph/${clientId}`,
       );
       const data = await response.json();
       setStepData(data);
@@ -49,7 +49,7 @@ const StepsTracker = () => {
     },
     onSubmit: async (values) => {
       try {
-        const res = await fetch(`/api/api/logging/`, {
+        const res = await fetch(`/api/logging/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
