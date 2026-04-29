@@ -40,7 +40,7 @@ const MoodTrackPage = () => {
 
   useEffect(() => {
     const fetchLandingData = async () => {
-      const response = await fetch(`/api/mood/${clientId}`);
+      const response = await fetch(`/api/api/mood/${clientId}`);
       const data = await response.json();
       setLandingData(data);
     };
@@ -57,7 +57,7 @@ const MoodTrackPage = () => {
     },
     onSubmit: async (values) => {
       try {
-        const res = await fetch(`/api/mood/`, {
+        const res = await fetch(`/api/api/mood/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
