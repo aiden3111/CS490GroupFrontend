@@ -19,7 +19,7 @@ function LoginPage() {
         password: values.password,
       };
 
-      fetch("/api/api/login", {
+      fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(creds),
