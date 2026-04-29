@@ -13,7 +13,12 @@ const CoachLanding = () => {
   const coachSpecialty = localStorage.getItem("coachSpecialty");
 
   const [hasUnread, setHasUnread] = useState(false);
-  const [landingData, setLandingData] = useState({ user_name: "" });
+  const [landingData, setLandingData] = useState({ 
+    user_name: "",
+    pricing: 0, 
+    availability: "", 
+    status: ""
+   });
   const [lanData, setLanData] = useState({
     trackers: [],
   });
@@ -377,8 +382,26 @@ const CoachLanding = () => {
             </div>
 
             <div className="card">
-              <h3></h3>
-              <div className="chart-placeholder">Dashboard Analytics Here</div>
+              <h3>My Profile & Settings</h3>
+              <div className="rreview-card"rreview-card>
+                <p><strong>Current Rate:</strong> ${landingData.pricing || '0.00'}/mo</p>
+                <p><strong>Availability:</strong> {landingData.availability || 'Not Set'}</p>
+                <p><strong>Status:</strong> 
+                  <span style={{ color: landingData.status === 'active' ? '#00ff44' : '#ef4444', marginLeft: '5px' }}>
+                    {landingData.status || 'inactive'}
+                  </span>
+                </p>
+              </div>
+              
+              <div style={{ marginTop: '20px' }}>
+                <button 
+                  className="btn-primary" 
+                  style={{ width: '100%' }}
+                  onClick={() => navigate(`/UserProfile/${clientId}`)}
+                >
+                  Update Profile & Rates
+                </button>
+              </div>
             </div>
 
             <div className="card">

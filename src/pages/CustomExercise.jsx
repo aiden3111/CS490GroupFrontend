@@ -1,12 +1,11 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
-/*import Modal from "./ModalPage";*/
+
 import { Form, Button, Container, Row, Col, Modal } from "react-bootstrap";
 
 import { useFormik } from "formik";
-//TODO: add the links to side bar
-//TODO: Build the top bar
+
 
 function CustomExercise() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,7 +17,7 @@ function CustomExercise() {
 
   const [activeTab, setActiveTab] = useState("mycustom");
 
-  /*I will updae this to search only user made exercises*/
+
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");

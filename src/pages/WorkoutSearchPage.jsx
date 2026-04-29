@@ -3,8 +3,7 @@ import "./WorkoutPage.css";
 import React, { useState, useEffect } from "react";
 import Modal from "./ModalPage";
 
-//TODO: add the links to side bar
-//TODO: Build the top bar
+
 //TODO: Search by terms not working 
 
 const WorkoutSearchPage = () => {
@@ -14,7 +13,7 @@ const WorkoutSearchPage = () => {
   const query = searchParams.get("search");
   const [workouts, setWorkouts] = useState([]);
   const navigate = useNavigate();
-  const [selectedCoach, setSelectedCoach] = useState(null);
+
   const [selectedFilters, setselectedFilters] = useState([]);
 
   useEffect(() => {
@@ -47,7 +46,7 @@ const WorkoutSearchPage = () => {
 
   useEffect(() => {
     if (query) {
-      fetch(`http://127.0.0.1:5000/api/exercises/`)
+      fetch(`http://127.0.0.1:5000/api/exercises/?search=${encodeURIComponent(query)}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {
@@ -312,6 +311,7 @@ const WorkoutSearchPage = () => {
             ? displayWorkouts.map((exercise) => (
                 <div key={exercise.exercise_id} className="section-card">
                   <h3>{exercise.exercise_name}</h3>
+                  <p><small>Created by: {exercise.created_by ? exercise.created_by: "System"}</small></p>
 
                   <p className="specialty-tag">
                     <b>Muscle Group:</b> {exercise.muscle_group}
