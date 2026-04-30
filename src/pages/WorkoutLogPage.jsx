@@ -109,7 +109,7 @@ const WorkoutLogPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch(`/api/workoutLogPage/`, {
+      const res = await fetch(`/api/workoutLogPage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ client_id: clientId, ...addForm }),
