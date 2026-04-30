@@ -366,7 +366,7 @@ const CoachLanding = () => {
                     </p>
                     <p></p>
                     <p>
-                      <strong>Rating:</strong> {r.rating}/5
+                      <strong>Rating:</strong> {r.rating}/10
                     </p>
                     <p>
                       <strong>Comment: </strong>

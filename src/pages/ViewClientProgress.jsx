@@ -14,19 +14,24 @@ import {
 
 const ViewClientProgress = () => {
   const { clientId } = useParams();
+  const coachId = localStorage.getItem("authenticatedClientId");
   const navigate = useNavigate();
   const [calorieData, setCalorieData] = useState([]);
   const [stepData, setStepData] = useState([]);
   const [range, setRange] = useState("week");
   const [clientData, setClientData] = useState({ client_name: "" });
-
   const [workoutLogs, setWorkoutLogs] = useState([]); 
+  
   useEffect(() => {
     const fetchClientProgress = async () => {
       try {
         const res = await fetch(
-          `/api/coach/client_progress/${clientId}`,
+          `/api/coach/${coachId}/client_progress/${clientId}`,
         );
+        if (!res.ok) {
+            console.error("Failed to fetch progress");
+            return;
+        }
         const data = await res.json();
 
         setStepData(data.steps || []);
@@ -34,11 +39,11 @@ const ViewClientProgress = () => {
         setWorkoutLogs(data.workouts || []); 
         setClientData({ client_name: data.client_name });
       } catch (err) {
-        console.error("Fetch error:", err);
+        console.error("Error in fetching client progress:", err);
       }
     };
     fetchClientProgress();
-  }, [clientId]);
+  }, [clientId, coachId]);
 
   const handleLogout = () => {
     localStorage.removeItem("authenticatedClientId");
