@@ -43,7 +43,7 @@ function CustomExercise() {
 
   useEffect(() => {
     if (query) {
-      fetch(`http://127.0.0.1:5000/api/exercises`)
+      fetch(`/api/exercises`)
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {
@@ -141,7 +141,7 @@ function MyCustom({ clientId }) {
   const [modalEdit, setModalEdit] = useState(false);
 
   const fetchWorkouts = () => {
-    fetch(`http://127.0.0.1:5000/api/my_exercises/?client_id=${clientId}`)
+    fetch(`/api/my_exercises/?client_id=${clientId}`)
       .then((res) => res.json())
       .then((data) => setWorkouts(data));
   };
@@ -161,7 +161,7 @@ function MyCustom({ clientId }) {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/exercises/${exerId}`,
+        `/api/exercises/${exerId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -228,7 +228,7 @@ function EditModal({ show, onHide, exercise, clientId, onSuccess }) {
     onSubmit: async (values) => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/api/exercises/${exercise.exercise_id}`,
+          `/api/exercises/${exercise.exercise_id}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -353,7 +353,7 @@ function CustomCreation({ clientId }) {
     validateOnBlur: false,
 
     onSubmit: (values) => {
-      fetch("http://127.0.0.1:5000/api/exercises", {
+      fetch("/api/exercises", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),

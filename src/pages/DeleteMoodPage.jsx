@@ -40,7 +40,7 @@ const DeleteMoodPage = () => {
 
   useEffect(() => {
     const fetchLandingData = async () => {
-      const response = await fetch(`/api/api/mood/${clientId}`);
+      const response = await fetch(`/api/mood/${clientId}`);
       const data = await response.json();
       setLandingData(data);
     };
@@ -58,7 +58,7 @@ const DeleteMoodPage = () => {
     enableReinitialize: true,
     onSubmit: async (values) => {
       try {
-        const res = await fetch(`/api/api/mood/${values.mood_log_id}`, {
+        const res = await fetch(`/api/mood/${values.mood_log_id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -87,7 +87,7 @@ const DeleteMoodPage = () => {
   };
 
   const fetchMood = (clientId) => {
-    fetch(`/api/api/mood${clientId}`)
+    fetch(`/api/mood${clientId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Help!");
         return res.json();
@@ -100,7 +100,7 @@ const DeleteMoodPage = () => {
     if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
     try {
-      const res = await fetch(`/api/api/mood/${logId}`, {
+      const res = await fetch(`/api/mood/${logId}`, {
         method: "DELETE",
       });
 
