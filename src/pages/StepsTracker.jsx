@@ -49,7 +49,7 @@ const StepsTracker = () => {
     },
     onSubmit: async (values) => {
       try {
-        const res = await fetch(`/api/logging/`, {
+        const res = await fetch(`/api/logging`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
