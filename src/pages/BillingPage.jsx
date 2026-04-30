@@ -60,7 +60,7 @@ const BillingPage = () => {
 
 
     const handleDownload = (invoiceId) => {
-        window.location.href = `http://127.0.0.1:5000/invoice/download/${invoiceId}`;
+        window.location.href = `/api/invoice/download/${invoiceId}`;
     };
 
     const selectStyle = {
