@@ -89,7 +89,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     const fetchLandingData = async () => {
-      const response = await fetch(`/api/api/landing_page/${clientId}`);
+      const response = await fetch(`/api/landing_page/${clientId}`);
       const data = await response.json();
       setLandingData(data);
     };
