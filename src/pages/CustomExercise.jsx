@@ -141,7 +141,7 @@ function MyCustom({ clientId }) {
   const [modalEdit, setModalEdit] = useState(false);
 
   const fetchWorkouts = () => {
-    fetch(`/api/my_exercises/?client_id=${clientId}`)
+    fetch(`/api/my_exercises?client_id=${clientId}`)
       .then((res) => res.json())
       .then((data) => setWorkouts(data));
   };
