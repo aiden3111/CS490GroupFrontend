@@ -132,7 +132,7 @@ const LandingPage = () => {
   useEffect(() => {
     const fetchCalorieData = async () => {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/calorie_graph/${clientId}`,
+        `/api/calorie_graph/${clientId}`,
       );
       const data = await response.json();
       setCalorieData(data);

@@ -30,13 +30,13 @@ const LogTodaysMeal = () => {
     useEffect(() => {
         const fetchPlanMeals = async () => {
             try {
-                const res = await fetch(`http://127.0.0.1:5000/api/nutrition_plan/${clientId}`);
+                const res = await fetch(`/api/nutrition_plan/${clientId}`);
                 const plans = await res.json();
 
                 if (res.ok && plans.length > 0) {
                     const latestPlanId = plans[plans.length - 1].nutrition_plan_id;
 
-                    const mealRes = await fetch(`http://127.0.0.1:5000/api/nutrition_plan/${clientId}/${latestPlanId}`);
+                    const mealRes = await fetch(`/api/nutrition_plan/${clientId}/${latestPlanId}`);
                     const mealData = await mealRes.json();
 
                     if (mealRes.ok) {
@@ -63,7 +63,7 @@ const LogTodaysMeal = () => {
         };
 
         try {
-            const res = await fetch("http://127.0.0.1:5000/api/nutrition_plan/log", {
+            const res = await fetch("/api/nutrition_plan/log", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -88,7 +88,7 @@ const LogTodaysMeal = () => {
 
         if (window.confirm("Delete this entry to correct your log?")) {
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/nutrition_plan/log/${mealLogId}`, {
+                const response = await fetch(`/api/nutrition_plan/log/${mealLogId}`, {
                     method: 'DELETE',
                 });
 
