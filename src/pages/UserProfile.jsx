@@ -499,7 +499,7 @@ const FitnessGoalsSection = ({ clientId, canEdit }) => {
             />
           ) : (
             <p className="field-value-highlight">
-              {goals.steps.toLocaleString()}
+              {goals && goals.steps ? goals.steps.toLocaleString() : "0"}
             </p>
           )}
         </div>
