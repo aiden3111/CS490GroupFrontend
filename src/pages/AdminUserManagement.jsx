@@ -33,7 +33,7 @@ const AdminUserManagement = () => {
         setLoading(true);
         setMessage("");
         try {
-            const url = q ? `/api/admin/accounts?q=${encodeURIComponent(q)}` : `/api/api/admin/accounts`;
+            const url = q ? `/api/admin/accounts?q=${encodeURIComponent(q)}` : `/api/admin/accounts`;
             const res = await fetch(url);
             const data = await res.json();
             if (!res.ok) throw new Error(data?.error || "Failed to load users");
