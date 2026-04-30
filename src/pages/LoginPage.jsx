@@ -37,6 +37,7 @@ function LoginPage() {
             // 2. Save to localStorage using a consistent key
             localStorage.setItem("authenticatedClientId", userId);
             localStorage.setItem("userRole", data.role);
+            localStorage.setItem("coachSpecialty", data.specialty);
 
             if (data.admin_id) {
               localStorage.setItem("adminId", data.admin_id);
