@@ -3,7 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("https://cs-490-group-backend.vercel.app");
+/*const socket = io("https://cs-490-group-backend.vercel.app");*/
 
 const MessagingPage = () => {
   const { clientId } = useParams();
