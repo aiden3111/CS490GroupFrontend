@@ -12,7 +12,7 @@ const SeeMyReviews = () => {
     const checkStatus = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/api/admin/check_status/${clientId}`,
+          `/api/admin/check_status/${clientId}`,
         );
         const data = await res.json();
 
@@ -43,7 +43,7 @@ const SeeMyReviews = () => {
     const loadReviews = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/review/coach/${clientId}`,
+          `/api/review/coach/${clientId}`,
         );
         const data = await res.json();
 

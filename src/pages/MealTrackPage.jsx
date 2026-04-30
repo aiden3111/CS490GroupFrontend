@@ -64,9 +64,14 @@ const MealTrackPage = () => {
 
           <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker </li>
           <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-          <li className="nav-item">Analytics</li>
+          <li
+            className="nav-item"
+            onClick={() => navigate(`/Analytics/${clientId}`)}
+          >
+            Analytics
+          </li>
           <span className="nav-section-label">Account</span>
-          <li className="nav-item">Subscriptions</li>
+      
           <li
             className="nav-item"
             onClick={() => navigate(`/UserProfile/${clientId}`)}

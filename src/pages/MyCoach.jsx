@@ -35,7 +35,7 @@ const MyCoach = () => {
   };
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/api/my_coach/${clientId}`)
+    fetch(`/api/my_coach/${clientId}`)
       .then((res) => {
         if (!res.ok) {
           return null;
@@ -63,7 +63,7 @@ const MyCoach = () => {
 
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/api/coach_ratings/${myCoach.coach_id}/rate`,
+          `/api/coach_ratings/${myCoach.coach_id}/rate`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

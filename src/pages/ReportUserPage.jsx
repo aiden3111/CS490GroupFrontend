@@ -28,7 +28,7 @@ const ReportUserPage = () => {
       enableReinitialize: true,
       onSubmit: async (values) => {
         try {
-          const res = await fetch(`/api/api/reports`, {
+          const res = await fetch(`/api/reports`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

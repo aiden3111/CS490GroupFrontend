@@ -29,12 +29,12 @@ const NotificationSettings = () => {
     const fetchNotificationData = async () => {
       try {
         const prefRes = await fetch(
-          `http://127.0.0.1:5000/api/notification-preferences/${clientId}`,
+          `/api/notification-preferences/${clientId}`,
         );
 
         if (prefRes.status === 404) {
           // Row doesn't exist, create it with defaults
-          await fetch(`http://127.0.0.1:5000/api/notification-preferences/`, {
+          await fetch(`/api/notification-preferences/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ client_id: clientId }),
@@ -56,7 +56,7 @@ const NotificationSettings = () => {
     const updatedValue = !preferences[field];
     try {
       const res = await fetch(
-        `http://127.0.0.1:5000/api/notification-preferences/${clientId}`,
+        `/api/notification-preferences/${clientId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

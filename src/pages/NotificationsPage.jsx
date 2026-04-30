@@ -29,7 +29,7 @@ const NotificationsPage = () => {
     const fetchData = async () => {
       try {
         const notifRes = await fetch(
-          `http://127.0.0.1:5000/api/notifications/${clientId}`,
+          `/api/notifications/${clientId}`,
         );
         const notifData = await notifRes.json();
         if (notifData.success) {
@@ -37,10 +37,10 @@ const NotificationsPage = () => {
         }
 
         const prefRes = await fetch(
-          `http://127.0.0.1:5000/api/notification-preferences/${clientId}`,
+          `/api/notification-preferences/${clientId}`,
         );
         if (prefRes.status === 404) {
-          await fetch(`http://127.0.0.1:5000/api/notification-preferences/`, {
+          await fetch(`/api/notification-preferences/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ client_id: clientId }),
@@ -60,7 +60,7 @@ const NotificationsPage = () => {
   const handleMarkAsRead = async (notificationId) => {
     try {
       const res = await fetch(
-        `http://127.0.0.1:5000/api/notifications/mark-read/${notificationId}`,
+        `/api/notifications/mark-read/${notificationId}`,
         {
           method: "PUT",
         },
