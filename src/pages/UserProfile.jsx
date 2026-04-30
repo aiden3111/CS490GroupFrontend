@@ -20,7 +20,7 @@ function UserProfile() {
   useEffect(() => {
     if (!clientId) return;
 
-    fetch(`http://127.0.0.1:5000/api/clients/${clientId}`)
+    fetch(`/api/clients/${clientId}`)
       .then((res) => res.json())
       .then((data) => {
         if (loggedInId !== clientId && loggedInUserRole !== 'coach') {
@@ -44,7 +44,7 @@ function UserProfile() {
   if (!user) return <div className="dashboard-container p-10">Loading BitFit Profile...</div>;
 
   const handleSave = async () => {
-    const res = await fetch(`http://127.0.0.1:5000/api/clients/${clientId}`, {
+    const res = await fetch(`/api/clients/${clientId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -57,7 +57,7 @@ function UserProfile() {
 
   const handleDeleteAccount = async () => {
     try {
-      const res = await fetch(`/api/api/clients/${clientId}`, {
+      const res = await fetch(`/api/clients/${clientId}`, {
         method: "DELETE",
       });
 

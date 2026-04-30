@@ -46,7 +46,7 @@ const WorkoutSearchPage = () => {
 
   useEffect(() => {
     if (query) {
-      fetch(`http://127.0.0.1:5000/api/exercises/?search=${encodeURIComponent(query)}`)
+      fetch(`/api/exercises/?search=${encodeURIComponent(query)}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {

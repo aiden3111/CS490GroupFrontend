@@ -57,7 +57,7 @@ const WorkoutPlanPage = () => {
 
     const fetchWorkoutPlans = useCallback(async () => {
         try {
-            const res = await fetch(`/api/api/workoutPlansPage/client/${clientId}`);
+            const res = await fetch(`/api/workoutPlansPage/client/${clientId}`);
             const data = await res.json();
             if (data.error) {
                 console.error(data.error);
@@ -73,7 +73,7 @@ const WorkoutPlanPage = () => {
 
     const fetchExercises = useCallback(async () => {
         try {
-            const res = await fetch(`/api/api/exercises/`);
+            const res = await fetch(`/api/exercises/`);
             const data = await res.json();
             setExercises(Array.isArray(data) ? data : []);
         } catch (err) {
@@ -84,7 +84,7 @@ const WorkoutPlanPage = () => {
 
     const fetchAssignedCoach = useCallback(async () => {
         try {
-            const res = await fetch(`/api/api/my_coach/${clientId}`);
+            const res = await fetch(`/api/my_coach/${clientId}`);
             if (!res.ok) {
                 setAssignedCoachId(null);
                 return;
@@ -99,7 +99,7 @@ const WorkoutPlanPage = () => {
     const loadPlanDetail = async (workoutPlanId) => {
         setPlanDetailLoading(true);
         try {
-            const res = await fetch(`/api/api/workoutPlansPage/${workoutPlanId}`);
+            const res = await fetch(`/api/workoutPlansPage/${workoutPlanId}`);
             const data = await res.json();
             if (data.error) {
                 showMessage(data.error, true);
@@ -165,7 +165,7 @@ const WorkoutPlanPage = () => {
         }
         setLoading(true);
         try {
-            const res = await fetch(`/api/api/workoutPlansPage/`, {
+            const res = await fetch(`/api/workoutPlansPage/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -211,7 +211,7 @@ const WorkoutPlanPage = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch(`/api/api/workoutPlansPage/${editingPlanId}`, {
+            const res = await fetch(`/api/workoutPlansPage/${editingPlanId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -241,7 +241,7 @@ const WorkoutPlanPage = () => {
         if (!window.confirm("Delete this workout plan and all of its exercises?")) return;
         setLoading(true);
         try {
-            const res = await fetch(`/api/api/workoutPlansPage/${workoutPlanId}`, { method: "DELETE" });
+            const res = await fetch(`/api/workoutPlansPage/${workoutPlanId}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok || data.error) {
                 showMessage(data.error || "Delete failed.", true);
@@ -271,7 +271,7 @@ const WorkoutPlanPage = () => {
         }
         setLoading(true);
         try {
-            const res = await fetch(`/api/api/workoutPlanExercisesPage/${workoutPlanId}/exercises`, {
+            const res = await fetch(`/api/workoutPlanExercisesPage/${workoutPlanId}/exercises`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -322,7 +322,7 @@ const WorkoutPlanPage = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch(`/api/api/workoutPlanExercisesPage/entry/${editingEntryId}`, {
+            const res = await fetch(`/api/workoutPlanExercisesPage/entry/${editingEntryId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -351,7 +351,7 @@ const WorkoutPlanPage = () => {
         if (!window.confirm("Remove this exercise from the plan?")) return;
         setLoading(true);
         try {
-            const res = await fetch(`/api/api/workoutPlanExercisesPage/entry/${entryId}`, {
+            const res = await fetch(`/api/workoutPlanExercisesPage/entry/${entryId}`, {
                 method: "DELETE",
             });
             const data = await res.json();

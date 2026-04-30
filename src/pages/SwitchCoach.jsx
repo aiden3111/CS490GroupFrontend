@@ -48,7 +48,7 @@ const SwitchCoach = () => {
 
   useEffect(() => {
     if (query) {
-      fetch(`http://127.0.0.1:5000/api/coaches_search/?search=${query}`)
+      fetch(`/api/coaches_search/?search=${query}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {
@@ -86,7 +86,7 @@ const SwitchCoach = () => {
   const handleRequestCoach = async () => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/coach/${selectedCoach.coach_id}/request`,
+        `/api/coach/${selectedCoach.coach_id}/request`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -108,7 +108,7 @@ const SwitchCoach = () => {
 
   const handleRemove = () => {
     try{
-fetch(`http://127.0.0.1:5000/api/my_coach/${clientId}`, {
+fetch(`/api/my_coach/${clientId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ client_id: clientId }),
