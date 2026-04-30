@@ -34,7 +34,7 @@ const NotificationSettings = () => {
 
         if (prefRes.status === 404) {
           // Row doesn't exist, create it with defaults
-          await fetch(`/api/notification-preferences/`, {
+          await fetch(`/api/notification-preferences`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ client_id: clientId }),
