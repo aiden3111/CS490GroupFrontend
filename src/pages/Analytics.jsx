@@ -30,7 +30,7 @@ useEffect(() => {
     const fetchAllData = async () => {
       try {
       
-        const calRes = await fetch(`api/calorie_graph/${clientId}?range=${range}`);
+        const calRes = await fetch(`/api/calorie_graph/${clientId}?range=${range}`);
         const rawCalorieData = await calRes.json();
 
         if (Array.isArray(rawCalorieData)) {
