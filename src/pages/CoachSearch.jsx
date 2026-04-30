@@ -55,7 +55,7 @@ const CoachSearch = () => {
   };
 
   useEffect(() => {
-    let url = `/api/coaches_search/?`;
+    let url = `/api/coaches_search?`;
     if (query) url += `search=${query}&`;
   
     if (sortOrder) url += `sort=${sortOrder}`;
