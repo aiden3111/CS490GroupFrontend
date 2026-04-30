@@ -21,7 +21,7 @@ const LandingPage = () => {
     const checkUnread = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/api/notifications/unread-count/${clientId}`,
+          `/api/notifications/unread-count/${clientId}`,
         );
         const data = await res.json();
         if (data.success && data.unread_count > 0) {
@@ -101,7 +101,7 @@ const LandingPage = () => {
   const fetchHistory = async () => {
     try {
       const res = await fetch(
-        `http://127.0.0.1:5000/api/workoutLogPage/history/${clientId}`,
+        `/api/workoutLogPage/history/${clientId}`,
       );
       const data = await res.json();
       setWorkoutHistory(data.workout_history || {});
@@ -112,7 +112,7 @@ const LandingPage = () => {
 
   const fetchExercises = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/exercises`);
+      const res = await fetch(`/api/exercises`);
       const data = await res.json();
       setExercises(data || []);
     } catch (err) {
