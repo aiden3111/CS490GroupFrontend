@@ -33,7 +33,7 @@ const AdminUserManagement = () => {
         setLoading(true);
         setMessage("");
         try {
-            const url = q ? `/api/api/admin/accounts?q=${encodeURIComponent(q)}` : `/api/api/admin/accounts`;
+            const url = q ? `/api/admin/accounts?q=${encodeURIComponent(q)}` : `/api/admin/accounts`;
             const res = await fetch(url);
             const data = await res.json();
             if (!res.ok) throw new Error(data?.error || "Failed to load users");
@@ -84,7 +84,7 @@ const AdminUserManagement = () => {
         setLoading(true);
         setMessage("");
         try {
-            const res = await fetch(`/api/api/admin/accounts/${encodeURIComponent(id)}`, { method: "DELETE" });
+            const res = await fetch(`/api/admin/accounts/${encodeURIComponent(id)}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok) throw new Error(data?.error || "Delete failed");
             setMessage("Account deleted.");
@@ -100,7 +100,7 @@ const AdminUserManagement = () => {
     const handleToggleStatus = async (user) => {
         const isCurrentlyActive = user.status === "active";
         const action = isCurrentlyActive ? "disable" : "reactivate";
-        const endpoint = isCurrentlyActive ? "/api/api/admin/disable_user" : "/api/api/admin/reactivate_user";
+        const endpoint = isCurrentlyActive ? "/api/admin/disable_user" : "/api/admin/reactivate_user";
 
         const ok = window.confirm(`Are you sure you want to ${action} account ${user.client_id}?`);
         if (!ok) return;

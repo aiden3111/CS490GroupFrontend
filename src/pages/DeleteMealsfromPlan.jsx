@@ -14,7 +14,7 @@ const DeleteMealsfromPlan = () => {
 
   
     useEffect(() => {
-        fetch(`/api/api/clients/coach/${clientId}`)
+        fetch(`/api/clients/coach/${clientId}`)
             .then(res => res.json())
             .then(data => setClients(Array.isArray(data) ? data : []))
             .catch(err => console.error("Error loading clients:", err));
@@ -49,7 +49,7 @@ const DeleteMealsfromPlan = () => {
 
             try {
                 
-                const res = await fetch(`/api/api/nutrition_plan_modifications/${clientId}/${values.selectedClientId}/${values.selectedPlanId}/meals`, {
+                const res = await fetch(`/api/nutrition_plan_modifications/${clientId}/${values.selectedClientId}/${values.selectedPlanId}/meals`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -86,7 +86,7 @@ const DeleteMealsfromPlan = () => {
         
         if (selectedId) {
             
-            fetch(`/api/api/nutrition_plan_modifications/${clientId}`) 
+            fetch(`/api/nutrition_plan_modifications/${clientId}`) 
                 .then(res => res.json())
                 .then(data => {
                     

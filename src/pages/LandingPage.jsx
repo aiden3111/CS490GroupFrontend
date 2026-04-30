@@ -41,7 +41,7 @@ const LandingPage = () => {
     const checkStatus = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/api/admin/check_status/${clientId}`,
+          `/api/admin/check_status/${clientId}`,
         );
         const data = await res.json();
 

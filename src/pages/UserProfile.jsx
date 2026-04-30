@@ -301,7 +301,7 @@ const PhysicalStatsSection = ({ user, clientId, setUser, canEdit }) => {
   const handleSavePhysical = async () => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/profile/physical`,
+        `/api/profile/physical`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -402,7 +402,7 @@ const FitnessGoalsSection = ({ clientId, canEdit }) => {
 
   useEffect(() => {
     if (clientId) {
-      fetch(`http://127.0.0.1:5000/api/profile/goals/${clientId}`)
+      fetch(`/api/profile/goals/${clientId}`)
         .then((res) => res.json())
         .then((data) => {
           setGoals(data);
@@ -419,7 +419,7 @@ const FitnessGoalsSection = ({ clientId, canEdit }) => {
 
   const handleSaveGoals = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/profile/goals`, {
+      const response = await fetch(`/api/profile/goals`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -565,9 +565,9 @@ const CoachManagementSection = ({ clientId }) => {
     const fetchCoachData = async () => {
       try {
         const [baseRes, fitRes, nutRes] = await Promise.all([
-          fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`),
-          fetch(`http://127.0.0.1:5000/api/profile/fitness_coach/${clientId}`),
-          fetch(`http://127.0.0.1:5000/api/profile/nutrition_coach/${clientId}`)
+          fetch(`/api/profile/coach/${clientId}`),
+          fetch(`/api/profile/fitness_coach/${clientId}`),
+          fetch(`/api/profile/nutrition_coach/${clientId}`)
         ]);
 
         const baseData = await baseRes.json();
@@ -594,14 +594,14 @@ const CoachManagementSection = ({ clientId }) => {
     try {
       const updates = [];
 
-      updates.push(fetch(`http://127.0.0.1:5000/api/profile/coach/${clientId}`, {
+      updates.push(fetch(`/api/profile/coach/${clientId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ availability: coachForm.availability, pricing: coachForm.pricing })
       }));
 
       if (coachForm.isFitness) {
-        updates.push(fetch(`http://127.0.0.1:5000/api/profile/fitness_coach/${clientId}`, {
+        updates.push(fetch(`/api/profile/fitness_coach/${clientId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ certifications: coachForm.fitnessData.certifications })
@@ -609,7 +609,7 @@ const CoachManagementSection = ({ clientId }) => {
       }
 
       if (coachForm.isNutrition) {
-        updates.push(fetch(`http://127.0.0.1:5000/api/profile/nutrition_coach/${clientId}`, {
+        updates.push(fetch(`/api/profile/nutrition_coach/${clientId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ certifications: coachForm.nutritionData.certifications })
@@ -733,7 +733,7 @@ const CoachApplication = ({ clientId }) => {
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (values) => {
-      fetch("/api/api/coach_applications/apply", {
+      fetch("/api/coach_applications/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -859,7 +859,7 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`http://127.0.0.1:5000/payment/client/${clientId}`);
+      const res = await fetch(`/api/payment/client/${clientId}`);
       const data = await res.json();
       if (!res.ok) {
         setError(data?.error || "Failed to load payment methods");
@@ -884,7 +884,7 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
   const setDefault = async (paymentId) => {
     setError("");
     try {
-      const res = await fetch(`http://127.0.0.1:5000/payment/default/${paymentId}`, {
+      const res = await fetch(`/api/payment/default/${paymentId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ client_id: clientId }),
@@ -903,7 +903,7 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
   const deleteMethod = async (paymentId) => {
     setError("");
     try {
-      const res = await fetch(`http://127.0.0.1:5000/payment/delete/${paymentId}`, {
+      const res = await fetch(`/api/payment/delete/${paymentId}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -930,7 +930,7 @@ const PaymentMethodsSection = ({ clientId, canEdit }) => {
     let expiry_month = val.slice(0, 2)
     let expiry_year = val.slice(2);
     try {
-      const res = await fetch(`http://127.0.0.1:5000/payment/add`, {
+      const res = await fetch(`/api/payment/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

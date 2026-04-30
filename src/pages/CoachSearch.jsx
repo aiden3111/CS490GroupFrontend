@@ -55,7 +55,7 @@ const CoachSearch = () => {
   };
 
   useEffect(() => {
-    let url = `http://127.0.0.1:5000/api/coaches_search/?`;
+    let url = `/api/coaches_search/?`;
     if (query) url += `search=${query}&`;
   
     if (sortOrder) url += `sort=${sortOrder}`;
@@ -71,7 +71,7 @@ const CoachSearch = () => {
     setPaymentError("");
     try {
       const res = await fetch(
-        `http://127.0.0.1:5000/payment/client/${clientId}`,
+        `/api/payment/client/${clientId}`,
       );
       const data = await res.json();
       if (!res.ok) {
@@ -136,7 +136,7 @@ const CoachSearch = () => {
     let expiry_month = val.slice(0, 2);
     let expiry_year = val.slice(2);
     try {
-      const res = await fetch(`http://127.0.0.1:5000/payment/add`, {
+      const res = await fetch(`/api/payment/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -162,7 +162,7 @@ const CoachSearch = () => {
 
   const getReviews = async (coachId) => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/review/coach/${coachId}`);
+      const res = await fetch(`/api/review/coach/${coachId}`);
       const data = await res.json();
 
       if (res.ok) {
@@ -240,7 +240,7 @@ const CoachSearch = () => {
         return;
       }
       const response = await fetch(
-        `http://127.0.0.1:5000/api/coach/${selectedCoach.coach_id}/request`,
+        `/api/coach/${selectedCoach.coach_id}/request`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

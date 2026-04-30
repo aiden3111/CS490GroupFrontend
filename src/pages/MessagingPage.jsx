@@ -3,7 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://127.0.0.1:5000");
+const socket = io("https://cs-490-group-backend.vercel.app");
 
 const MessagingPage = () => {
   const { clientId } = useParams();
@@ -38,7 +38,7 @@ const MessagingPage = () => {
   }, [messages]);
 
   const fetchConversations = async () => {
-    const res = await fetch(`http://127.0.0.1:5000/api/messaging/conversations/${clientId}`);
+    const res = await fetch(`/api/messaging/conversations/${clientId}`);
     const data = await res.json();
     setConversations(Array.isArray(data) ? data : []);
   };
@@ -48,7 +48,7 @@ const MessagingPage = () => {
     const room = [clientId, otherUser.other_user_id].sort().join("_");
     socket.emit("join", { room });
 
-    const res = await fetch(`http://127.0.0.1:5000/api/messaging/${clientId}/${otherUser.other_user_id}`);
+    const res = await fetch(`/api/messaging/${clientId}/${otherUser.other_user_id}`);
     const data = await res.json();
     setMessages(Array.isArray(data) ? data : []);
   };

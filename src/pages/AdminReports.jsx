@@ -40,7 +40,7 @@ const AdminReports = () => {
         setLoading(true);
         setMessage("");
         try {
-            const url = statusFilter ? `/api/api/admin/reports?status=${encodeURIComponent(statusFilter)}` : `/api/api/admin/reports`;
+            const url = statusFilter ? `/api/admin/reports?status=${encodeURIComponent(statusFilter)}` : `/api/admin/reports`;
             const res = await fetch(url);
             const data = await res.json();
             if (!res.ok) throw new Error(data?.error || "Failed to load reports");
@@ -74,7 +74,7 @@ const AdminReports = () => {
         setLoading(true);
         setMessage("");
         try {
-            const res = await fetch(`/api/api/admin/reports/${reportId}/review`, {
+            const res = await fetch(`/api/admin/reports/${reportId}/review`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ admin_id: Number(adminId), status: newStatus }),

@@ -35,8 +35,8 @@ const AdminCoachApplications = () => {
     setMessage("");
     try {
       const url = statusFilter
-        ? `/api/api/coach_applications?status=${encodeURIComponent(statusFilter)}`
-        : `/api/api/coach_applications`;
+        ? `/api/coach_applications?status=${encodeURIComponent(statusFilter)}`
+        : `/api/coach_applications`;
       const res = await fetch(url);
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Failed to load applications");
@@ -68,7 +68,7 @@ const AdminCoachApplications = () => {
     setLoading(true);
     setMessage("");
     try {
-      const res = await fetch(`/api/api/coach_applications/review`, {
+      const res = await fetch(`/api/coach_applications/review`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

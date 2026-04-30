@@ -11,7 +11,7 @@ const EditTodaysMeal = () => {
 
     const fetchTodaysLogs = async () => {
         try {
-            const res = await fetch(`http://127.0.0.1:5000/api/calorie_graph/${clientId}`);
+            const res = await fetch(`/api/calorie_graph/${clientId}`);
             const data = await res.json();
             const filtered = data.filter(log => log.log_date === todayDate);
 
@@ -26,7 +26,7 @@ const EditTodaysMeal = () => {
 
     const handleUpdate = async (logId, updatedData) => {
         try {
-            const res = await fetch(`http://127.0.0.1:5000/api/nutrition_plan/log/${logId}`, {
+            const res = await fetch(`/api/nutrition_plan/log/${logId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedData)
@@ -43,7 +43,7 @@ const EditTodaysMeal = () => {
     };
 
     const handleDelete = async (logId) => {
-            const res = await fetch(`http://127.0.0.1:5000/api/nutrition_plan/log/${logId}`, {
+            const res = await fetch(`/api/nutrition_plan/log/${logId}`, {
                 method: "DELETE"
             });
 

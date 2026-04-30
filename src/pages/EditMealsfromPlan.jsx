@@ -14,7 +14,7 @@ const EditMealsfromPlan = () => {
 
     
     useEffect(() => {
-        fetch(`/api/api/clients/coach/${clientId}`)
+        fetch(`/api/clients/coach/${clientId}`)
             .then(res => res.json())
             .then(data => setClients(Array.isArray(data) ? data : []))
             .catch(err => console.error("Error loading clients:", err));
@@ -39,7 +39,7 @@ const EditMealsfromPlan = () => {
         onSubmit: async (values) => {
             try {
                 
-                const res = await fetch(`/api/api/nutrition_plan_modifications/${clientId}/${values.selectedClientId}/${values.selectedPlanId}`, {
+                const res = await fetch(`/api/nutrition_plan_modifications/${clientId}/${values.selectedClientId}/${values.selectedPlanId}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -58,7 +58,7 @@ const EditMealsfromPlan = () => {
     });
 
    const fetchMeals = (planId) => {
-    fetch(`/api/api/nutrition_plan_modifications/meals/${planId}`) 
+    fetch(`/api/nutrition_plan_modifications/meals/${planId}`) 
         .then(res => {
             if (!res.ok) throw new Error("Help!");
             return res.json();
@@ -73,7 +73,7 @@ const EditMealsfromPlan = () => {
         setPlans([]);
         setMeals([]);
         if (selectedId) {
-            fetch(`/api/api/nutrition_plan_modifications/${clientId}`) 
+            fetch(`/api/nutrition_plan_modifications/${clientId}`) 
                 .then(res => res.json())
                 .then(data => {
                     const clientPlans = Array.isArray(data) ? data.filter(p => p.client_id === selectedId) : [];
@@ -100,7 +100,7 @@ const EditMealsfromPlan = () => {
 
         try {
             
-            const res = await fetch(`/api/api/nutrition_plan_modifications/${clientId}/${formik.values.selectedClientId}/${formik.values.selectedPlanId}/meals/${mealId}`, {
+            const res = await fetch(`/api/nutrition_plan_modifications/${clientId}/${formik.values.selectedClientId}/${formik.values.selectedPlanId}/meals/${mealId}`, {
                 method: "DELETE"
             });
 

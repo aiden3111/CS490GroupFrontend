@@ -61,7 +61,7 @@ const WorkoutLogPage = () => {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/workoutLogPage/history/${clientId}`);
+      const res = await fetch(`/api/workoutLogPage/history/${clientId}`);
       const data = await res.json();
       setWorkoutHistory(data.workout_history || {});
     } catch (err) {
@@ -71,7 +71,7 @@ const WorkoutLogPage = () => {
 
   const fetchExercises = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/exercises`);
+      const res = await fetch(`/api/exercises`);
       const data = await res.json();
       setExercises(data || []);
     } catch (err) {
@@ -109,7 +109,7 @@ const WorkoutLogPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/workoutLogPage/`, {
+      const res = await fetch(`/api/workoutLogPage/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ client_id: clientId, ...addForm }),
@@ -148,7 +148,7 @@ const WorkoutLogPage = () => {
     if (!window.confirm("Are you sure you want to delete this workout log? This action cannot be undone.")) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/api/workoutLogPage/${log.log_id}`, { method: "DELETE" });
+      const res = await fetch(`/api/workoutLogPage/${log.log_id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok || data.error) {
         showMessage(data.error || "Delete failed.", true);
@@ -170,7 +170,7 @@ const WorkoutLogPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/workoutLogPage/${editingLogId}`, {
+      const res = await fetch(`/api/workoutLogPage/${editingLogId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm),

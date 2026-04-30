@@ -26,7 +26,7 @@ const CoachLanding = () => {
   const [reviews, setReviews] = useState([]);
   useEffect(() => {
     const fetchLandingData = async () => {
-      const response = await fetch(`/api/api/landing_page/${clientId}`);
+      const response = await fetch(`/api/landing_page/${clientId}`);
       const data = await response.json();
       setLanData(data);
     };
@@ -37,7 +37,7 @@ const CoachLanding = () => {
     const checkUnread = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/api/notifications/unread-count/${clientId}`,
+          `/api/notifications/unread-count/${clientId}`,
         );
         const data = await res.json();
         if (data.success && data.unread_count > 0) {
@@ -56,7 +56,7 @@ const CoachLanding = () => {
   useEffect(() => {
     const fetchCoachData = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:5000/api/coach/${clientId}`);
+        const res = await fetch(`/api/coach/${clientId}`);
         const data = await res.json();
         if (res.ok) {
           setLandingData({
@@ -81,7 +81,7 @@ const CoachLanding = () => {
     };
 
     try {
-      const res = await fetch("/api/api/workoutPlansPage/", {
+      const res = await fetch("/api/workoutPlansPage/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(planData),
@@ -98,7 +98,7 @@ const CoachLanding = () => {
 
   useEffect(() => {
     if (activeTab === "clients") {
-      fetch(`/api/api/clients/coach/${clientId}`)
+      fetch(`/api/clients/coach/${clientId}`)
         .then((res) => res.json())
         .then((data) => setClients(data))
         .catch((err) => console.error("Error loading roster:", err));
@@ -109,7 +109,7 @@ const CoachLanding = () => {
     const checkStatus = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/api/admin/check_status/${clientId}`,
+          `/api/admin/check_status/${clientId}`,
         );
         const data = await res.json();
 
@@ -132,7 +132,7 @@ const CoachLanding = () => {
   }, [clientId, navigate]);
 
   useEffect(() => {
-    fetch(`/api/api/coach/${clientId}/requests`)
+    fetch(`/api/coach/${clientId}/requests`)
       .then((res) => res.json())
       .then((data) =>
         setRequests(data.filter((req) => req.status === "pending")),
@@ -143,7 +143,7 @@ const CoachLanding = () => {
   const handleAction = async (requestId, status, targetClientId) => {
     try {
       const response = await fetch(
-        `/api/api/coach/${clientId}/requests/${requestId}`,
+        `/api/coach/${clientId}/requests/${requestId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -193,7 +193,7 @@ const CoachLanding = () => {
   useEffect(() => {
     const fetchCalorieData = async () => {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/calorie_graph/${clientId}`,
+        `/api/calorie_graph/${clientId}`,
       );
       const data = await response.json();
       setCalorieData(data);
@@ -205,7 +205,7 @@ const CoachLanding = () => {
     const loadReviews = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/review/coach/${clientId}`,
+          `/api/review/coach/${clientId}`,
         );
         const data = await res.json();
 

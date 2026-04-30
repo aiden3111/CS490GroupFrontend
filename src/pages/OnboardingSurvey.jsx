@@ -20,7 +20,7 @@ function OnboardingSurveyPage() {
         validateOnChange: false,
         validateOnBlur: false,
         onSubmit: (values) => {
-            fetch("/api/api/surveys", {
+            fetch("/api/surveys", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(values),

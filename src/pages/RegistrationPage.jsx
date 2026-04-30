@@ -34,7 +34,7 @@ function RegistrationPage() {
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (values) => {
-      fetch("/api/api/register", {
+      fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -69,7 +69,7 @@ function RegistrationPage() {
   const handleGoogleSignup = (response) => {
     const googleToken = response.credential;
 
-    fetch("/api/api/google-login", {
+    fetch("/api/google-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token: googleToken }),
