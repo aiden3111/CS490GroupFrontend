@@ -30,7 +30,7 @@ useEffect(() => {
     const fetchAllData = async () => {
       try {
       
-        const calRes = await fetch(`http://127.0.0.1:5000/api/calorie_graph/${clientId}?range=${range}`);
+        const calRes = await fetch(`api/calorie_graph/${clientId}?range=${range}`);
         const rawCalorieData = await calRes.json();
 
         if (Array.isArray(rawCalorieData)) {
@@ -46,11 +46,11 @@ useEffect(() => {
         }
 
 
-        const stepRes = await fetch(`http://127.0.0.1:5000/api/steps_graph/${clientId}?range=${range}`);
+        const stepRes = await fetch(`/api/steps_graph/${clientId}?range=${range}`);
         const stpData = await stepRes.json();
         setStepData(Array.isArray(stpData) ? stpData : []);
 
-        const moodRes = await fetch(`http://127.0.0.1:5000/api/mood/${clientId}`);
+        const moodRes = await fetch(`/api/mood/${clientId}`);
         const mdData = await moodRes.json();
         setMoodData(Array.isArray(mdData) ? mdData : []);
 
