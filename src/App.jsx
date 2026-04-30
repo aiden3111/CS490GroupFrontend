@@ -35,6 +35,9 @@ import NotificationSettings from './pages/NotificationSettings';
 import ViewClientProgress from './pages/ViewClientProgress';
 import AccountSuspended from './pages/AccountSuspended';
 import SeeMyReviews from './pages/SeeMyReviews';
+import BillingPage from './pages/BillingPage';
+import AdminAnalytics from './pages/AdminAnalytics';
+
 
 function App() {
   return (
@@ -74,6 +77,11 @@ function App() {
         <Route path="/ViewClientProgress/:clientId" element={<ProtectedRoutes><ViewClientProgress/></ProtectedRoutes>}/>
         <Route path="/SeeMyReviews/:clientId" element={<ProtectedRoutes><SeeMyReviews/></ProtectedRoutes>}/>
         <Route path="/AccountSuspended" element={<AccountSuspended />} />
+        <Route path="/BillingPage/:clientId" element={<ProtectedRoutes><BillingPage/></ProtectedRoutes>} />
+        <Route path="/AdminAnalytics/:clientId" element={<ProtectedRoutes><AdminAnalytics /></ProtectedRoutes>} />
+
+
+
         <Route path="/" element={<Navigate to="/RegistrationPage" />} />
       </Routes>
     </Router>

@@ -199,6 +199,8 @@ const LandingPage = () => {
           {userRole === "admin" && (
             <>
               <span className="nav-section-label">Admin</span>
+              <li className="nav-item" onClick={() => navigate(`/AdminAnalytics/${clientId}`)}>Admin Dashboard</li>
+
               <li
                 className="nav-item"
                 onClick={() => navigate(`/AdminUsers/${clientId}`)}
@@ -222,6 +224,7 @@ const LandingPage = () => {
           <span className="nav-section-label">Account</span>
 
           <li className="nav-item">Subscriptions</li>
+          <li className="nav-item" onClick={() => navigate(`/BillingPage/${clientId}`)}>Invoices</li>
 
           <li
             className="nav-item"

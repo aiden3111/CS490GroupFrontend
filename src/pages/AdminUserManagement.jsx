@@ -33,7 +33,7 @@ const AdminUserManagement = () => {
         setLoading(true);
         setMessage("");
         try {
-            const url = q ? `/api/admin/accounts?q=${encodeURIComponent(q)}` : `/api/admin/accounts`;
+            const url = q ? `/api/admin/accounts?q=${encodeURIComponent(q)}` : `/api/api/admin/accounts`;
             const res = await fetch(url);
             const data = await res.json();
             if (!res.ok) throw new Error(data?.error || "Failed to load users");
@@ -110,10 +110,9 @@ const AdminUserManagement = () => {
 
         try {
             const payload = {
-                admin_id: clientId, // Using the logged in admin's ID
+                admin_id: clientId, 
             };
 
-            // Determine if we are targeting a client or coach based on their role/data
             if (user.role === "coach") {
                 payload.coach_id = user.client_id;
             } else {
@@ -131,7 +130,6 @@ const AdminUserManagement = () => {
 
             setMessage(`User ${isCurrentlyActive ? "disabled" : "reactivated"} successfully.`);
 
-            // Update local state so the button changes immediately
             setUsers((prev) =>
                 prev.map((u) =>
                     u.client_id === user.client_id
@@ -172,9 +170,10 @@ const AdminUserManagement = () => {
                     <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
                     <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
                     <span className="nav-section-label">Admin</span>
+                    <li className="nav-item" onClick={() => navigate(`/AdminAnalytics/${clientId}`)}>Admin Dashboard</li>
+
                     <li className="nav-item active">User Management</li>
                     <li className="nav-item" onClick={() => navigate(`/AdminReports/${clientId}`)}>Coach Reports</li>
-                    <li className="nav-item" onClick={() => navigate(`/AdminCoachApplications/${clientId}`)}>Coach Applications</li>
                     <span className="nav-section-label">Account</span>
                     <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
                 </ul>
@@ -294,7 +293,6 @@ const AdminUserManagement = () => {
                                             </div>
                                         </div>
                                         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                                            {/* NEW DISABLE/REACTIVATE BUTTON */}
                                             <button
                                                 className={isActive ? "btn-outline-warning" : "btn-outline-success"}
                                                 style={{
