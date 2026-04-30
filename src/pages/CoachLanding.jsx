@@ -258,7 +258,7 @@ const CoachLanding = () => {
             My Clients{" "}
           </li>
 
-          {userRole === "coach" &&
+          {(userRole === "coach" || userRole === "nutritionist") &&
             (coachSpecialty === "nutrition" || coachSpecialty === "both") && (
               <li
                 className="nav-item"
@@ -266,7 +266,7 @@ const CoachLanding = () => {
               >
                 Assign Meal Plans
               </li>
-            )}
+          )}
 
           <li
             className="nav-item"
