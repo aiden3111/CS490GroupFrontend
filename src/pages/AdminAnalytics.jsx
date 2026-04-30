@@ -127,7 +127,6 @@ body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--t
 }
 `;
 
-/* ─────────────────────── recharts helpers ─────────────────────── */
 const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;
     return (
@@ -145,9 +144,6 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const axisStyle = { fill: "#8a9490", fontSize: 11, fontFamily: "'DM Mono', monospace" };
 const gridStyle = { stroke: "rgba(255,255,255,0.05)" };
-
-
-
 
 
 function AdminAnalytics() {
@@ -173,7 +169,6 @@ function AdminAnalytics() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    /* auth guard */
     useEffect(() => {
         const loggedIn = localStorage.getItem("authenticatedClientId");
         if (loggedIn !== clientId || userRole !== "admin") {
@@ -186,7 +181,7 @@ function AdminAnalytics() {
         setLoading(true);
         setError("");
         try {
-            const res = await fetch(`/api/api/admin/active_users?period=${p}`);
+            const res = await fetch(`/api/admin/active_users?period=${p}`);
             const data = await res.json();
 
             if (res.ok) {
@@ -213,7 +208,7 @@ function AdminAnalytics() {
 
     const fetchStats = useCallback(async () => {
         try {
-            const res = await fetch("/api/api/admin/stats");
+            const res = await fetch("/api/admin/stats");
             const data = await res.json();
             if (res.ok){
                 setStats(data);}
@@ -232,7 +227,7 @@ function AdminAnalytics() {
     const fetchSignups = useCallback(async (p) => {
         try {
             const days = p === "day" ? 1 : p === "week" ? 7 : 30;
-            const res = await fetch(`/api/api/admin/accounts/new?days=${days}`);
+            const res = await fetch(`/api/admin/accounts/new?days=${days}`);
             const data = await res.json();
 
             if (res.ok) {
@@ -456,9 +451,6 @@ function AdminAnalytics() {
                                 </ResponsiveContainer>
                             </div>
                         </div>
-
-                        
-
                 </main>
             </div>
         </>
