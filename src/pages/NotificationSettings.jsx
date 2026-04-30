@@ -25,6 +25,7 @@ const NotificationSettings = () => {
     navigate("/LoginPage/");
   };
 
+  //TODO: cahnge water reminders to steps
   useEffect(() => {
     const fetchNotificationData = async () => {
       try {
@@ -116,7 +117,7 @@ const NotificationSettings = () => {
                 checked={preferences.daily_water_reminder}
                 onChange={() => handleTogglePreference("daily_water_reminder")}
               />
-              Daily Water Reminders
+              Daily Steps Reminders
             </label>
 
             <label className="checkbox-container">
@@ -148,14 +149,7 @@ const NotificationSettings = () => {
               In-App Notifications
             </label>
 
-            <label className="checkbox-container">
-              <input
-                type="checkbox"
-                checked={preferences.in_app_notifications}
-                onChange={() => handleTogglePreference("in_app_notifications")}
-              />
-              In-App Notifications
-            </label>
+     
           </div>
         </section>
       </main>
