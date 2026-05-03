@@ -4,7 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import { io } from "socket.io-client";
 
-/*const socket = io("https://cs-490-group-backend.vercel.app");*/
+const socket = io(import.meta.env.VITE_BACKEND_URL, {
+  transports: ["websocket", "polling"],
+  withCredentials: true,
+});
 
 const MessagingPage = () => {
   const { clientId } = useParams();
