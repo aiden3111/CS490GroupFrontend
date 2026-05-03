@@ -52,7 +52,7 @@ const AdminCoachApplications = () => {
     if (!q) return apps;
     return apps.filter((a) => {
       const hay =
-        `${a.application_id} ${a.client_id} ${a.first_name} ${a.last_name} ${a.email} ${a.specialty} ${a.certifications} ${a.bio} ${a.status}`.toLowerCase();
+        `${a.application_id} ${a.client_id} ${a.first_name} ${a.last_name} ${a.email} ${a.specialty} ${a.certifications} ${a.bio} ${a.availability} ${a.status}`.toLowerCase();
       return hay.includes(q);
     });
   }, [query, apps]);
@@ -87,7 +87,6 @@ const AdminCoachApplications = () => {
             : a,
         ),
       );
-      // refresh to ensure state is consistent with DB
       fetchApps(status);
     } catch (e) {
       setMessage(e.message || "Update failed");
@@ -140,9 +139,7 @@ const AdminCoachApplications = () => {
               }}
             >
               {statusOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
+                <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
             <button className="search-btn" disabled={loading} onClick={() => fetchApps(status)}>
@@ -202,6 +199,9 @@ const AdminCoachApplications = () => {
                     </div>
                     <div>
                       <strong>Specialty:</strong> {a.specialty} • <strong>Pricing:</strong> {a.pricing != null ? `$${a.pricing}` : "—"}
+                    </div>
+                    <div>
+                      <strong>Availability:</strong> {a.availability || "—"}
                     </div>
                   </div>
                   {a.certifications && (

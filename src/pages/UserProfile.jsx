@@ -728,7 +728,8 @@ const CoachApplication = ({ clientId }) => {
       bio: "",
       specialty: "",
       certifications: "",
-      pricing: ""
+      pricing: "",
+      availability: ""
     },
     validateOnChange: false,
     validateOnBlur: false,
@@ -755,6 +756,7 @@ const CoachApplication = ({ clientId }) => {
       if (!values.specialty) errors.specialty = "Required";
       if (!values.certifications) errors.certifications = "Required";
       if (!values.pricing) errors.pricing = "Required";
+      if (!values.availability) errors.availability = "Required";
       return errors;
     },
   });
@@ -810,6 +812,17 @@ const CoachApplication = ({ clientId }) => {
             name="pricing"
             onChange={formikForm.handleChange}
             value={formikForm.values.pricing}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formAvailability">
+          <Form.Label className="text-white">Availability</Form.Label>
+          <Form.Control
+            type="text"
+            name="availability"
+            onChange={formikForm.handleChange}
+            value={formikForm.values.availability}
+            placeholder="e.g. Mon-Fri 9am-5pm"
           />
         </Form.Group>
 

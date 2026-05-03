@@ -13,17 +13,18 @@ const CoachLanding = () => {
   const coachSpecialty = localStorage.getItem("coachSpecialty");
 
   const [hasUnread, setHasUnread] = useState(false);
-  const [landingData, setLandingData] = useState({ 
+  const [landingData, setLandingData] = useState({
     user_name: "",
-    pricing: 0, 
-    availability: "", 
+    pricing: 0,
+    availability: "",
     status: ""
-   });
+  });
   const [lanData, setLanData] = useState({
     trackers: [],
   });
   const [calorieData, setCalorieData] = useState([]);
   const [reviews, setReviews] = useState([]);
+
   useEffect(() => {
     const fetchLandingData = async () => {
       const response = await fetch(`/api/landing_page/${clientId}`);
@@ -36,20 +37,13 @@ const CoachLanding = () => {
   useEffect(() => {
     const checkUnread = async () => {
       try {
-        const res = await fetch(
-          `/api/notifications/unread-count/${clientId}`,
-        );
+        const res = await fetch(`/api/notifications/unread-count/${clientId}`);
         const data = await res.json();
-        if (data.success && data.unread_count > 0) {
-          setHasUnread(true);
-        } else {
-          setHasUnread(false);
-        }
+        setHasUnread(data.success && data.unread_count > 0);
       } catch (err) {
         console.error("Error checking unread status:", err);
       }
     };
-
     checkUnread();
   }, [clientId]);
 
@@ -108,9 +102,7 @@ const CoachLanding = () => {
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        const res = await fetch(
-          `/api/admin/check_status/${clientId}`,
-        );
+        const res = await fetch(`/api/admin/check_status/${clientId}`);
         const data = await res.json();
 
         if (data.status === "disabled" || data.status === "suspended") {
@@ -142,29 +134,25 @@ const CoachLanding = () => {
 
   const handleAction = async (requestId, status, targetClientId) => {
     try {
-      const response = await fetch(
-        `/api/coach/${clientId}/requests/${requestId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            status: status,
-            client_id: targetClientId,
-          }),
-        },
-      );
+      const response = await fetch(`/api/coach/${clientId}/requests/${requestId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: status,
+          client_id: targetClientId,
+        }),
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
         alert(errorData.error);
         return;
       }
 
-      if (response.ok) {
-        setRequests((prev) =>
-          prev.filter((req) => req.request_id !== requestId),
-        );
-        alert(`Request ${status} successfully!`);
-      }
+      setRequests((prev) =>
+        prev.filter((req) => req.request_id !== requestId),
+      );
+      alert(`Request ${status} successfully!`);
     } catch (err) {
       console.error("Update failed:", err);
     }
@@ -175,8 +163,7 @@ const CoachLanding = () => {
       alert("Please enter a valid search term.");
       return;
     }
-    const encodedSearch = encodeURIComponent(searchTerm);
-    navigate(`/CoachSearch/${clientId}?search=${searchTerm}`);
+    navigate(`/CoachSearch/${clientId}?search=${encodeURIComponent(searchTerm)}`);
   };
 
   const handleEnter = (e) => {
@@ -192,9 +179,7 @@ const CoachLanding = () => {
 
   useEffect(() => {
     const fetchCalorieData = async () => {
-      const response = await fetch(
-        `/api/calorie_graph/${clientId}`,
-      );
+      const response = await fetch(`/api/calorie_graph/${clientId}`);
       const data = await response.json();
       setCalorieData(data);
     };
@@ -204,9 +189,7 @@ const CoachLanding = () => {
   useEffect(() => {
     const loadReviews = async () => {
       try {
-        const res = await fetch(
-          `/api/review/coach/${clientId}`,
-        );
+        const res = await fetch(`/api/review/coach/${clientId}`);
         const data = await res.json();
 
         if (res.ok) {
@@ -232,9 +215,8 @@ const CoachLanding = () => {
             className={`nav-item ${location.pathname.includes("NotificationsPage") ? "active" : ""}`}
             onClick={() => navigate(`/NotificationsPage/${clientId}`)}
           >
-            {" "}
             Notifications
-            {hasUnread && <span className="notification-dot"></span>}{" "}
+            {hasUnread && <span className="notification-dot"></span>}
           </li>
           <li
             className={`nav-item ${activeTab == "dashboard" ? "active" : ""}`}
@@ -246,16 +228,13 @@ const CoachLanding = () => {
             className={`nav-item ${activeTab === "requests" ? "active" : ""}`}
             onClick={() => setActiveTab("requests")}
           >
-            {" "}
-            Pending Requests{" "}
-            {requests.length > 0 && `(${requests.length})`}{" "}
+            Pending Requests {requests.length > 0 && `(${requests.length})`}
           </li>
           <li
             className={`nav-item ${activeTab === "clients" ? "active" : ""}`}
             onClick={() => setActiveTab("clients")}
           >
-            {" "}
-            My Clients{" "}
+            My Clients
           </li>
 
           {(userRole === "coach" || userRole === "nutritionist") &&
@@ -268,53 +247,37 @@ const CoachLanding = () => {
               </li>
           )}
 
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MessagingPage/${clientId}`)}
-          >
+          <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>
             Messages
           </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/SeeMyReviews/${clientId}`)}
-          >
+          <li className="nav-item" onClick={() => navigate(`/SeeMyReviews/${clientId}`)}>
             My Reviews
           </li>
 
           <span className="nav-section-label">Client Features</span>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
-          >
+          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>
+            My Coach
+          </li>
+          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>
             Workout Logs
           </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MealTrackPage/${clientId}`)}
-          >
-            {" "}
-            Meal Tracker{" "}
+          <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>
+            Meal Tracker
           </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MoodTrackPage/${clientId}`)}
-          >
-            {" "}
-            Mood Tracker{" "}
+          <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>
+            Mood Tracker
           </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/Analytics/${clientId}`)}
-          >
-            {" "}
-            Analytics{" "}
+          <li className="nav-item" onClick={() => navigate(`/Analytics/${clientId}`)}>
+            Analytics
           </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            {" "}
-            My Profile{" "}
+          <li className="nav-item" onClick={() => navigate(`/BillingPage/${clientId}`)}>
+            Subscriptions
+          </li>
+          <li className="nav-item" onClick={() => navigate(`/Invoices/${clientId}`)}>
+            Invoices
+          </li>
+          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>
+            My Profile
           </li>
         </ul>
 
@@ -364,7 +327,6 @@ const CoachLanding = () => {
                     <p>
                       Client id: {r.client_id} - {r.first_name} {r.last_name}
                     </p>
-                    <p></p>
                     <p>
                       <strong>Rating:</strong> {r.rating}/10
                     </p>
@@ -383,19 +345,19 @@ const CoachLanding = () => {
 
             <div className="card">
               <h3>My Profile & Settings</h3>
-              <div className="rreview-card"rreview-card>
+              <div className="rreview-card">
                 <p><strong>Current Rate:</strong> ${landingData.pricing || '0.00'}/mo</p>
                 <p><strong>Availability:</strong> {landingData.availability || 'Not Set'}</p>
-                <p><strong>Status:</strong> 
+                <p><strong>Status:</strong>
                   <span style={{ color: landingData.status === 'active' ? '#00ff44' : '#ef4444', marginLeft: '5px' }}>
                     {landingData.status || 'inactive'}
                   </span>
                 </p>
               </div>
-              
+
               <div style={{ marginTop: '20px' }}>
-                <button 
-                  className="btn-primary" 
+                <button
+                  className="btn-primary"
                   style={{ width: '100%' }}
                   onClick={() => navigate(`/UserProfile/${clientId}`)}
                 >
@@ -428,7 +390,7 @@ const CoachLanding = () => {
             </div>
 
             <div className="card">
-              <h3> Mood Tracker </h3>
+              <h3>Mood Tracker</h3>
               {lanData.trackers?.length > 0 ? (
                 lanData.trackers.slice(0, 4).map((mood) => (
                   <div key={mood.log_date} className="mood-entry">
@@ -491,11 +453,7 @@ const CoachLanding = () => {
                         <button
                           className="btn-primary"
                           onClick={() =>
-                            handleAction(
-                              req.request_id,
-                              "accepted",
-                              req.client_id,
-                            )
+                            handleAction(req.request_id, "accepted", req.client_id)
                           }
                         >
                           Accept
@@ -544,8 +502,7 @@ const CoachLanding = () => {
                   className="client-grid"
                   style={{
                     display: "grid",
-                    gridTemplateColumns:
-                      "repeat(auto-fill, minmax(320px, 1fr))",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
                     gap: "20px",
                   }}
                 >
