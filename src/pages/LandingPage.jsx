@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
 
 const LandingPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,27 +16,7 @@ const LandingPage = () => {
     trackers: [],
   });
 
-  const [hasUnread, setHasUnread] = useState(false);
   const [calorieData, setCalorieData] = useState([]);
-  useEffect(() => {
-    const checkUnread = async () => {
-      try {
-        const res = await fetch(
-          `/api/notifications/unread-count/${clientId}`,
-        );
-        const data = await res.json();
-        if (data.success && data.unread_count > 0) {
-          setHasUnread(true);
-        } else {
-          setHasUnread(false);
-        }
-      } catch (err) {
-        console.error("Error checking unread status:", err);
-      }
-    };
-
-    checkUnread();
-  }, [clientId]);
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -80,11 +61,6 @@ const LandingPage = () => {
     if (e.key === "Enter") {
       handleSearch();
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("authenticatedClientId");
-    navigate("/LoginPage/");
   };
 
   useEffect(() => {
@@ -142,105 +118,7 @@ const LandingPage = () => {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <span className="nav-section-label">Main</span>
-
-        <ul className="nav-list">
-          <li className="nav-item active">Dashboard</li>
-          <li
-            className={`nav-item ${location.pathname.includes("NotificationsPage") ? "active" : ""}`}
-            onClick={() => navigate(`/NotificationsPage/${clientId}`)}
-          >
-            {" "}
-            Notifications{" "}
-            {hasUnread && <span className="notification-dot"></span>}{" "}
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MyCoach/${clientId}`)}
-          >
-            {" "}
-            My Coach
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
-          >
-            Workout Logs
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MealTrackPage/${clientId}`)}
-          >
-            Meal Tracker
-          </li>
-          <span className="nav-section-label">Insights</span>
-
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MoodTrackPage/${clientId}`)}
-          >
-            {" "}
-            Mood Tracker{" "}
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MessagingPage/${clientId}`)}
-          >
-            Messages
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/Analytics/${clientId}`)}
-          >
-            Analytics
-          </li>
-          {userRole === "admin" && (
-            <>
-              <span className="nav-section-label">Admin</span>
-              <li className="nav-item" onClick={() => navigate(`/AdminAnalytics/${clientId}`)}>Admin Dashboard</li>
-
-              <li
-                className="nav-item"
-                onClick={() => navigate(`/AdminUsers/${clientId}`)}
-              >
-                User Management
-              </li>
-              <li
-                className="nav-item"
-                onClick={() => navigate(`/AdminReports/${clientId}`)}
-              >
-                Coach Reports
-              </li>
-              <li
-                className="nav-item"
-                onClick={() => navigate(`/AdminCoachApplications/${clientId}`)}
-              >
-                Coach Applications
-              </li>
-            </>
-          )}
-          <span className="nav-section-label">Account</span>
-
-          <li className="nav-item">Subscriptions</li>
-          <li className="nav-item" onClick={() => navigate(`/BillingPage/${clientId}`)}>Invoices</li>
-
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile{" "}
-          </li>
-        </ul>
-
-        <div className="sidebar-bottom">
-          <button className="logout-btn" onClickCapture={handleLogout}>
-            <span></span>
-            Logout
-          </button>
-        </div>
-      </nav>
+      <Sidebar activePage="dashboard" />
 
       <main className="main-content">
         <header className="dashboard-header">

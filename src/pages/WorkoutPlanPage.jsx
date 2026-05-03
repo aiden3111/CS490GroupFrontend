@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect, useCallback } from "react";
+import Sidebar from "../components/Sidebar";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -147,10 +148,6 @@ const WorkoutPlanPage = () => {
         if (e.key === "Enter") handleSearch();
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("authenticatedClientId");
-        navigate("/LoginPage/");
-    };
 
     const handleCreateField = (e) => {
         setCreateForm({ ...createForm, [e.target.name]: e.target.value });
@@ -646,21 +643,7 @@ const WorkoutPlanPage = () => {
 
     return (
         <div className="dashboard-container">
-            <nav className="sidebar">
-                <div className="brand-logo">BitFit</div>
-                <ul className="nav-list">
-                    <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-                    <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
-                    <ul className="sub-nav">
-                        <li className="nav-item active">Workout Plan</li>
-                        <li className="nav-item" onClick={() => navigate(`/StepsTracker/${clientId}`)}>Step Tracker</li>
-                        <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}>Custom Exercise</li>
-                    </ul>
-                    <div className="sidebar-bottom">
-                        <button className="back-btn" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>← Back to Workout Logs</button>
-                    </div>
-                </ul>
-            </nav>
+            <Sidebar activePage="workoutlogs" />
 
             <div className="main-content">
                 <div className="header">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./Landingcss.css";
+import Sidebar from "../components/Sidebar";
 
 
 
@@ -78,6 +79,7 @@ const BillingPage = () => {
 
     return (
         <div className="dashboard-container">
+            <Sidebar activePage="billing" />
             <main className="main-content">
                 <header className="dashboard-header">
                     <h1 className="welcome-text">Billing & Invoices</h1>

@@ -3,6 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import Sidebar from "../components/Sidebar";
 import {
   LineChart,
   Line,
@@ -26,10 +27,6 @@ const StepsTracker = () => {
     }
   }, [clientId, navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("authenticatedClientId");
-    navigate("/LoginPage/");
-  };
 
   useEffect(() => {
     const fetchStepData = async () => {
@@ -83,46 +80,7 @@ const StepsTracker = () => {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
-          >
-            Workout Logs
-          </li>
-          <ul className="sub-nav">
-            <li
-              className="nav-item"
-              onClick={() => navigate(`/WorkoutPlan/${clientId}`)}
-            >
-              Workout Plan
-            </li>
-            <li className="nav-item active">Step Tracker</li>
-            <li
-              className="nav-item"
-              onClick={() => navigate(`/CustomExercise/${clientId}`)}
-            >
-              Custom Exercise
-            </li>
-          </ul>
-          <div className="sidebar-bottom">
-            <button
-              className="back-btn"
-              onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
-            >
-              ← Back to Workout Logs
-            </button>
-          </div>
-        </ul>
-      </nav>
+      <Sidebar activePage="workoutlogs" />
 
       <div className="main-content">
         <div className="header">

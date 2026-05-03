@@ -1,6 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./WorkoutPage.css";
 import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
 
 const NotificationsPage = () => {
   const { clientId } = useParams();
@@ -20,10 +21,6 @@ const NotificationsPage = () => {
     }
   }, [clientId, navigate]);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/LoginPage/");
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,31 +79,7 @@ const NotificationsPage = () => {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile
-          </li>
-
-          <li className="nav-item active">Notifications Settings</li>
-        </ul>
-
-        <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </nav>
+      <Sidebar activePage="notifications" />
 
       <main className="main-content">
         <h1>Notifications</h1>

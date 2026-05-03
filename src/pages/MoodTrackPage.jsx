@@ -3,6 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import Sidebar from "../components/Sidebar";
 
 const MoodTrackPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,10 +34,6 @@ const MoodTrackPage = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("authenticatedClientId");
-    navigate("/LoginPage/");
-  };
 
   useEffect(() => {
     const fetchLandingData = async () => {
@@ -95,64 +92,7 @@ const MoodTrackPage = () => {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MyCoach/${clientId}`)}
-          >
-            My Coaches{" "}
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
-          >
-            Workout Logs
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MealTrackPage/${clientId}`)}
-          >
-            Meal Tracker
-          </li>
-          <li className="nav-item active">Mood Tracker</li>
-          <ul>
-            <li className="nav-item" onClick={() => navigate(`/DeleteMoodPage/${clientId}`)}> Edit Mood</li>
-          </ul>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MessagingPage/${clientId}`)}
-          >
-            Messages
-          </li>
-          <li className="nav-item">Subscriptions</li>
-           <li
-            className="nav-item"
-            onClick={() => navigate(`/Analytics/${clientId}`)}
-          >
-            Analytics
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile
-          </li>
-        </ul>
-
-        <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </nav>
+      <Sidebar activePage="moodtracker" />
 
       <div className="main-content">
         <div className="header">

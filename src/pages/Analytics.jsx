@@ -1,6 +1,7 @@
-import { useNavigate, useParams,} from "react-router-dom"; 
+import { useNavigate, useParams,} from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
 import { Container, Row, Col } from "react-bootstrap";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -63,30 +64,24 @@ useEffect(() => {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <ul className="nav-list">
-          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-          <li className="nav-item active">Analytics</li>
-          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
-        </ul>
-
-    <p>Filter Range</p>
-    <select 
-      className="bitfit-input" 
-      value={range} 
-      onChange={(e) => setRange(e.target.value)}
-    >
-      <option value="day">Today</option>
-      <option value="week">This Week</option>
-      <option value="month">This Month</option>
-    </select>
-  
-      </nav>
+      <Sidebar activePage="analytics" />
 
       <main className="main-content">
         <h1>Health Analytics</h1>
-        
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ color: "var(--muted)", fontSize: "13px", marginRight: "8px" }}>Filter Range:</label>
+          <select
+            className="bitfit-input"
+            value={range}
+            onChange={(e) => setRange(e.target.value)}
+            style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "6px", color: "white", padding: "6px 10px" }}
+          >
+            <option value="day">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+        </div>
+
         <Container fluid>
           <Row className="mb-4">
         

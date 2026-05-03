@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
 
 import {
   LineChart,
@@ -26,10 +27,6 @@ const MealTrackPage = () => {
     }
   }, [clientId, navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("authenticatedClientId");
-    navigate("/LoginPage/");
-  };
 
   useEffect(() => {
     const fetchCalorieData = async () => {
@@ -45,47 +42,7 @@ const MealTrackPage = () => {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <span className="nav-section-label">Main</span>
-
-        <ul className="nav-list">
-          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}> Dashboard</li>
-          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}> My Coaches </li>
-          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}> Workout Logs</li>
-          <li className="nav-item active">Meal Tracker</li>
-              <ul className="sub-sub-nav">
-                        <li className="nav-item"> Meal Plan</li>
-                        <li className="nav-item" onClick={() => navigate(`/LogTodaysMeal/${clientId}`)}> Log Today's Meals</li>
-                        <li className="nav-item" onClick={() => navigate(`/EditTodaysMeal/${clientId}`)}> Edit Today's Meals</li>
-
-              </ul>
-          <span className="nav-section-label">Insights</span>
-
-          <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker </li>
-          <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/Analytics/${clientId}`)}
-          >
-            Analytics
-          </li>
-          <span className="nav-section-label">Account</span>
-      
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile
-          </li>
-        </ul>
-
-        <div className="sidebar-bottom">
-          <button className="logout-btn" onClickCapture={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </nav>
+      <Sidebar activePage="mealtracker" />
 
       <div className="main-content">
         <h1>Meal Tracker</h1>

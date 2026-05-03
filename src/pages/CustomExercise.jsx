@@ -1,6 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
 
 import { Form, Button, Container, Row, Col, Modal } from "react-bootstrap";
 
@@ -25,11 +26,6 @@ function CustomExercise() {
       navigate(`/UserProfile/${loggedInId}`);
     }
   }, [clientId, navigate]);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/LoginPage/");
-  };
 
   const handleSearch = () => {
     if (searchTerm.trim().length === 0) {
@@ -59,68 +55,7 @@ function CustomExercise() {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}
-          >
-            {" "}
-            Workout Logs
-          </li>
-          <ul className="sub-nav">
-            <li
-              className="nav-item"
-              onClick={() => navigate(`/WorkoutPlan/${clientId}`)}
-            >
-              Workout Plan{" "}
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => navigate(`/StepsTracker/${clientId}`)}
-            >
-              Step Tracker{" "}
-            </li>
-            <li className="nav-item active">Custom Exercise </li>
-            <ul className="sub-sub-nav">
-              <li
-                onClick={() => setActiveTab("mycustom")}
-                className={`nav-item ${activeTab === "mycustom" ? "active" : ""}`}
-              >
-                My Custom
-              </li>
-              <li
-                onClick={() => setActiveTab("create-custom")}
-                className={`nav-item ${activeTab === "create-custom" ? "active" : ""}`}
-              >
-                Create exercise
-              </li>
-            </ul>
-          </ul>
-          <div className="sidebar-bottom">
-            <button className="back-btn" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>← Back to Workout Logs</button>
-          </div>
-        </ul>
-
-        <div className="sidebar-bottom">
-          <button className="logout-btn" onClickCapture={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </nav>
+      <Sidebar activePage="workoutlogs" />
 
       <main className="main-content">
         <h1 className="welcome-text"> Custom Exercise</h1>

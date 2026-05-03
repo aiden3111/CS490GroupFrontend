@@ -2,6 +2,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import Modal from "./ModalPage";
+import Sidebar from "../components/Sidebar";
 
 //TODO: add the links to side bar
 //TODO: Build the top bar
@@ -24,11 +25,6 @@ const SwitchCoach = () => {
       navigate(`/UserProfile/${loggedInId}`);
     }
   }, [clientId, navigate]);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/LoginPage/");
-  };
 
   const handleSearch = () => {
     if (searchTerm.trim().length === 0) {
@@ -125,51 +121,7 @@ fetch(`/api/my_coach/${clientId}`, {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
-          </li>
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile
-          </li>
-        </ul>
-
-        
-        <div className="checkbox">
-          <label className="checkbox-container1">
-            <input
-              type="checkbox"
-              name="Fitness"
-              checked={selectedFilters.includes("fitness")}
-              onChange={() => handleFilterChange("fitness")}
-            />
-            Fitness
-          </label>
-          <label className="checkbox-container2">
-            <input
-              type="checkbox"
-              name="Nutrition"
-              checked={selectedFilters.includes("nutrition")}
-              onChange={() => handleFilterChange("nutrition")}
-            />
-            Nutrition
-          </label>
-        </div>
-
-        <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </nav>
+      <Sidebar activePage="mycoach" />
 
       <main className="main-content">
         <h1 className="welcome-text"> Remove or Switch Coach</h1>

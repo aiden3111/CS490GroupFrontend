@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
+import Sidebar from "../components/Sidebar";
 
 import {
     LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -256,7 +257,6 @@ function AdminAnalytics() {
 
     
     
-    const handleLogout = () => { localStorage.clear(); navigate("/LoginPage/"); };
 
     const totalForPie = stats.active_users + stats.deactivated_users;
     const pending = (stats.total_users || 0) - stats.active_users - stats.deactivated_users;
@@ -278,28 +278,7 @@ function AdminAnalytics() {
         <>
             <style>{css}</style>
             <div className="dashboard-container">
-                    <nav className="sidebar">
-                        <div className="brand-logo">BitFit</div>
-                        <span className="nav-section-label">Main</span>
-                        <ul className="nav-list">
-                            <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-                            <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach</li>
-                            <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
-                            <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
-                            <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
-                            <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-                            <span className="nav-section-label">Admin</span>
-                        <li className="nav-item active">Admin Dashboard</li>
-
-                        <li className="nav-item" onClick={() => navigate(`/AdminUsers/${clientId}`)}>User Management</li>
-                            <li className="nav-item" onClick={() => navigate(`/AdminReports/${clientId}`)}>Coach Reports</li>
-                            <span className="nav-section-label">Account</span>
-                            <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
-                        </ul>
-                        <div className="sidebar-bottom">
-                            <button className="logout-btn" onClickCapture={handleLogout}>Logout</button>
-                        </div>
-                    </nav>
+                    <Sidebar activePage="admindashboard" />
 
                 <main className="main-content">
                     

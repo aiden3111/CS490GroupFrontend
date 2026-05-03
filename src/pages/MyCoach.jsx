@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Navbar, Nav } from "react-bootstrap";
 import { useFormik } from "formik";
 import { Form, Button, Container } from "react-bootstrap";
+import Sidebar from "../components/Sidebar";
 
 const MyCoach = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -88,37 +89,10 @@ const MyCoach = () => {
     },
   });
 
-  const handleLogout = () => {
-    //localStorage.removeItem("authenticatedClientId");
-    localStorage.clear();
-    navigate("/LoginPage/");
-  };
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <span className="nav-section-label">Main</span>
-
-        <ul className="nav-list">
-          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}> Dashboard </li>
-          <li className="nav-item active">My Coach</li>
-          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}> Workout Logs </li>
-          <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}> Meal Tracker </li>
-          <span className="nav-section-label">Insights</span>
-          <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}> Mood Tracker </li>
-          <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}> Messages </li>
-          <li className="nav-item" onClick={() => navigate(`/Analytics/${clientId}`)}> Analytics </li>
-          <span className="nav-section-label">Account</span>
-          <li className="nav-item">Subscriptions</li>
-          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}> My Profile </li>
-        </ul>
-        <div className="sidebar-bottom">
-          <button className="logout-btn" onClickCapture={handleLogout}>
-            <span></span>Logout
-          </button>
-        </div>
-      </nav>
+      <Sidebar activePage="mycoach" />
 
       <main className="main-content">
         <header className="dashboard-header">

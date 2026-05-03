@@ -3,6 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import Sidebar from "../components/Sidebar";
 
 const AddMealstoPlan = () => {
     const { clientId } = useParams(); 
@@ -97,35 +98,9 @@ const AddMealstoPlan = () => {
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("authenticatedClientId");
-        navigate("/LoginPage/");
-    };
-
     return (
         <div className="dashboard-container">
-        <nav className="sidebar">
-                <div className="brand-logo">BitFit</div>
-                <ul className="nav-list">
-                    <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-                    
-                   
-                    <ul className="sub-sub-nav">
-                        <li className="nav-item active"> Clients Meal Plan</li>
-                           <li className="nav-item " onClick={() => navigate(`/AssignMealPlan//${clientId}`)}> Assign Meal Plan </li>
-                            <li className="nav-item active">Create Meal  </li>
-                            <li className="nav-item" onClick={() => navigate(`/CustomExercise/${clientId}`)}> Edit Meal </li>
-                    </ul>
-                   
-                    <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-                    <li className="nav-item">Subscriptions</li>
-                    <li className="nav-item">Analytics</li>
-                 
-                </ul>
-                <div className="sidebar-bottom">
-                    <button className="nav-item" onClickCapture={handleLogout}>Logout</button>
-                </div>
-            </nav>
+        <Sidebar activePage="assignmealplan" />
 
             <div className="main-content">
                 <h1>Add Meals to Plan</h1>

@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import { Form, Button } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import Modal from "./ModalPage";
+import Sidebar from "../components/Sidebar";
 
 function UserProfile() {
   const { clientId } = useParams();
@@ -85,37 +86,7 @@ function UserProfile() {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        {loggedInId !== clientId && (
-          <div className="p-3">
-            <Button variant="outline-warning" size="sm" onClick={() => navigate(-1)}>
-              ← Back to Roster
-            </Button>
-          </div>
-        )}
-        <ul className="nav-list">
-          <li onClick={() => setActiveTab("personal")} className={`nav-item ${activeTab === "personal" ? "active" : ""}`}>Personal Info</li>
-          <li onClick={() => setActiveTab("physical")} className={`nav-item ${activeTab === "physical" ? "active" : ""}`}> Physical Stats</li>
-          <li onClick={() => setActiveTab("goals")} className={`nav-item ${activeTab === "goals" ? "active" : ""}`}> Fitness </li>
-          {canEdit && user.role === 'coach' && (
-            <>
-              <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
-              <li onClick={() => setActiveTab('coach-management')} className={`nav-item ${activeTab === "coach-management" ? "active" : ""}`}>Coach Management</li>
-            </>
-          )}
-          {canEdit && user.role === 'client' && (
-            <>
-              <div className="sidebar-divider" style={{ borderTop: '1px solid #27272a', margin: '1rem 0' }}></div>
-              <li onClick={() => setActiveTab('coach-application')} className={`nav-item ${activeTab === "coach-application" ? "active" : ""}`}>Coach Application</li>
-              <li onClick={() => setActiveTab('payment-methods')} className={`nav-item ${activeTab === "payment-methods" ? "active" : ""}`}>Payment Methods</li>
-            </>
-          )}
-          <li className="nav-item" onClick={() => navigate(`/LandingPage/${loggedInId}`)}>Dashboard</li>
-          <li className="nav-item" onClick={() => navigate(`/NotificationSettings/${loggedInId}`)}>Notifications Settings</li>
-          <li className="nav-item r" onClick={() => navigate(`/ReportUserPage/${loggedInId}`)}>Report User</li>
-        </ul>
-      </nav>
+      <Sidebar activePage="profile" />
 
       <main className="main-content">
         <header className="mb-4">
@@ -123,6 +94,27 @@ function UserProfile() {
             {loggedInId === clientId ? "My Profile" : `${user.first_name}'s Profile`}
           </h1>
         </header>
+
+        {loggedInId !== clientId && (
+          <Button variant="outline-warning" size="sm" style={{ marginBottom: "16px" }} onClick={() => navigate(-1)}>
+            ← Back to Roster
+          </Button>
+        )}
+
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "20px" }}>
+          <button onClick={() => setActiveTab("personal")} className={`btn-${activeTab === "personal" ? "primary" : "secondary"}`}>Personal Info</button>
+          <button onClick={() => setActiveTab("physical")} className={`btn-${activeTab === "physical" ? "primary" : "secondary"}`}>Physical Stats</button>
+          <button onClick={() => setActiveTab("goals")} className={`btn-${activeTab === "goals" ? "primary" : "secondary"}`}>Fitness Goals</button>
+          {canEdit && user.role === "coach" && (
+            <button onClick={() => setActiveTab("coach-management")} className={`btn-${activeTab === "coach-management" ? "primary" : "secondary"}`}>Coach Management</button>
+          )}
+          {canEdit && user.role === "client" && (
+            <>
+              <button onClick={() => setActiveTab("coach-application")} className={`btn-${activeTab === "coach-application" ? "primary" : "secondary"}`}>Coach Application</button>
+              <button onClick={() => setActiveTab("payment-methods")} className={`btn-${activeTab === "payment-methods" ? "primary" : "secondary"}`}>Payment Methods</button>
+            </>
+          )}
+        </div>
 
         {activeTab === "personal" && (
           <PersonalInfoSection

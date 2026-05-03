@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
 
 const SeeMyReviews = () => {
   const { clientId } = useParams();
@@ -34,10 +35,6 @@ const SeeMyReviews = () => {
     }
   }, [clientId, navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("authenticatedClientId");
-    navigate("/LoginPage/");
-  };
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -62,34 +59,7 @@ const SeeMyReviews = () => {
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <span className="nav-section-label">Coach Features</span>
-        <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/CoachLanding/${clientId}`)}
-          >
-            Dashboard
-          </li>
-
-          <span className="nav-section-label">Client Features</span>
-
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            {" "}
-            My Profile{" "}
-          </li>
-        </ul>
-
-        <div className="sidebar-bottom">
-          <button className="logout-btn" onClickCapture={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </nav>
+      <Sidebar activePage="myreviews" />
 
       <main className="main-content">
         <header className="dashboard-header">

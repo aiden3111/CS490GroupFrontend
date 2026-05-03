@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect, useRef } from "react";
+import Sidebar from "../components/Sidebar";
 import { io } from "socket.io-client";
 
 /*const socket = io("https://cs-490-group-backend.vercel.app");*/
@@ -69,30 +70,10 @@ const MessagingPage = () => {
     if (e.key === "Enter") sendMessage();
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("authenticatedClientId");
-    navigate("/LoginPage/");
-  };
 
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <ul className="nav-list">
-          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach</li>
-          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
-          <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
-          <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
-          <li className="nav-item active">Messages</li>
-          <li className="nav-item">Subscriptions</li>
-          <li className="nav-item" onClick={() => navigate(`/Analytics/${clientId}`)}>Analytics</li>
-          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
-        </ul>
-        <div className="sidebar-bottom">
-          <button className="nav-item" onClickCapture={handleLogout}>Logout</button>
-        </div>
-      </nav>
+      <Sidebar activePage="messages" />
 
       <div className="main-content">
         <div className="header">

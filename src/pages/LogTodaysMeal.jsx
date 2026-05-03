@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./Landingcss.css";
+import Sidebar from "../components/Sidebar";
 
 
 const LogTodaysMeal = () => {
@@ -103,20 +104,7 @@ const LogTodaysMeal = () => {
 
     return (
         <div className="dashboard-container">
-            <nav className="sidebar">
-                <div className="brand-logo">BitFit</div>
-                <ul className="nav-list">
-                    <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-                    <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
-                    <ul className="sub-sub-nav">
-                        <li className="nav-item active">Log Today's Meals</li>
-                        <li className="nav-item" onClick={() => navigate(`/EditTodaysMeal/${clientId}`)}>Edit Today's Meals</li>
-                    </ul>
-                    <div className="sidebar-bottom">
-                        <button className="back-btn" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>← Back to Tracker</button>
-                    </div>
-                </ul>
-            </nav>
+            <Sidebar activePage="mealtracker" />
 
             <div className="main-content">
                 <header className="header">

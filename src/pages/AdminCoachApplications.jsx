@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
+import Sidebar from "../components/Sidebar";
 const statusOptions = [
   { value: "pending", label: "Pending" },
   { value: "approved", label: "Approved" },
@@ -56,10 +57,6 @@ const AdminCoachApplications = () => {
       return hay.includes(q);
     });
   }, [query, apps]);
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/LoginPage/");
-  };
   const review = async (applicationId, action) => {
     if (!adminId) {
       setMessage("Missing adminId. Please log out and log back in as an admin.");
@@ -96,27 +93,7 @@ const AdminCoachApplications = () => {
   };
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <span className="nav-section-label">Main</span>
-        <ul className="nav-list">
-          <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-          <li className="nav-item" onClick={() => navigate(`/MyCoach/${clientId}`)}>My Coach</li>
-          <li className="nav-item" onClick={() => navigate(`/WorkoutLogPage/${clientId}`)}>Workout Logs</li>
-          <li className="nav-item" onClick={() => navigate(`/MealTrackPage/${clientId}`)}>Meal Tracker</li>
-          <li className="nav-item" onClick={() => navigate(`/MoodTrackPage/${clientId}`)}>Mood Tracker</li>
-          <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-          <span className="nav-section-label">Admin</span>
-          <li className="nav-item" onClick={() => navigate(`/AdminUsers/${clientId}`)}>User Management</li>
-          <li className="nav-item" onClick={() => navigate(`/AdminReports/${clientId}`)}>Coach Reports</li>
-          <li className="nav-item active">Coach Applications</li>
-          <span className="nav-section-label">Account</span>
-          <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
-        </ul>
-        <div className="sidebar-bottom">
-          <button className="logout-btn" onClickCapture={handleLogout}>Logout</button>
-        </div>
-      </nav>
+      <Sidebar activePage="coachapplications" />
       <main className="main-content">
         <header className="dashboard-header">
           <h1 className="welcome-text">Admin: Coach Applications</h1>

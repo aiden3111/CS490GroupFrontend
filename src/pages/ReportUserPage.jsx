@@ -3,6 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { Form, Button, Container, Table, Row, Col } from "react-bootstrap";
+import Sidebar from "../components/Sidebar";
 
 const ReportUserPage = () => {
 
@@ -53,47 +54,9 @@ const ReportUserPage = () => {
   
 
 
-  const handleLogout = () => {
-    //localStorage.removeItem("authenticatedClientId");
-    localStorage.clear();
-    navigate("/LoginPage/");
-  };
-
   return (
     <div className="dashboard-container">
-      <nav className="sidebar">
-        <div className="brand-logo">BitFit</div>
-        <span className="nav-section-label">Main</span>
-
-        <ul className="nav-list">
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/LandingPage/${clientId}`)}
-          >
-            Dashboard
-          </li>
-
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/MessagingPage/${clientId}`)}
-          >
-            Messages
-          </li>
-     
-          <li
-            className="nav-item"
-            onClick={() => navigate(`/UserProfile/${clientId}`)}
-          >
-            My Profile
-          </li>
-        </ul>
-
-        <div className="sidebar-bottom">
-          <button className="logout-btn" onClickCapture={handleLogout}>
-            <span></span>Logout
-          </button>
-        </div>
-      </nav>
+      <Sidebar activePage="profile" />
 
       <main className="main-content">
         <Container

@@ -3,6 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { Form, Button, Container, Table, Row, Col } from "react-bootstrap";
+import Sidebar from "../components/Sidebar";
 
 const EditMealsfromPlan = () => {
     const { clientId } = useParams(); 
@@ -122,36 +123,9 @@ const EditMealsfromPlan = () => {
 
   
 
-    const handleLogout = () => {
-        localStorage.removeItem("authenticatedClientId");
-        navigate("/LoginPage/");
-    };
-
     return (
         <div className="dashboard-container">
-        <nav className="sidebar">
-                <div className="brand-logo">BitFit</div>
-                <ul className="nav-list">
-                    <li className="nav-item" onClick={() => navigate(`/LandingPage/${clientId}`)}>Dashboard</li>
-               
-                   
-                    <ul className="sub-sub-nav">
-                        <li className="nav-item active"> Clients Meal Plan</li>
-                           <li className="nav-item " onClick={() => navigate(`/AssignMealPlan//${clientId}`)}> Assign Meal Plan </li>
-                            <li className="nav-item" onClick={() => navigate(`/AddMealstoPlan/${clientId}`)}>Create Meal  </li>
-                            
-                            <li className="nav-item active" onClick={() => navigate(`/CustomExercise/${clientId}`)}> Edit Meal </li>
-                    </ul>
-                  
-                    <li className="nav-item" onClick={() => navigate(`/MessagingPage/${clientId}`)}>Messages</li>
-                    
-                    <li className="nav-item">Analytics</li>
-                    <li className="nav-item" onClick={() => navigate(`/UserProfile/${clientId}`)}>My Profile</li>
-                </ul>
-                <div className="sidebar-bottom">
-                    <button className="nav-item" onClickCapture={handleLogout}>Logout</button>
-                </div>
-            </nav>
+        <Sidebar activePage="assignmealplan" />
 
             <div className="main-content">
                 <h1>Edit & Delete Meals</h1>
