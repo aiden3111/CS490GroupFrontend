@@ -16,6 +16,7 @@ const MessagingPage = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
+  const currentRoomRef = useRef(null);
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -27,14 +28,21 @@ const MessagingPage = () => {
   }, [clientId, navigate]);
 
   useEffect(() => {
-  socket.on("receive_message", (message) => {
-    setMessages((prev) => [...prev, message]);
-  });
+    socket.on("receive_message", (message) => {
+      setMessages((prev) => [...prev, message]);
+    });
 
-  return () => {
-    socket.off("receive_message");
-  };
-}, []);
+    socket.on("connect", () => {
+      if (currentRoomRef.current) {
+        socket.emit("join", { room: currentRoomRef.current });
+      }
+    });
+
+    return () => {
+      socket.off("receive_message");
+      socket.off("connect");
+    };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -49,6 +57,7 @@ const MessagingPage = () => {
   const openConversation = async (otherUser) => {
     setSelectedUser(otherUser);
     const room = [clientId, otherUser.other_user_id].sort().join("_");
+    currentRoomRef.current = room;
     socket.emit("join", { room });
 
     const res = await fetch(`/api/messaging/${clientId}/${otherUser.other_user_id}`);
