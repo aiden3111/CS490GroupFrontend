@@ -256,9 +256,6 @@ const Sidebar = ({ activePage = "" }) => {
         >
           Billing &amp; Invoices
         </li>
-        <li className="nav-item nav-placeholder">
-          Invoices
-        </li>
         <li
           className={`nav-item${activePage === "profile" ? " active" : ""}`}
           onClick={() => navigate(`/UserProfile/${clientId}`)}
