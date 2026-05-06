@@ -56,7 +56,7 @@ const ReportUserPage = () => {
 
   return (
     <div className="dashboard-container">
-      <Sidebar activePage="profile" />
+      <Sidebar activePage="report-user" />
 
       <main className="main-content">
         <Container

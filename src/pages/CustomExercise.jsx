@@ -55,10 +55,25 @@ function CustomExercise() {
 
   return (
     <div className="dashboard-container">
-      <Sidebar activePage="workoutlogs" />
+      <Sidebar activePage="customexercise" />
 
       <main className="main-content">
         <h1 className="welcome-text"> Custom Exercise</h1>
+
+        <div className="tab-row">
+          <button
+            className={`btn-${activeTab === "mycustom" ? "primary" : "secondary"}`}
+            onClick={() => setActiveTab("mycustom")}
+          >
+            My Custom Exercises
+          </button>
+          <button
+            className={`btn-${activeTab === "create" ? "primary" : "secondary"}`}
+            onClick={() => setActiveTab("create")}
+          >
+            Create Exercise
+          </button>
+        </div>
 
         {activeTab === "mycustom" ? (
           <MyCustom clientId={clientId} />

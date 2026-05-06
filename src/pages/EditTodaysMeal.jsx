@@ -55,7 +55,7 @@ const EditTodaysMeal = () => {
 
     return (
         <div className="dashboard-container">
-            <Sidebar activePage="mealtracker" />
+            <Sidebar activePage="editmeal" />
 
             <div className="main-content">
                 <header className="header" style={{ marginBottom: "30px" }}>

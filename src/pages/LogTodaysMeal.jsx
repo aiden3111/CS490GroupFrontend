@@ -104,7 +104,7 @@ const LogTodaysMeal = () => {
 
     return (
         <div className="dashboard-container">
-            <Sidebar activePage="mealtracker" />
+            <Sidebar activePage="logmeal" />
 
             <div className="main-content">
                 <header className="header">

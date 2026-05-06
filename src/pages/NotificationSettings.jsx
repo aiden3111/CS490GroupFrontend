@@ -75,7 +75,7 @@ const NotificationSettings = () => {
 
   return (
     <div className="dashboard-container">
-      <Sidebar activePage="notifications" />
+      <Sidebar activePage="notification-settings" />
 
       <main className="main-content">
         <h1>Notifications</h1>
