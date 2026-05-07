@@ -81,7 +81,7 @@ function LoginPage() {
         if (data.client_id) {
           localStorage.setItem("authenticatedClientId", data.client_id);
           localStorage.setItem("userRole", data.role || "client");
-          navigate(`/UserProfile/${data.client_id}`);
+          navigate(`/LandingPage/${data.client_id}`);
         } else if (data["needs registration"]) {
           alert("Account not found.");
           navigate("/RegistrationPage");
