@@ -79,6 +79,8 @@ function LoginPage() {
       .then((data) => {
         console.log("Backend Response:", data);
         if (data.client_id) {
+          localStorage.setItem("authenticatedClientId", data.client_id);
+          localStorage.setItem("userRole", data.role || "client");
           navigate(`/UserProfile/${data.client_id}`);
         } else if (data["needs registration"]) {
           alert("Account not found.");
