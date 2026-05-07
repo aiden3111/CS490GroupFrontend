@@ -105,26 +105,6 @@ const Analytics = () => {
     fetchPhotos();
   }, [clientId, range]);
 
-  const handleDelete = async (imageUrl) => {
-    const filename = imageUrl.split("/").pop();
-
-    if (!window.confirm("Are you sure you want to delete this photo?")) return;
-
-    try {
-      const res = await fetch(`/api/progress/delete/${filename}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        setProgressPhotos((prev) =>
-          prev.filter((p) => p.image_url !== imageUrl),
-        );
-      }
-    } catch (err) {
-      console.error("Failed to delete photo", err);
-    }
-  };
-
   return (
     <div className="dashboard-container">
       <Sidebar activePage="analytics" />
@@ -300,25 +280,7 @@ const Analytics = () => {
                         {photo.photo_type}
                       </p>
 
-                      <button
-                        onClick={() => handleDelete(photo.image_url)}
-                        style={{
-                          width: "100%",
-                          padding: "4px",
-                          fontSize: "11px",
-                          background: "rgba(255, 77, 77, 0.2)",
-                          border: "1px solid #ff4d4d",
-                          borderRadius: "4px",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.target.style.background = "#6d4134")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.target.style.background = "rgba(255, 77, 77, 0.2)")
-                        }
-                      >
-                        Delete Photo
-                      </button>
+                
                     </div>
                   );
                 })}
