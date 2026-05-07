@@ -479,18 +479,6 @@ const CoachLanding = () => {
                           View Progress
                         </button>
                       </div>
-                      <button
-                        className="btn-outline-warning w-100"
-                        style={{
-                          border: "1px solid #fbbf24",
-                          color: "#fbbf24",
-                          background: "transparent",
-                          padding: "8px",
-                        }}
-                        onClick={() => handleCreatePlan(client)}
-                      >
-                        + Assign New Workout Plan
-                      </button>
                     </div>
                   ))}
                 </div>

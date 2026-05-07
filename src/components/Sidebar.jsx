@@ -12,6 +12,7 @@ const Sidebar = ({ activePage = "" }) => {
     workouts: ["workoutlogs", "workoutplan", "exercise-library", "steps", "customexercise"].includes(activePage),
     meals: ["mealtracker", "logmeal", "editmeal"].includes(activePage),
     coachMeals: ["assignmealplan", "addmealstoplan", "editmealsfromplan"].includes(activePage),
+    coachWorkouts: ["assignworkoutplan", "addworkoutstoplan", "editworkoutsfromplan"].includes(activePage),
   });
 
   // Everyone is a client. Additional roles stack on top.
@@ -26,6 +27,9 @@ const Sidebar = ({ activePage = "" }) => {
         coachSpecialty === "both"));
   const canAssignMeals =
     coachSpecialty === "nutrition" || coachSpecialty === "both";
+  
+  const canAssignWorkouts =
+    coachSpecialty === "fitness" || coachSpecialty === "both";
 
   useEffect(() => {
     const checkUnread = async () => {
@@ -175,6 +179,40 @@ const Sidebar = ({ activePage = "" }) => {
         {hasCoachRole && (
           <>
             <span className="nav-section-label">Coach</span>
+            {canAssignWorkouts && (
+              <>
+                <li
+                  className={`nav-item nav-parent${["assignworkoutplan", "addworkoutstoplan", "editworkoutsfromplan"].includes(activePage) ? " active" : ""}`}
+                  onClick={() => toggleMenu("coachWorkouts")}
+                >
+                  <span>Client Workout Plans</span>
+                  <span className={`nav-caret${openMenus.coachWorkouts ? " open" : ""}`}>▾</span>
+                </li>
+                {openMenus.coachWorkouts && (
+                  <ul className="nav-sublist">
+                    <li
+                      className={`nav-item nav-subitem${activePage === "assignworkoutplan" ? " active" : ""}`}
+                      onClick={() => navigate(`/AssignWorkoutPlan/${clientId}`)}
+                    >
+                      Assign Workout Plan
+                    </li>
+                    <li
+                      className={`nav-item nav-subitem${activePage === "addworkoutstoplan" ? " active" : ""}`}
+                      onClick={() => navigate(`/AddWorkoutstoPlan/${clientId}`)}
+                    >
+                      Add Workouts
+                    </li>
+                    <li
+                      className={`nav-item nav-subitem${activePage === "editworkoutsfromplan" ? " active" : ""}`}
+                      onClick={() => navigate(`/EditWorkoutsfromPlan/${clientId}`)}
+                    >
+                      Edit/Delete Workouts
+                    </li>
+                  </ul>
+                )}
+              </>
+            )}
+            
             {canAssignMeals && (
               <>
                 <li
