@@ -1,7 +1,6 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import "./WorkoutPage.css";
 import React, { useState, useEffect } from "react";
-import Modal from "./ModalPage";
 import Sidebar from "../components/Sidebar";
 
 
@@ -16,6 +15,8 @@ const WorkoutSearchPage = () => {
   const navigate = useNavigate();
 
   const [selectedFilters, setselectedFilters] = useState([]);
+  const muscleFilters = ["Chest", "Shoulders", "Back", "Legs", "Hamstrings", "Core", "Cardio", "Arms", "Glutes", "Full Body"];
+  const equipmentFilters = ["Barbell", "Dumbbell", "Machine", "Cable", "Bodyweight", "None", "Treadmill"];
 
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
@@ -41,8 +42,11 @@ const WorkoutSearchPage = () => {
   };
 
   useEffect(() => {
-    if (query) {
-      fetch(`/api/exercises?search=${encodeURIComponent(query)}`)
+    const endpoint = query
+      ? `/api/exercises?search=${encodeURIComponent(query)}`
+      : "/api/exercises";
+
+    fetch(endpoint)
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {
@@ -53,7 +57,6 @@ const WorkoutSearchPage = () => {
           }
         })
         .catch((err) => console.error("Fetch error:", err));
-    }
   }, [query]);
 
   const handleFilterChange = (name) => {
@@ -74,7 +77,7 @@ const WorkoutSearchPage = () => {
 
   return (
     <div className="dashboard-container">
-      <Sidebar activePage="workoutlogs" />
+      <Sidebar activePage="exercise-library" />
 
       <main className="main-content">
         <h1 className="welcome-text"> Exercise Library</h1>
@@ -94,7 +97,45 @@ const WorkoutSearchPage = () => {
           </button>
         </div>
 
-        {query && <h2 className="section-title">Seach Results: "{query}"</h2>}
+        {query && <h2 className="section-title">Search Results: "{query}"</h2>}
+
+        <section className="filter-panel">
+          <div className="filter-group">
+            <p>Muscle Group</p>
+            <div className="filter-options">
+              {muscleFilters.map((name) => (
+                <label key={name} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedFilters.includes(name)}
+                    onChange={() => handleFilterChange(name)}
+                  />
+                  {name}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="filter-group">
+            <p>Equipment</p>
+            <div className="filter-options">
+              {equipmentFilters.map((name) => (
+                <label key={name} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedFilters.includes(name)}
+                    onChange={() => handleFilterChange(name)}
+                  />
+                  {name}
+                </label>
+              ))}
+            </div>
+          </div>
+          {selectedFilters.length > 0 && (
+            <button className="clear-filters-btn" onClick={() => setselectedFilters([])}>
+              Clear Filters
+            </button>
+          )}
+        </section>
 
         <div className="coach-grid">
           {displayWorkouts.length > 0
@@ -130,11 +171,8 @@ const WorkoutSearchPage = () => {
                   )}
                 </div>
               ))
-            : query && <p>No coaches found.</p>}
+            : <p>No exercises found.</p>}
         </div>
-        <Modal>
-         
-        </Modal>
       </main>
     </div>
   );

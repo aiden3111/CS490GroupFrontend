@@ -100,7 +100,7 @@ const AddMealstoPlan = () => {
 
     return (
         <div className="dashboard-container">
-        <Sidebar activePage="assignmealplan" />
+        <Sidebar activePage="addmealstoplan" />
 
             <div className="main-content">
                 <h1>Add Meals to Plan</h1>

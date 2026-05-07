@@ -80,7 +80,7 @@ const StepsTracker = () => {
 
   return (
     <div className="dashboard-container">
-      <Sidebar activePage="workoutlogs" />
+      <Sidebar activePage="steps" />
 
       <div className="main-content">
         <div className="header">

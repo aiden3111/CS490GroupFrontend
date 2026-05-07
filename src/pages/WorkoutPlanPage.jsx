@@ -643,7 +643,7 @@ const WorkoutPlanPage = () => {
 
     return (
         <div className="dashboard-container">
-            <Sidebar activePage="workoutlogs" />
+            <Sidebar activePage="workoutplan" />
 
             <div className="main-content">
                 <div className="header">
@@ -907,4 +907,3 @@ const cancelButtonStyle = {
 };
 
 export default WorkoutPlanPage;
-

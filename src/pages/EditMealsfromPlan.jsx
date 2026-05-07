@@ -125,7 +125,7 @@ const EditMealsfromPlan = () => {
 
     return (
         <div className="dashboard-container">
-        <Sidebar activePage="assignmealplan" />
+        <Sidebar activePage="editmealsfromplan" />
 
             <div className="main-content">
                 <h1>Edit & Delete Meals</h1>
