@@ -137,6 +137,7 @@ const MyCoach = () => {
             </button>
           </div>
         ) : (
+          <div>
           <div className="card coach-detail-card">
             <div className="coach-detail-header">
               <div className="coach-detail-avatar">
@@ -189,8 +190,8 @@ const MyCoach = () => {
               Remove / Switch Coach
             </button>
           </div>
-        )}
-        <div className="coach-reviews">
+          
+           <div className="coach-reviews" style={{ marginTop: "60px" }}>
           <h2>Leave a Review </h2>
           <Container className="mt-3">
             <div
@@ -234,6 +235,9 @@ const MyCoach = () => {
             </div>
           </Container>
         </div>
+          </div>
+        )}
+       
       </main>
     </div>
   );
