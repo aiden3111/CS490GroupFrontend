@@ -13,9 +13,8 @@ const AddWorkoutstoPlan = () => {
 
     const [clients, setClients] = useState([]);
     const [plans, setPlans] = useState([]);
-    const [exercises, setExercises] = useState([]);  // exercise library
+    const [exercises, setExercises] = useState([]);  
 
-    // Auth guard
     useEffect(() => {
         const loggedInId = localStorage.getItem("authenticatedClientId");
         if (loggedInId !== clientId) {
@@ -23,23 +22,20 @@ const AddWorkoutstoPlan = () => {
         }
     }, [clientId, navigate]);
 
-    // Load coach's clients
     useEffect(() => {
-        fetch(`/api/api/clients/coach/${clientId}`)
+        fetch(`/api/clients/coach/${clientId}`)
             .then(res => res.json())
             .then(data => setClients(Array.isArray(data) ? data : []))
             .catch(err => console.error("Error loading clients:", err));
     }, [clientId]);
 
-    // Load exercise library for the dropdown
     useEffect(() => {
-        fetch(`/api/api/exercises/`)
+        fetch(`/api/exercises/`)
             .then(res => res.json())
             .then(data => setExercises(Array.isArray(data) ? data : (data.exercises ?? [])))
             .catch(err => console.error("Error loading exercises:", err));
     }, []);
 
-    // When client changes, fetch their workout plans
     const handleClientChange = (e) => {
         const selectedId = e.target.value;
         formik.setFieldValue("selectedClientId", selectedId);
@@ -47,7 +43,7 @@ const AddWorkoutstoPlan = () => {
         setPlans([]);
 
         if (selectedId) {
-            fetch(`/api/api/workoutPlansPage/client/${selectedId}`)
+            fetch(`/api/workoutPlansPage/client/${selectedId}`)
                 .then(res => res.json())
                 .then(data => setPlans(data.workout_plans ?? []))
                 .catch(err => console.error("Error loading plans:", err));
@@ -75,7 +71,7 @@ const AddWorkoutstoPlan = () => {
             }
 
             try {
-                const res = await fetch(`/api/api/workoutPlanExercisesPage/${values.selectedPlanId}/exercises`, {
+                const res = await fetch(`/api/workoutPlanExercisesPage/${values.selectedPlanId}/exercises`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -90,7 +86,6 @@ const AddWorkoutstoPlan = () => {
 
                 if (res.ok) {
                     alert("Exercise added to plan!");
-                    // Keep client + plan selected, clear exercise fields only
                     formik.resetForm({
                         values: {
                             ...formik.initialValues,

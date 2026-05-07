@@ -25,14 +25,14 @@ const EditWorkoutsfromPlan = () => {
     }, [clientId, navigate]);
  
     useEffect(() => {
-        fetch(`/api/api/clients/coach/${clientId}`)
+        fetch(`/api/clients/coach/${clientId}`)
             .then(res => res.json())
             .then(data => setClients(Array.isArray(data) ? data : []))
             .catch(err => console.error("Error loading clients:", err));
     }, [clientId]);
  
     useEffect(() => {
-        fetch(`/api/api/exercises/`)
+        fetch(`/api/exercises/`)
             .then(res => res.json())
             .then(data => setAllExercises(Array.isArray(data) ? data : (data.exercises ?? [])))
             .catch(err => console.error("Error loading exercise library:", err));
@@ -54,7 +54,7 @@ const EditWorkoutsfromPlan = () => {
             if (!values.id) return;
  
             try {
-                const res = await fetch(`/api/api/workoutPlanExercisesPage/entry/${values.id}`, {
+                const res = await fetch(`/api/workoutPlanExercisesPage/entry/${values.id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -87,7 +87,7 @@ const EditWorkoutsfromPlan = () => {
     });
  
     const fetchPlanExercises = (planId) => {
-        fetch(`/api/api/workoutPlansPage/${planId}`)
+        fetch(`/api/workoutPlansPage/${planId}`)
             .then(res => {
                 if (!res.ok) throw new Error("Failed to load plan");
                 return res.json();
@@ -109,7 +109,7 @@ const EditWorkoutsfromPlan = () => {
         setExercises([]);
  
         if (selectedId) {
-            fetch(`/api/api/workoutPlansPage/client/${selectedId}`)
+            fetch(`/api/workoutPlansPage/client/${selectedId}`)
                 .then(res => res.json())
                 .then(data => setPlans(data.workout_plans ?? []))
                 .catch(err => console.error("Error loading plans:", err));
@@ -140,7 +140,7 @@ const EditWorkoutsfromPlan = () => {
         if (!window.confirm("Are you sure you want to remove this exercise from the plan?")) return;
  
         try {
-            const res = await fetch(`/api/api/workoutPlanExercisesPage/entry/${rowId}`, {
+            const res = await fetch(`/api/workoutPlanExercisesPage/entry/${rowId}`, {
                 method: "DELETE",
             });
  

@@ -10,7 +10,6 @@ const AssignWorkoutPlan = () => {
     const navigate = useNavigate();
     const [clients, setClients] = useState([]);
 
-    // Auth guard
     useEffect(() => {
         const loggedInId = localStorage.getItem("authenticatedClientId");
         if (loggedInId !== clientId) {
@@ -18,9 +17,8 @@ const AssignWorkoutPlan = () => {
         }
     }, [clientId, navigate]);
 
-    // Load coach's clients
     useEffect(() => {
-        fetch(`/api/api/clients/coach/${clientId}`)
+        fetch(`/api/clients/coach/${clientId}`)
             .then(res => res.json())
             .then(data => setClients(Array.isArray(data) ? data : []))
             .catch(err => console.error("Error loading clients:", err));
@@ -39,7 +37,7 @@ const AssignWorkoutPlan = () => {
             }
 
             try {
-                const res = await fetch(`/api/api/workoutPlansPage/`, {
+                const res = await fetch(`/api/workoutPlansPage/`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -75,7 +73,6 @@ const AssignWorkoutPlan = () => {
                         <div style={{ backgroundColor: "#2a472a", padding: "30px", borderRadius: "15px", color: "white" }}>
                             <Form onSubmit={formik.handleSubmit}>
 
-                                {/* Frequency */}
                                 <Form.Group className="mb-4">
                                     <Form.Label>Frequency (e.g., 3x per week)</Form.Label>
                                     <Form.Control
@@ -87,7 +84,6 @@ const AssignWorkoutPlan = () => {
                                     />
                                 </Form.Group>
 
-                                {/* Difficulty */}
                                 <Form.Group className="mb-4">
                                     <Form.Label>Difficulty</Form.Label>
                                     <Form.Select
@@ -102,7 +98,6 @@ const AssignWorkoutPlan = () => {
                                     </Form.Select>
                                 </Form.Group>
 
-                                {/* Client */}
                                 <Form.Group className="mb-4">
                                     <Form.Label>Select Client</Form.Label>
                                     <Form.Select
