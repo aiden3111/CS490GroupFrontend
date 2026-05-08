@@ -49,9 +49,39 @@ const MessagingPage = () => {
   }, [messages]);
 
   const fetchConversations = async () => {
-    const res = await fetch(`/api/messaging/conversations/${clientId}`);
-    const data = await res.json();
-    setConversations(Array.isArray(data) ? data : []);
+    const userRole = localStorage.getItem("userRole");
+
+    // Fetch existing message conversations
+    const convRes = await fetch(`/api/messaging/conversations/${clientId}`);
+    const convData = await convRes.json();
+    const existing = Array.isArray(convData) ? convData : [];
+    const existingIds = new Set(existing.map((c) => c.other_user_id));
+
+    const contacts = [];
+
+    if (userRole === "coach" || userRole === "nutritionist") {
+      // Coaches see all their clients
+      const clientsRes = await fetch(`/api/clients/coach/${clientId}`);
+      const clientsData = await clientsRes.json();
+      if (Array.isArray(clientsData)) {
+        clientsData.forEach((c) => {
+          if (!existingIds.has(c.client_id)) {
+            contacts.push({ other_user_id: c.client_id, first_name: c.first_name, last_name: c.last_name, last_message: null });
+          }
+        });
+      }
+    } else {
+      // Clients see their assigned coach
+      const coachRes = await fetch(`/api/my_coach/${clientId}`);
+      if (coachRes.ok) {
+        const coachData = await coachRes.json();
+        if (coachData.coach_id && !existingIds.has(coachData.coach_id)) {
+          contacts.push({ other_user_id: coachData.coach_id, first_name: coachData.first_name, last_name: coachData.last_name, last_message: null });
+        }
+      }
+    }
+
+    setConversations([...existing, ...contacts]);
   };
 
   const openConversation = async (otherUser) => {
@@ -110,7 +140,7 @@ const MessagingPage = () => {
                   }}
                 >
                   <p style={{ margin: 0, fontWeight: "bold" }}>{conv.first_name} {conv.last_name}</p>
-                  <p style={{ margin: 0, fontSize: "12px", color: "#aaa" }}>{conv.last_message}</p>
+                  <p style={{ margin: 0, fontSize: "12px", color: "#aaa" }}>{conv.last_message ?? "No messages yet"}</p>
                 </div>
               ))
             )}
