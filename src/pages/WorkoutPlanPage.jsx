@@ -58,7 +58,7 @@ const WorkoutPlanPage = () => {
 
     const fetchWorkoutPlans = useCallback(async () => {
         try {
-            const res = await fetch(`/api/workoutPlansPageclient/${clientId}`);
+            const res = await fetch(`/api/workoutPlansPage/client/${clientId}`);
             const data = await res.json();
             if (data.error) {
                 console.error(data.error);
@@ -100,7 +100,7 @@ const WorkoutPlanPage = () => {
     const loadPlanDetail = async (workoutPlanId) => {
         setPlanDetailLoading(true);
         try {
-            const res = await fetch(`/api/workoutPlansPage${workoutPlanId}`);
+            const res = await fetch(`/api/workoutPlansPage/${workoutPlanId}`);
             const data = await res.json();
             if (data.error) {
                 showMessage(data.error, true);
@@ -208,7 +208,7 @@ const WorkoutPlanPage = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch(`/api/workoutPlansPage${editingPlanId}`, {
+            const res = await fetch(`/api/workoutPlansPage/${editingPlanId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -238,7 +238,7 @@ const WorkoutPlanPage = () => {
         if (!window.confirm("Delete this workout plan and all of its exercises?")) return;
         setLoading(true);
         try {
-            const res = await fetch(`/api/workoutPlansPage${workoutPlanId}`, { method: "DELETE" });
+            const res = await fetch(`/api/workoutPlansPage/${workoutPlanId}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok || data.error) {
                 showMessage(data.error || "Delete failed.", true);
