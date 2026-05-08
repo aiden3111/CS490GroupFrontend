@@ -32,7 +32,7 @@ const EditWorkoutsfromPlan = () => {
     }, [clientId]);
  
     useEffect(() => {
-        fetch(`/api/exercises/`)
+        fetch(`/api/exercises`)
             .then(res => res.json())
             .then(data => setAllExercises(Array.isArray(data) ? data : (data.exercises ?? [])))
             .catch(err => console.error("Error loading exercise library:", err));

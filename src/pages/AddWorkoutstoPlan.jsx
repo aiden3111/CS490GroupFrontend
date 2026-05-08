@@ -30,7 +30,7 @@ const AddWorkoutstoPlan = () => {
     }, [clientId]);
 
     useEffect(() => {
-        fetch(`/api/exercises/`)
+        fetch(`/api/exercises`)
             .then(res => res.json())
             .then(data => setExercises(Array.isArray(data) ? data : (data.exercises ?? [])))
             .catch(err => console.error("Error loading exercises:", err));

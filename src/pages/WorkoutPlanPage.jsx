@@ -74,7 +74,7 @@ const WorkoutPlanPage = () => {
 
     const fetchExercises = useCallback(async () => {
         try {
-            const res = await fetch(`/api/exercises/`);
+            const res = await fetch(`/api/exercises`);
             const data = await res.json();
             setExercises(Array.isArray(data) ? data : []);
         } catch (err) {
