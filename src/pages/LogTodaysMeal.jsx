@@ -32,28 +32,32 @@ const LogTodaysMeal = () => {
         description: ""
     });
 
-    useEffect(() => {
-        const fetchPlanMeals = async () => {
-            try {
-                const res = await fetch(`/api/nutrition_plan/${clientId}`);
-                const plans = await res.json();
+   useEffect(() => {
+    const fetchPlanMeals = async () => {
+        try {
+            const res = await fetch(`/api/nutrition_plan/${clientId}`);
+            const plans = await res.json();
 
-                if (res.ok && plans.length > 0) {
-                    const latestPlanId = plans[plans.length - 1].nutrition_plan_id;
+            if (res.ok && plans.length > 0) {
+               
+                const sortedPlans = [...plans].sort((a, b) => a.nutrition_plan_id - b.nutrition_plan_id);
+                const latestPlanId = sortedPlans[sortedPlans.length - 1].nutrition_plan_id;
 
-                    const mealRes = await fetch(`/api/nutrition_plan/${clientId}/${latestPlanId}`);
-                    const mealData = await mealRes.json();
+                console.log("Buscando refeições para o plano mais recente:", latestPlanId);
 
-                    if (mealRes.ok) {
-                        setAssignedMeals(mealData); 
-                    }
+                const mealRes = await fetch(`/api/nutrition_plan/${clientId}/${latestPlanId}`);
+                const mealData = await mealRes.json();
+
+                if (mealRes.ok) {
+                    setAssignedMeals(mealData); 
                 }
-            } catch (err) {
-                console.error("Meal fetch error:", err);
             }
-        };
-        if (clientId) fetchPlanMeals();
-    }, [clientId]);
+        } catch (err) {
+            console.error("Meal fetch error:", err);
+        }
+    };
+    fetchPlanMeals();
+}, [clientId]);
 
     const handleLogSubmit = async (mealData, isAssigned = true) => {
         const payload = {
