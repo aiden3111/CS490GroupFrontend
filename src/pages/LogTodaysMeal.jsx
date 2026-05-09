@@ -128,38 +128,33 @@ const LogTodaysMeal = () => {
     }
   };
 
-  return (
+  const mealsByDay = assignedMeals.reduce((acc, meal) => {
+  const day = meal.day_number;
+  if (!acc[day]) acc[day] = [];
+  acc[day].push(meal);
+  return acc;
+}, {});
+
+
+const sortedDayNumbers = Object.keys(mealsByDay).sort((a, b) => a - b);
+
+ return (
     <div className="dashboard-container">
       <Sidebar activePage="logmeal" />
 
       <div className="main-content">
         <header className="header">
-          <h1
-            style={{
-              fontSize: "32px",
-              fontWeight: 700,
-              color: "#fbbf24",
-              letterSpacing: "-0.5px",
-            }}
-          >
+          <h1 style={{ fontSize: "32px", fontWeight: 700, color: "#fbbf24", letterSpacing: "-0.5px" }}>
             Log Today's Intake
           </h1>
-          <p
-            style={{
-              color: "#00ff44",
-              fontSize: "15px",
-              fontWeight: 600,
-              marginTop: "4px",
-            }}
-          >
+          <p style={{ color: "#00ff44", fontSize: "15px", fontWeight: 600, marginTop: "4px" }}>
             {today}
           </p>
-          {/* <p style={{ color: "var(--text)", fontSize: "13px", marginTop: "2px" }}>Record your meals.</p> */}
         </header>
+
+        {/* Dropdown menu is client have more than one plan */}
         <div className="card" style={{ marginBottom: "20px" }}>
-          <label
-            style={{ color: "#fbbf24", marginBottom: "8px", display: "block" }}
-          >
+          <label style={{ color: "#fbbf24", marginBottom: "8px", display: "block" }}>
             Select Nutrition Plan:
           </label>
           <select
@@ -169,65 +164,60 @@ const LogTodaysMeal = () => {
             style={{ backgroundColor: "#18181b", color: "white" }}
           >
             {plans.map((plan) => (
-              <option
-                key={plan.nutrition_plan_id}
-                value={plan.nutrition_plan_id}
-              >
+              <option key={plan.nutrition_plan_id} value={plan.nutrition_plan_id}>
                 {plan.category} (Created by: {plan.created_by})
               </option>
             ))}
           </select>
         </div>
-        <div className="card" style={{ gap: 0 }}>
-          <h3
-            className="card-title"
-            style={{ color: "#00ff44", marginBottom: "16px" }}
-          >
-            Your Assigned Plan
+
+        {/* testing the day separation*/}
+        <div className="card" style={{ gap: "20px" }}>
+          <h3 className="card-title" style={{ color: "#00ff44", marginBottom: "16px" }}>
+            Weekly Nutrition Plan
           </h3>
-          {assignedMeals.length > 0 ? (
-            <div className="space-y-4">
-              {assignedMeals.map((meal) => (
-                <div
-                  key={meal.meal_id}
-                  className="meal-plan-row"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    border: "1px solid #27272a",
-                  }}
-                >
-                  <div>
-                    <p
+
+          {sortedDayNumbers.length > 0 ? (
+            sortedDayNumbers.map((dayNum) => (
+              <div key={dayNum} className="day-section" style={{ marginBottom: "25px" }}>
+                <h4 style={{ color: "#5d782f", borderBottom: "1px solid #3f3f46", paddingBottom: "5px", marginBottom: "15px" }}>
+                  {DAYS_OF_WEEK[dayNum]}
+                </h4>
+
+                <div className="space-y-4">
+                  {mealsByDay[dayNum].map((meal) => (
+                    <div
+                      key={meal.meal_id}
+                      className="meal-plan-row"
                       style={{
-                        color: "#93cd2e",
-                        fontSize: "12px",
-                        fontWeight: "bold",
-                        margin: 0,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "12px",
+                        backgroundColor: "#18181b",
+                        borderRadius: "8px",
+                        marginBottom: "10px",
+                        border: "1px solid #27272a"
                       }}
                     >
-                      {DAYS_OF_WEEK[meal.day_number] ||
-                        `Day ${meal.day_number}`}
-                    </p>
-                    <h4 className="meal-plan-name">{meal.meal_name}</h4>
-                    <p className="meal-plan-meta">
-                      {meal.time_of_day} | {meal.calories} calories
-                    </p>
-                    <p className="meal-plan-meta">{meal.description}</p>
-                  </div>
-                  <button
-                    className="meal-log-btn"
-                    onClick={() => handleLogSubmit(meal)}
-                  >
-                    Log Meal
-                  </button>
+                      <div>
+                        <h5 style={{ margin: 0, color: "white", fontSize: "16px" }}>{meal.meal_name}</h5>
+                        <p style={{ fontSize: "12px", color: "#a1a1aa", margin: "4px 0" }}>
+                          {meal.time_of_day} | {meal.calories} kcal
+                        </p>
+                        <p style={{ fontSize: "11px", color: "#71717a", margin: 0 }}>{meal.description}</p>
+                      </div>
+                      <button className="meal-log-btn" onClick={() => handleLogSubmit(meal)}>
+                        Log Meal
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))
           ) : (
             <p style={{ color: "var(--muted)", fontSize: "13px" }}>
-              No meals assigned for today. Use custom entry below.
+              No meals assigned to this plan.
             </p>
           )}
         </div>
