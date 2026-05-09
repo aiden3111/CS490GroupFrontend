@@ -338,7 +338,10 @@ const CoachSearch = () => {
             </div>
           </div>
 
-          {(selectedFilters.length > 0 || sortOrder) && (
+         
+
+          </Col>
+           {(selectedFilters.length > 0 || sortOrder) && (
             <button
               className="clear-filters-btn"
               onClick={() => {
@@ -349,8 +352,6 @@ const CoachSearch = () => {
               Clear Filters
             </button>
           )}
-
-          </Col>
           </Row>
         </section>
 
