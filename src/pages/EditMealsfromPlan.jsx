@@ -30,6 +30,15 @@ const EditMealsfromPlan = () => {
       .catch((err) => console.error("Error loading clients:", err));
   }, [clientId]);
 
+  const formatListDate = (dateStr) => {
+  if (!dateStr) return "N/A";
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' 
+  }).replace(/,/g, ''); 
+};
+
+
 const mealsByDay = meals.reduce((acc, meal) => {
     const day = meal.day_number;
     if (!acc[day]) acc[day] = [];
