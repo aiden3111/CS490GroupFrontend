@@ -66,7 +66,7 @@ const formatGraphDate = (dateStr) => {
           <h2>Meal & Calories</h2>
           {calorieData.map((cal) => (
             <div key={cal.meal_log_id} className="meal-square">
-             <p><strong>Date:</strong> {formatListDate(item.log_date)}</p>
+             <p><strong>Date:</strong> {formatListDate(cal.log_date)}</p>
               <p>Calories: {cal.actual_calories}</p>
               <p>Notes: {cal.notes}</p>
             </div>

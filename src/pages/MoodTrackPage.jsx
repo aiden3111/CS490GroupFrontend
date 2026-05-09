@@ -192,7 +192,7 @@ const formatGraphDate = (dateStr) => {
           <div className="meal-tracker-header">
             {mooddata.map((mood) => (
               <div key={mood.log_date} className="mood-square">
-                <p><strong>Date:</strong> {formatListDate(item.log_date)}</p>
+                <p><strong>Date:</strong> {formatListDate(mood.log_date)}</p>
                 <p>Score {mood.mood_score}</p>
                 <p>Label: {mood.mood_label}</p>
                 <p>Aditional notes: {mood.notes}</p>

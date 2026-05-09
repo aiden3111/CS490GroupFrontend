@@ -137,7 +137,7 @@ const formatGraphDate = (dateStr) => {
             <div className="steps-scroll-container">
               {stepData.map((steps) => (
                 <div key={steps.log_date} className="meal-square">
-                  <p><strong>Date:</strong> {formatListDate(item.log_date)}</p>
+                  <p><strong>Date:</strong> {formatListDate(steps.log_date)}</p>
                   <p>
                     <strong>Steps:</strong> {steps.steps}
                   </p>
