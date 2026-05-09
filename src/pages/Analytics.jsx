@@ -127,6 +127,24 @@ const Analytics = () => {
   }
 };
 
+ const formatListDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'short', 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  }).replace(/,/g, ''); 
+};
+
+const formatGraphDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: '2-digit' 
+  });
+};
+
   return (
     <div className="dashboard-container">
       <Sidebar activePage="analytics" />
@@ -169,9 +187,10 @@ const Analytics = () => {
                 <ResponsiveContainer>
                   <LineChart data={calorieData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="log_date" />
+                    <XAxis dataKey="log_date" 
+                        tickFormatter={formatGraphDate} />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip labelFormatter={formatListDate} />
                     <Line
                       type="monotone"
                       dataKey="actual_calories"
@@ -190,10 +209,13 @@ const Analytics = () => {
                 <ResponsiveContainer>
                   <LineChart data={stepData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="log_date" />
+                    <XAxis 
+                      dataKey="log_date" 
+                      tickFormatter={formatGraphDate} 
+                    />
                     <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="steps" stroke="#3b82f6" />
+                    <Tooltip labelFormatter={formatListDate} />
+                    <Line type="monotone" dataKey="steps" stroke="#3b9ff6" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -207,13 +229,16 @@ const Analytics = () => {
                 <ResponsiveContainer>
                   <LineChart data={moodData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="log_date" />
+                    <XAxis 
+                      dataKey="log_date" 
+                      tickFormatter={formatGraphDate} 
+                    />
                     <YAxis domain={[0, 5]} />
-                    <Tooltip />
+                    <Tooltip labelFormatter={formatListDate} />
                     <Line
                       type="monotone"
                       dataKey="mood_score"
-                      stroke="#f59e0b"
+                      stroke="#94b43c"
                     />
                   </LineChart>
                 </ResponsiveContainer>
