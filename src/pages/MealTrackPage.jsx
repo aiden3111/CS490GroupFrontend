@@ -14,7 +14,6 @@ import {
 } from "recharts";
 
 const MealTrackPage = () => {
- 
   const { clientId } = useParams();
   const navigate = useNavigate();
   const [calorieData, setCalorieData] = useState([]);
@@ -27,18 +26,17 @@ const MealTrackPage = () => {
     }
   }, [clientId, navigate]);
 
-
   useEffect(() => {
     const fetchCalorieData = async () => {
       const response = await fetch(`/api/calorie_graph/${clientId}`);
       const data = await response.json();
-      setCalorieData(data);
+      const sortedData = [...data].sort(
+        (a, b) => new Date(b.log_date) - new Date(a.log_date),
+      );
+      setCalorieData(sortedData);
     };
     fetchCalorieData();
   }, [clientId]);
-
-  //TODO: add the links to side bar
-  //TODO: Build the top bar
 
   return (
     <div className="dashboard-container">
@@ -50,27 +48,40 @@ const MealTrackPage = () => {
           <h2>Meal & Calories</h2>
           {calorieData.map((cal) => (
             <div key={cal.meal_log_id} className="meal-square">
-              <p>Date: {cal.log_date}</p>
+              <p>
+                <strong>Date:</strong> {new Date(cal.log_date).toDateString()}
+              </p>
               <p>Calories: {cal.actual_calories}</p>
               <p>Notes: {cal.notes}</p>
             </div>
           ))}
         </div>
         <div className="callgraph">
-          <div className="calorie-graph" style={{ width: "100%", height: 300, marginTop: "20px" }}>
+          <div
+            className="calorie-graph"
+            style={{ width: "100%", height: 300, marginTop: "20px" }}
+          >
             <h3>Calorie Trends</h3>
             {calorieData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={calorieData}>
+                <LineChart data={[...calorieData].reverse()}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="log_date" />
+                  <XAxis
+                    dataKey="log_date"
+                    tickFormatter={(str) =>
+                      new Date(str).toDateString().slice(4, 10)
+                    }
+                  />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip
+                    labelFormatter={(label) => new Date(label).toDateString()}
+                  />
                   <Line
                     type="monotone"
                     dataKey="actual_calories"
                     stroke="#509e54"
-                    fill="#78b47b"
+                    strokeWidth={3}
+                    dot={{ r: 5 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -84,5 +95,4 @@ const MealTrackPage = () => {
   );
 };
 
-//TODO: Fix Sqares content
 export default MealTrackPage;

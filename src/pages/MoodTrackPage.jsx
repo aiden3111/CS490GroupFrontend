@@ -4,6 +4,15 @@ import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import Sidebar from "../components/Sidebar";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const MoodTrackPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,10 +20,16 @@ const MoodTrackPage = () => {
   const navigate = useNavigate();
   const [mooddata, setLandingData] = useState([]);
 
-  const fetchLandingData = async () => {
-    const response = await fetch(`/api/mood/${clientId}`);
-    const data = await response.json();
-    setLandingData([...data].reverse());
+ const fetchLandingData = async () => {
+    try {
+      const response = await fetch(`/api/mood/${clientId}`);
+      const data = await response.json();
+     
+      const sortedData = [...data].sort((a, b) => new Date(b.log_date) - new Date(a.log_date));
+      setLandingData(sortedData);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
   };
 
   useEffect(() => {
@@ -56,7 +71,7 @@ const MoodTrackPage = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             client_id: clientId,
-            log_date: values.date,
+            log_date: new Date().toISOString().split("T")[0],
 
             mood_score: values.mood_score,
             mood_label: values.mood_label,
@@ -83,8 +98,7 @@ const MoodTrackPage = () => {
     },
   });
 
-  //TODO: add the links to side bar
-  //TODO: Build the top bar
+
 
   return (
     <div className="dashboard-container">
@@ -171,11 +185,31 @@ const MoodTrackPage = () => {
           </div>
         </div>
 
-        <div className="mood-graph"></div>
+        <div className="mood-graph">
+          <div className="calorie-graph" style={{ width: "100%", height: 300, marginTop: "40px" }}>
+            <h3 style={{ color: "#00ff44" }}>Mood Trends</h3>
+            {mooddata.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+               
+                <LineChart data={[...mooddata].reverse()}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                  <XAxis 
+                    dataKey="log_date" 
+                    tickFormatter={(str) => new Date(str).toDateString().slice(4, 10)} 
+                  />
+                  <YAxis domain={[0, 10]} />
+                  <Tooltip labelFormatter={(l) => new Date(l).toDateString()} />
+                  <Line type="monotone" dataKey="mood_score" stroke="#fbbf24" strokeWidth={4} dot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <p style={{ color: "#a1a1aa" }}>No mood data recorded yet.</p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
-//TODO: Fix Styling
-//TODO: Fix Sqares content
+
 export default MoodTrackPage;
