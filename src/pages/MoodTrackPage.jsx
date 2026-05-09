@@ -56,7 +56,23 @@ const MoodTrackPage = () => {
     }
   };
 
-  const date = new Date().toISOString().split("T")[0];
+  const formatListDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'short', 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  }).replace(/,/g, ''); 
+};
+
+const formatGraphDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: '2-digit' 
+  });
+};
   const formik = useFormik({
     initialValues: {
       log_date: "",
@@ -176,7 +192,7 @@ const MoodTrackPage = () => {
           <div className="meal-tracker-header">
             {mooddata.map((mood) => (
               <div key={mood.log_date} className="mood-square">
-                <p>Date: {mood.log_date}</p>
+                <p><strong>Date:</strong> {formatListDate(item.log_date)}</p>
                 <p>Score {mood.mood_score}</p>
                 <p>Label: {mood.mood_label}</p>
                 <p>Aditional notes: {mood.notes}</p>
@@ -195,11 +211,11 @@ const MoodTrackPage = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                   <XAxis 
                     dataKey="log_date" 
-                    tickFormatter={(str) => new Date(str).toDateString().slice(4, 10)} 
+                    tickFormatter={formatGraphDate}
                   />
                   <YAxis domain={[0, 10]} />
-                  <Tooltip labelFormatter={(l) => new Date(l).toDateString()} />
-                  <Line type="monotone" dataKey="mood_score" stroke="#fbbf24" strokeWidth={4} dot={{ r: 6 }} />
+                  <Tooltip labelFormatter={formatListDate} />
+                  <Line type="monotone" dataKey="mood_score" stroke="#5d8e43" strokeWidth={4} dot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
             ) : (

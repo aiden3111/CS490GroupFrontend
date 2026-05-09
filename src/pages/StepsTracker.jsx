@@ -38,7 +38,23 @@ const StepsTracker = () => {
     fetchStepData();
   }, [clientId, navigate]);
 
-  const date = new Date().toISOString().split("T")[0];
+ const formatListDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'short', 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  }).replace(/,/g, ''); 
+};
+
+const formatGraphDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: '2-digit' 
+  });
+};
   const formik = useFormik({
     initialValues: {
       steps: "",
@@ -121,10 +137,7 @@ const StepsTracker = () => {
             <div className="steps-scroll-container">
               {stepData.map((steps) => (
                 <div key={steps.log_date} className="meal-square">
-                  <p>
-                    <strong>Date:</strong>{" "}
-                    {new Date(steps.log_date).toDateString()}
-                  </p>
+                  <p><strong>Date:</strong> {formatListDate(item.log_date)}</p>
                   <p>
                     <strong>Steps:</strong> {steps.steps}
                   </p>
@@ -144,13 +157,11 @@ const StepsTracker = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                       dataKey="log_date"
-                      tickFormatter={(str) =>
-                        new Date(str).toDateString().slice(0, 10)
-                      }
+                      tickFormatter={formatGraphDate}
                     />
                     <YAxis />
                     <Tooltip
-                      labelFormatter={(label) => new Date(label).toDateString()}
+                      labelFormatter={formatListDate}
                     />
                     <Line
                       type="monotone"

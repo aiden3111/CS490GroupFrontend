@@ -38,6 +38,24 @@ const MealTrackPage = () => {
     fetchCalorieData();
   }, [clientId]);
 
+   const formatListDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'short', 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  }).replace(/,/g, ''); 
+};
+
+const formatGraphDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: '2-digit' 
+  });
+};
+
   return (
     <div className="dashboard-container">
       <Sidebar activePage="mealtracker" />
@@ -48,9 +66,7 @@ const MealTrackPage = () => {
           <h2>Meal & Calories</h2>
           {calorieData.map((cal) => (
             <div key={cal.meal_log_id} className="meal-square">
-              <p>
-                <strong>Date:</strong> {new Date(cal.log_date).toDateString()}
-              </p>
+             <p><strong>Date:</strong> {formatListDate(item.log_date)}</p>
               <p>Calories: {cal.actual_calories}</p>
               <p>Notes: {cal.notes}</p>
             </div>
@@ -68,13 +84,11 @@ const MealTrackPage = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="log_date"
-                    tickFormatter={(str) =>
-                      new Date(str).toDateString().slice(4, 10)
-                    }
+                    tickFormatter={formatGraphDate}
                   />
                   <YAxis />
                   <Tooltip
-                    labelFormatter={(label) => new Date(label).toDateString()}
+                   labelFormatter={formatListDate}
                   />
                   <Line
                     type="monotone"
