@@ -651,7 +651,7 @@ const WorkoutPlanPage = () => {
                 </div>
 
                 <div className="search-container">
-                    <p>Search here</p>
+               
                     <input
                         type="text"
                         className="form-control search-input"

@@ -13,6 +13,7 @@ const CoachSearch = () => {
   const navigate = useNavigate();
   const [selectedCoach, setSelectedCoach] = useState(null);
   const [selectedFilters, setselectedFilters] = useState([]);
+
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState("");
@@ -294,7 +295,63 @@ const CoachSearch = () => {
 
         {query && <h2 className="section-title">Search Results: "{query}"</h2>}
 
+
         <div className="coach-grid">
+
+          {/* INSERE A BARRA AQUI - IGUAL À WORKOUT SEARCH PAGE */}
+        <section className="filter-panel">
+          <div className="filter-group">
+            <p>Specialty</p>
+            <div className="filter-options">
+              {["Fitness", "Nutrition"].map((name) => (
+                <label key={name} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedFilters.includes(name.toLowerCase())}
+                    onChange={() => handleFilterChange(name.toLowerCase())}
+                  />
+                  {name}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <p>Sort by Price</p>
+            <div className="filter-options">
+              <select 
+                className="filter-select"
+                style={{ 
+                  background: "#18181b", 
+                  color: "white", 
+                  border: "1px solid #3f3f46", 
+                  padding: "5px 10px", 
+                  borderRadius: "6px",
+                  marginTop: "5px"
+                }}
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <option value="">Default</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          {(selectedFilters.length > 0 || sortOrder) && (
+            <button 
+              className="clear-filters-btn" 
+              onClick={() => {
+                setselectedFilters([]);
+                setSortOrder("");
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
+        </section>
+        
           {displayCoaches.length > 0 ? (
             displayCoaches.map((coach) => (
               <div key={coach.coach_id} className="section-card">
