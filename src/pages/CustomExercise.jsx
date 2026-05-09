@@ -140,7 +140,21 @@ function MyCustom({ clientId }) {
             <h3>Exercise: {ex.exercise_name}</h3>
             <p>Muscle Group: {ex.muscle_group} </p>
             <p>Equipment: {ex.equipment}</p>
-            <p>Example: {ex.example_video}</p>
+            <p>
+              <b>Example:</b>{" "}
+              {ex.example_video ? (
+                <a
+                  href={ex.example_video}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: "#1d2c59", textDecoration: "underline" }}
+                >
+                  View Demo Video
+                </a>
+              ) : (
+                "No video available"
+              )}
+            </p>
             <button className="edit-btn" onClick={() => handleEdit(ex)}>
               Edit
             </button>

@@ -19,7 +19,6 @@ const StepsTracker = () => {
   const navigate = useNavigate();
   const [stepData, setStepData] = useState([]);
 
-
   const fetchStepData = async () => {
     try {
       const response = await fetch(`/api/steps_graph/${clientId}`);
@@ -53,7 +52,6 @@ const StepsTracker = () => {
             client_id: clientId,
             log_date: date,
             steps: values.steps,
-           
           }),
         });
 
@@ -75,9 +73,6 @@ const StepsTracker = () => {
       }
     },
   });
-
-  //TODO: add the links to side bar
-  //TODO: Build the top bar
 
   return (
     <div className="dashboard-container">
@@ -127,7 +122,8 @@ const StepsTracker = () => {
               {stepData.map((steps) => (
                 <div key={steps.log_date} className="meal-square">
                   <p>
-                    <strong>Date:</strong> {steps.log_date}
+                    <strong>Date:</strong>{" "}
+                    {new Date(steps.log_date).toDateString()}
                   </p>
                   <p>
                     <strong>Steps:</strong> {steps.steps}
@@ -144,21 +140,29 @@ const StepsTracker = () => {
               <h3>Steps Trends</h3>
               {stepData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={stepData}>
+                  <LineChart data={[...stepData].reverse()}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="log_date" />
+                    <XAxis
+                      dataKey="log_date"
+                      tickFormatter={(str) =>
+                        new Date(str).toDateString().slice(0, 10)
+                      }
+                    />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip
+                      labelFormatter={(label) => new Date(label).toDateString()}
+                    />
                     <Line
                       type="monotone"
                       dataKey="steps"
                       stroke="#509e54"
-                      fill="#78b47b"
+                      strokeWidth={3}
+                      dot={{ r: 6 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <p>No calorie data found.</p>
+                <p>No steps data found.</p>
               )}
             </div>
           </div>
@@ -168,6 +172,5 @@ const StepsTracker = () => {
     </div>
   );
 };
-//TODO: Fix Styling
-//TODO: Fix Sqares content
+
 export default StepsTracker;
