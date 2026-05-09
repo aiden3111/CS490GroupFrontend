@@ -223,7 +223,7 @@ const AddMealstoPlan = () => {
                                         name="day_number" 
                                         min="1"  
                                         max="7" 
-                                        placeholder="1=Mon, 7=Sun"
+                                        placeholder="1=Sun, 7=Sat"
                                         onChange={formik.handleChange} 
                                         value={formik.values.day_number}
                                         onInput={(e) => {
