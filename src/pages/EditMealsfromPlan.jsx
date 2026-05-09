@@ -30,14 +30,14 @@ const EditMealsfromPlan = () => {
       .catch((err) => console.error("Error loading clients:", err));
   }, [clientId]);
 
-  const mealsByDay = planMeals.reduce((acc, meal) => {
+const mealsByDay = meals.reduce((acc, meal) => {
     const day = meal.day_number;
     if (!acc[day]) acc[day] = [];
     acc[day].push(meal);
     return acc;
-  }, {});
+}, {});
 
-  const sortedDays = Object.keys(mealsByDay).sort((a, b) => a - b);
+const sortedDayNumbers = Object.keys(mealsByDay).sort((a, b) => a - b);
 
   const formik = useFormik({
     initialValues: {
@@ -216,38 +216,20 @@ const EditMealsfromPlan = () => {
                     </thead>
                     <tbody>
                       {mealsByDay[dayNum].map((m) => (
-                        <tr key={m.meal_id}>
-                          <td>
-                            <strong>{m.meal_name}</strong>
-                            <br />
-                            <small className="text-muted">
-                              {m.description}
-                            </small>
-                          </td>
-                          <td>{m.calories} kcal</td>
-                          <td>
-                            {m.protein}g / {m.carbs}g / {m.fats}g
-                          </td>
-                          <td>{m.time_of_day}</td>
-                          <td>
-                            <Button
-                              variant="warning"
-                              size="sm"
-                              className="me-2"
-                              onClick={() => handleEditClick(m)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              onClick={() => handleDeleteMeal(m.meal_id)}
-                            >
-                              Delete
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
+    <tr key={m.meal_id}>
+        <td>{m.meal_name}</td>
+       
+        <td><strong>Date:</strong> {formatListDate(m.log_date)}</td> 
+        <td>{m.calories}</td>
+        <td>{m.protein} / {m.carbs} / {m.fats}</td>
+        <td>{DAYS_OF_WEEK[m.day_number]}</td>
+        <td>{m.time_of_day}</td>
+        <td>
+            <Button variant="warning" onClick={() => handleEditClick(m)}>Edit</Button>
+            <Button variant="danger" onClick={() => handleDeleteMeal(m.meal_id)}>Delete</Button>
+        </td>
+    </tr>
+))}
                     </tbody>
                   </Table>
                 </div>
