@@ -128,7 +128,7 @@ const LogTodaysMeal = () => {
                             {assignedMeals.map((meal) => (
                                 <div key={meal.meal_id} className="meal-plan-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #27272a' }}>
                                     <div>
-                                        <p style={{ color: "#fbbf24", fontSize: "12px", fontWeight: "bold", margin: 0 }}>
+                                        <p style={{ color: "#8aa954", fontSize: "12px", fontWeight: "bold", margin: 0 }}>
                                             {DAYS_OF_WEEK[meal.day_number] || `Day ${meal.day_number}`}
                                         </p>
                                         <h4 className="meal-plan-name">{meal.meal_name}</h4>
