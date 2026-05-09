@@ -180,9 +180,9 @@ const sortedDayNumbers = Object.keys(mealsByDay).sort((a, b) => a - b);
           {sortedDayNumbers.length > 0 ? (
             sortedDayNumbers.map((dayNum) => (
               <div key={dayNum} className="day-section" style={{ marginBottom: "25px" }}>
-                <h4 style={{ color: "#5d782f", borderBottom: "1px solid #3f3f46", paddingBottom: "5px", marginBottom: "15px" }}>
+                <h3 style={{ color: "#91a942", borderBottom: "1px solid #3f3f46", paddingBottom: "5px", marginBottom: "15px" }}>
                   {DAYS_OF_WEEK[dayNum]}
-                </h4>
+                </h3>
 
                 <div className="space-y-4">
                   {mealsByDay[dayNum].map((meal) => (
