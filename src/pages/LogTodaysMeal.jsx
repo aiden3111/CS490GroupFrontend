@@ -4,182 +4,293 @@ import "./Landingcss.css";
 import Sidebar from "../components/Sidebar";
 
 const DAYS_OF_WEEK = {
-    1: "Monday", 2: "Tuesday", 3: "Wednesday", 
-    4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+  7: "Sunday",
 };
 const LogTodaysMeal = () => {
-    const { clientId } = useParams();
-    const navigate = useNavigate();
-  
+  const { clientId } = useParams();
+  const navigate = useNavigate();
 
-    const today = new Date().toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
-    const [assignedMeals, setAssignedMeals] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [selectedPlanId, setSelectedPlanId] = useState("");
+  const [assignedMeals, setAssignedMeals] = useState([]);
 
-    const [isCustomMode, setIsCustomMode] = useState(false);
-    const [customMeal, setCustomMeal] = useState({
-        meal_name: "",
-        calories: "",
-        protein: "",
-        carbs: "",
-        fats: "",
-        notes: "",
-        description: ""
-    });
+  const [isCustomMode, setIsCustomMode] = useState(false);
+  const [customMeal, setCustomMeal] = useState({
+    meal_name: "",
+    calories: "",
+    protein: "",
+    carbs: "",
+    fats: "",
+    notes: "",
+    description: "",
+  });
 
-   useEffect(() => {
-    const fetchPlanMeals = async () => {
-        try {
-            const res = await fetch(`/api/nutrition_plan/${clientId}`);
-            const plans = await res.json();
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await fetch(`/api/nutrition_plan/${clientId}`);
+        const data = await res.json();
+        if (res.ok) {
+          setPlans(data);
 
-            if (res.ok && plans.length > 0) {
-               
-                const sortedPlans = [...plans].sort((a, b) => a.nutrition_plan_id - b.nutrition_plan_id);
-                const latestPlanId = sortedPlans[sortedPlans.length - 1].nutrition_plan_id;
-
-                console.log("Buscando refeições para o plano mais recente:", latestPlanId);
-
-                const mealRes = await fetch(`/api/nutrition_plan/${clientId}/${latestPlanId}`);
-                const mealData = await mealRes.json();
-
-                if (mealRes.ok) {
-                    setAssignedMeals(mealData); 
-                }
-            }
-        } catch (err) {
-            console.error("Meal fetch error:", err);
+          if (data.length > 0) setSelectedPlanId(data[0].nutrition_plan_id);
         }
+      } catch (err) {
+        console.error("Errors fetching plans:", err);
+      }
     };
-    fetchPlanMeals();
-}, [clientId]);
+    fetchPlans();
+  }, [clientId]);
 
-    const handleLogSubmit = async (mealData, isAssigned = true) => {
-        const payload = {
-            client_id: clientId,
-            meal_id: isAssigned ? mealData.meal_id : null,
-            meal_name: isAssigned ? mealData.meal_name : customMeal.meal_name,
-            calories: isAssigned ? mealData.calories : customMeal.calories,
-            protein: isAssigned ? mealData.protein : customMeal.protein,
-            carbs: isAssigned ? mealData.carbs : customMeal.carbs,
-            fats: isAssigned ? mealData.fats : customMeal.fats,
-            notes: isAssigned ? `Followed Plan: ${mealData.meal_name}` : customMeal.notes
-        };
+  useEffect(() => {
+    const fetchMeals = async () => {
+      if (!selectedPlanId) return;
+      try {
+        const res = await fetch(
+          `/api/nutrition_plan/${clientId}/${selectedPlanId}`,
+        );
+        const data = await res.json();
+        setAssignedMeals(res.ok ? data : []);
+      } catch (err) {
+        setAssignedMeals([]);
+      }
+    };
+    fetchMeals();
+  }, [clientId, selectedPlanId]);
 
-        try {
-            const res = await fetch("/api/nutrition_plan/log", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-
-            if (res.ok) {
-                if (!isAssigned) setIsCustomMode(false);
-                navigate(`/MealTrackPage/${clientId}`); 
-            }
-        } catch (err) {
-            alert("Failed to log meal.");
-        }
+  const handleLogSubmit = async (mealData, isAssigned = true) => {
+    const payload = {
+      client_id: clientId,
+      meal_id: isAssigned ? mealData.meal_id : null,
+      meal_name: isAssigned ? mealData.meal_name : customMeal.meal_name,
+      calories: isAssigned ? mealData.calories : customMeal.calories,
+      protein: isAssigned ? mealData.protein : customMeal.protein,
+      carbs: isAssigned ? mealData.carbs : customMeal.carbs,
+      fats: isAssigned ? mealData.fats : customMeal.fats,
+      notes: isAssigned
+        ? `Followed Plan: ${mealData.meal_name}`
+        : customMeal.notes,
     };
 
-    const deleteLogEntry = async (mealLogId, logDate) => {
-        const today = new Date().toISOString().split('T')[0];
+    try {
+      const res = await fetch("/api/nutrition_plan/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-        if (logDate !== today) {
-            alert("Warning: You can only modify or delete logs recorded on the current day.");
-            return; 
+      if (res.ok) {
+        if (!isAssigned) setIsCustomMode(false);
+        navigate(`/MealTrackPage/${clientId}`);
+      }
+    } catch (err) {
+      alert("Failed to log meal.");
+    }
+  };
+
+  const deleteLogEntry = async (mealLogId, logDate) => {
+    const today = new Date().toISOString().split("T")[0];
+
+    if (logDate !== today) {
+      alert(
+        "Warning: You can only modify or delete logs recorded on the current day.",
+      );
+      return;
+    }
+
+    if (window.confirm("Delete this entry to correct your log?")) {
+      try {
+        const response = await fetch(`/api/nutrition_plan/log/${mealLogId}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          setCalorieData((prev) =>
+            prev.filter((item) => item.meal_log_id !== mealLogId),
+          );
         }
+      } catch (error) {
+        console.error("Error deleting log:", error);
+      }
+    }
+  };
 
-        if (window.confirm("Delete this entry to correct your log?")) {
-            try {
-                const response = await fetch(`/api/nutrition_plan/log/${mealLogId}`, {
-                    method: 'DELETE',
-                });
+  return (
+    <div className="dashboard-container">
+      <Sidebar activePage="logmeal" />
 
-                if (response.ok) {
-                    setCalorieData(prev => prev.filter(item => item.meal_log_id !== mealLogId));
-                }
-            } catch (error) {
-                console.error("Error deleting log:", error);
-            }
-        }
-    };
-
-    return (
-        <div className="dashboard-container">
-            <Sidebar activePage="logmeal" />
-
-            <div className="main-content">
-                <header className="header">
-                    <h1 style={{ fontSize: "32px", fontWeight: 700, color: "#fbbf24", letterSpacing: "-0.5px" }}>Log Today's Intake</h1>
-                    <p style={{ color: "#00ff44", fontSize: "15px", fontWeight: 600, marginTop: "4px" }}>{today}</p>
-                    {/* <p style={{ color: "var(--text)", fontSize: "13px", marginTop: "2px" }}>Record your meals.</p> */}
-                </header>
-
-                <div className="card" style={{ gap:0}}>
-                    <h3 className="card-title" style={{ color: "#00ff44", marginBottom: "16px" }}>Your Assigned Plan</h3>
-                    {assignedMeals.length > 0 ? (
-                        <div className="space-y-4">
-                            {assignedMeals.map((meal) => (
-                                <div key={meal.meal_id} className="meal-plan-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #27272a' }}>
-                                    <div>
-                                        <p style={{ color: "#8aa954", fontSize: "12px", fontWeight: "bold", margin: 0 }}>
-                                            {DAYS_OF_WEEK[meal.day_number] || `Day ${meal.day_number}`}
-                                        </p>
-                                        <h4 className="meal-plan-name">{meal.meal_name}</h4>
-                                        <p className="meal-plan-meta">{meal.time_of_day} | {meal.calories} calories</p>
-                                        <p className="meal-plan-meta">{meal.description}</p>
-                                    </div>
-                                    <button className="meal-log-btn" onClick={() => handleLogSubmit(meal)}>Log Meal</button>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                            <p style={{ color: "var(--muted)", fontSize: "13px" }}>No meals assigned for today. Use custom entry below.</p>
-                    )}
-                </div>
-
-                <div className="mt-8">
-                    <button
-                        className="meal-custom-toggle"
-                        onClick={() => setIsCustomMode(!isCustomMode)}
-                        style={{ border: '1px dashed #52525b', background: 'transparent' }}
-                    >
-                        {isCustomMode ? "Cancel Custom Entry" : "+ Log a Custom Meal (Not on Plan)"}
-                    </button>
-
-                    {isCustomMode && (
-                        <div className="card" style={{ gap: "12px" }}>
-                            <h4 className="card-title" style={{ color: "#00ff44", marginBottom: "16px", fontWeight: 500 }}>Manual Entry</h4>
-                            <div className="grid-container" style={{ display: 'grid', gap: '15px' }}>
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    <input type="number" className="bitfit-input" placeholder="Cals" style={{ backgroundColor: "#000" }} onChange={(e) => setCustomMeal({ ...customMeal, calories: e.target.value })} />
-
-                                </div>
-                                <textarea
-                                    className="bitfit-input"
-                                    placeholder="Notes (e.g., custom entry, meal description)"
-                                    style={{ backgroundColor: "#000", minHeight: "80px" }}
-                                    onChange={(e) => setCustomMeal({ ...customMeal, notes: e.target.value })}
-                                ></textarea>
-                                <button
-                                    className="meal-save-btn"
-                                    onClick={() => handleLogSubmit(customMeal, false)}
-                                >
-                                    Save Custom Log
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
+      <div className="main-content">
+        <header className="header">
+          <h1
+            style={{
+              fontSize: "32px",
+              fontWeight: 700,
+              color: "#fbbf24",
+              letterSpacing: "-0.5px",
+            }}
+          >
+            Log Today's Intake
+          </h1>
+          <p
+            style={{
+              color: "#00ff44",
+              fontSize: "15px",
+              fontWeight: 600,
+              marginTop: "4px",
+            }}
+          >
+            {today}
+          </p>
+          {/* <p style={{ color: "var(--text)", fontSize: "13px", marginTop: "2px" }}>Record your meals.</p> */}
+        </header>
+        <div className="card" style={{ marginBottom: "20px" }}>
+          <label
+            style={{ color: "#fbbf24", marginBottom: "8px", display: "block" }}
+          >
+            Select Nutrition Plan:
+          </label>
+          <select
+            className="bitfit-input"
+            value={selectedPlanId}
+            onChange={(e) => setSelectedPlanId(e.target.value)}
+            style={{ backgroundColor: "#18181b", color: "white" }}
+          >
+            {plans.map((plan) => (
+              <option
+                key={plan.nutrition_plan_id}
+                value={plan.nutrition_plan_id}
+              >
+                {plan.category} (Created by: {plan.created_by})
+              </option>
+            ))}
+          </select>
         </div>
-    );
+        <div className="card" style={{ gap: 0 }}>
+          <h3
+            className="card-title"
+            style={{ color: "#00ff44", marginBottom: "16px" }}
+          >
+            Your Assigned Plan
+          </h3>
+          {assignedMeals.length > 0 ? (
+            <div className="space-y-4">
+              {assignedMeals.map((meal) => (
+                <div
+                  key={meal.meal_id}
+                  className="meal-plan-row"
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    border: "1px solid #27272a",
+                  }}
+                >
+                  <div>
+                    <p
+                      style={{
+                        color: "#688f24",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        margin: 0,
+                      }}
+                    >
+                      {DAYS_OF_WEEK[meal.day_number] ||
+                        `Day ${meal.day_number}`}
+                    </p>
+                    <h4 className="meal-plan-name">{meal.meal_name}</h4>
+                    <p className="meal-plan-meta">
+                      {meal.time_of_day} | {meal.calories} calories
+                    </p>
+                    <p className="meal-plan-meta">{meal.description}</p>
+                  </div>
+                  <button
+                    className="meal-log-btn"
+                    onClick={() => handleLogSubmit(meal)}
+                  >
+                    Log Meal
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p style={{ color: "var(--muted)", fontSize: "13px" }}>
+              No meals assigned for today. Use custom entry below.
+            </p>
+          )}
+        </div>
+
+        <div className="mt-8">
+          <button
+            className="meal-custom-toggle"
+            onClick={() => setIsCustomMode(!isCustomMode)}
+            style={{ border: "1px dashed #52525b", background: "transparent" }}
+          >
+            {isCustomMode
+              ? "Cancel Custom Entry"
+              : "+ Log a Custom Meal (Not on Plan)"}
+          </button>
+
+          {isCustomMode && (
+            <div className="card" style={{ gap: "12px" }}>
+              <h4
+                className="card-title"
+                style={{
+                  color: "#00ff44",
+                  marginBottom: "16px",
+                  fontWeight: 500,
+                }}
+              >
+                Manual Entry
+              </h4>
+              <div
+                className="grid-container"
+                style={{ display: "grid", gap: "15px" }}
+              >
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <input
+                    type="number"
+                    className="bitfit-input"
+                    placeholder="Cals"
+                    style={{ backgroundColor: "#000" }}
+                    onChange={(e) =>
+                      setCustomMeal({ ...customMeal, calories: e.target.value })
+                    }
+                  />
+                </div>
+                <textarea
+                  className="bitfit-input"
+                  placeholder="Notes (e.g., custom entry, meal description)"
+                  style={{ backgroundColor: "#000", minHeight: "80px" }}
+                  onChange={(e) =>
+                    setCustomMeal({ ...customMeal, notes: e.target.value })
+                  }
+                ></textarea>
+                <button
+                  className="meal-save-btn"
+                  onClick={() => handleLogSubmit(customMeal, false)}
+                >
+                  Save Custom Log
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default LogTodaysMeal;
