@@ -338,12 +338,18 @@ const CoachSearch = () => {
             </div>
           </div>
 
-         
-
           </Col>
            {(selectedFilters.length > 0 || sortOrder) && (
             <button
               className="clear-filters-btn"
+              style={{
+              backgroundColor: "#294333",
+              color: "white",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              border: "none",
+              transition: "background-color 0.2s"
+            }}
               onClick={() => {
                 setselectedFilters([]);
                 setSortOrder("");
