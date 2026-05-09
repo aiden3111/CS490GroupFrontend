@@ -3,10 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./Landingcss.css";
 import Sidebar from "../components/Sidebar";
 
-
+const DAYS_OF_WEEK = {
+    1: "Monday", 2: "Tuesday", 3: "Wednesday", 
+    4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"
+};
 const LogTodaysMeal = () => {
     const { clientId } = useParams();
     const navigate = useNavigate();
+  
 
     const today = new Date().toLocaleDateString('en-US', {
         weekday: 'long',
@@ -120,6 +124,9 @@ const LogTodaysMeal = () => {
                             {assignedMeals.map((meal) => (
                                 <div key={meal.meal_id} className="meal-plan-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #27272a' }}>
                                     <div>
+                                        <p style={{ color: "#fbbf24", fontSize: "12px", fontWeight: "bold", margin: 0 }}>
+                                            {DAYS_OF_WEEK[meal.day_number] || `Day ${meal.day_number}`}
+                                        </p>
                                         <h4 className="meal-plan-name">{meal.meal_name}</h4>
                                         <p className="meal-plan-meta">{meal.time_of_day} | {meal.calories} calories</p>
                                         <p className="meal-plan-meta">{meal.description}</p>

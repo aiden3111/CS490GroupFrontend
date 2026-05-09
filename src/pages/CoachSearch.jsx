@@ -348,7 +348,7 @@ const CoachSearch = () => {
               padding: "8px 16px",
               borderRadius: "6px",
               border: "none",
-              marginTop: "5px"
+              marginTop: "6px"
             }}
               onClick={() => {
                 setselectedFilters([]);

@@ -206,12 +206,20 @@ const DeleteMealsfromPlan = () => {
                                     placeholder="e.g. Breakfast" />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>Day</Form.Label>
+                            <Form.Label>Day of the Week (1-7)</Form.Label>
                                 <Form.Control 
+                                    type="number" 
                                     name="day_number" 
+                                    min="1"      
+                                    max="7"       
+                                    placeholder="1=Mon, 7=Sun"
                                     onChange={formik.handleChange} 
-                                    value={formik.values.day_number} 
-                                    placeholder="Day" />
+                                    value={formik.values.day_number}
+                                    onInput={(e) => {
+                                        if (e.target.value > 7) e.target.value = 7;
+                                        if (e.target.value < 0) e.target.value = 1;
+                                    }}
+                                />
                             </Form.Group>
 
                             <Button variant="primary" type="submit" className="w-100 mt-3">
