@@ -294,10 +294,7 @@ const CoachSearch = () => {
         </div>
 
         {query && <h2 className="section-title">Search Results: "{query}"</h2>}
-
-
-        <div className="coach-grid">
-        <section className="filter-panel">
+     <section className="filter-panel">
           <div className="filter-group">
             <p>Specialty</p>
             <div className="filter-options">
@@ -350,6 +347,9 @@ const CoachSearch = () => {
           )}
         </section>
 
+
+        <div className="coach-grid">
+   
           {displayCoaches.length > 0 ? (
             displayCoaches.map((coach) => (
               <div key={coach.coach_id} className="section-card">
