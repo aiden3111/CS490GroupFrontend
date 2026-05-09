@@ -297,8 +297,6 @@ const CoachSearch = () => {
 
 
         <div className="coach-grid">
-
-          {/* INSERE A BARRA AQUI - IGUAL À WORKOUT SEARCH PAGE */}
         <section className="filter-panel">
           <div className="filter-group">
             <p>Specialty</p>
@@ -351,7 +349,7 @@ const CoachSearch = () => {
             </button>
           )}
         </section>
-        
+
           {displayCoaches.length > 0 ? (
             displayCoaches.map((coach) => (
               <div key={coach.coach_id} className="section-card">
