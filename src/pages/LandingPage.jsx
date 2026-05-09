@@ -151,7 +151,7 @@ const LandingPage = () => {
                   <div key={mood.log_date} className="mood-entry">
                     <div>
                       <div className="mood-label">{mood.mood_label}</div>
-                      <div className="mood-date">{mood.log_date}</div>
+                      <div className="mood-date">{new Date(mood.log_date).toDateString()}</div>
                     </div>
                     <span className="mood-score">{mood.mood_score} / 10</span>
                   </div>
