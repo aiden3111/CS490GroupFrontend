@@ -60,7 +60,7 @@ const LogTodaysMeal = () => {
       if (!selectedPlanId) return;
       try {
         const res = await fetch(
-          `/api/nutrition_plan/${clientId}/${selectedPlanId}`,
+         `/api/nutrition_plan_modifications/meals/${selectedPlanId}`,
         );
         const data = await res.json();
         setAssignedMeals(res.ok ? data : []);
@@ -201,7 +201,7 @@ const LogTodaysMeal = () => {
                   <div>
                     <p
                       style={{
-                        color: "#688f24",
+                        color: "#93cd2e",
                         fontSize: "12px",
                         fontWeight: "bold",
                         margin: 0,
