@@ -60,13 +60,14 @@ const formatGraphDate = (dateStr) => {
       steps: "",
     },
     onSubmit: async (values) => {
+      const todayISO = new Date().toISOString().split("T")[0];
       try {
         const res = await fetch(`/api/logging`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             client_id: clientId,
-            log_date: date,
+            log_date: todayISO,
             steps: values.steps,
           }),
         });
