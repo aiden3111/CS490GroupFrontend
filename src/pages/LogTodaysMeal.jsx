@@ -173,14 +173,14 @@ const sortedDayNumbers = Object.keys(mealsByDay).sort((a, b) => a - b);
 
         {/* testing the day separation*/}
         <div className="card" style={{ gap: "20px" }}>
-          <h3 className="card-title" style={{ color: "#00ff44", marginBottom: "16px" }}>
+          <h3 className="card-title" style={{ color: "#1b9d3e", marginBottom: "16px" }}>
             Weekly Nutrition Plan
           </h3>
 
           {sortedDayNumbers.length > 0 ? (
             sortedDayNumbers.map((dayNum) => (
               <div key={dayNum} className="day-section" style={{ marginBottom: "25px" }}>
-                <p style={{ color: "#91a942", borderBottom: "1px solid #3f3f46", paddingBottom: "5px", marginBottom: "15px" }}>
+                <p style={{ color: "#91a942", borderBottom: "1px solid #3f3f46", paddingBottom: "5px", marginBottom: "5px" }}>
                   {DAYS_OF_WEEK[dayNum]}
                 </p>
 

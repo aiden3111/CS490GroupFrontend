@@ -11,12 +11,19 @@ const MoodTrackPage = () => {
   const navigate = useNavigate();
   const [mooddata, setLandingData] = useState([]);
 
+  const fetchLandingData = async () => {
+    const response = await fetch(`/api/mood/${clientId}`);
+    const data = await response.json();
+    setLandingData([...data].reverse());
+  };
+
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
     if (loggedInId !== clientId) {
       navigate(`/UserProfile/${loggedInId}`);
       return;
     }
+    fetchLandingData();
   }, [clientId, navigate]);
 
   const handleSearch = () => {
@@ -34,19 +41,9 @@ const MoodTrackPage = () => {
     }
   };
 
-
-  useEffect(() => {
-    const fetchLandingData = async () => {
-      const response = await fetch(`/api/mood/${clientId}`);
-      const data = await response.json();
-      setLandingData(data);
-    };
-    fetchLandingData();
-  }, [clientId]);
-  const date = new Date().toISOString().split('T')[0];
+  const date = new Date().toISOString().split("T")[0];
   const formik = useFormik({
     initialValues: {
-      
       log_date: "",
       mood_score: "",
       mood_label: "",
@@ -58,14 +55,12 @@ const MoodTrackPage = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            
-                client_id: clientId,
-                log_date: values.date,
-          
-                mood_score: values.mood_score,
-                mood_label: values.mood_label,
-                notes: values.notes,
-              
+            client_id: clientId,
+            log_date: values.date,
+
+            mood_score: values.mood_score,
+            mood_label: values.mood_label,
+            notes: values.notes,
           }),
         });
 
@@ -77,6 +72,7 @@ const MoodTrackPage = () => {
               selectedClientId: values.selectedClientId,
             },
           });
+          await fetchLandingData();
         } else {
           const err = await res.json();
           alert(`Error: ${err.error}`);
@@ -98,9 +94,8 @@ const MoodTrackPage = () => {
         <div className="header">
           <h1>Mood Tracker</h1>
           <div>
-          
             <Container className="mt-5">
-                <h2>How are you feeling today?</h2>
+              <h2>How are you feeling today?</h2>
               <div
                 style={{
                   backgroundColor: "#2a472a",
@@ -110,8 +105,6 @@ const MoodTrackPage = () => {
                 }}
               >
                 <Form onSubmit={formik.handleSubmit}>
-               
-
                   <Row>
                     <Col>
                       <Form.Group className="mb-3 flex-fill">
@@ -167,14 +160,14 @@ const MoodTrackPage = () => {
 
           <h3>Previous logs</h3>
           <div className="meal-tracker-header">
-          {mooddata.map((mood) => (
-            <div key={mood.log_date} className="mood-square">
-              <p>Date: {mood.log_date}</p>
-              <p>Score {mood.mood_score}</p>
-              <p>Label: {mood.mood_label}</p>
-              <p>Aditional notes: {mood.notes}</p>
-            </div>
-          ))}
+            {mooddata.map((mood) => (
+              <div key={mood.log_date} className="mood-square">
+                <p>Date: {mood.log_date}</p>
+                <p>Score {mood.mood_score}</p>
+                <p>Label: {mood.mood_label}</p>
+                <p>Aditional notes: {mood.notes}</p>
+              </div>
+            ))}
           </div>
         </div>
 

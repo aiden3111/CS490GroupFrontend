@@ -19,25 +19,25 @@ const StepsTracker = () => {
   const navigate = useNavigate();
   const [stepData, setStepData] = useState([]);
 
+
+  const fetchStepData = async () => {
+    try {
+      const response = await fetch(`/api/steps_graph/${clientId}`);
+      const data = await response.json();
+      setStepData([...data].reverse());
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+  };
+
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
     if (loggedInId !== clientId) {
       navigate(`/UserProfile/${loggedInId}`);
       return;
     }
-  }, [clientId, navigate]);
-
-
-  useEffect(() => {
-    const fetchStepData = async () => {
-      const response = await fetch(
-        `/api/steps_graph/${clientId}`,
-      );
-      const data = await response.json();
-      setStepData(data);
-    };
     fetchStepData();
-  }, [clientId]);
+  }, [clientId, navigate]);
 
   const date = new Date().toISOString().split("T")[0];
   const formik = useFormik({
@@ -65,6 +65,7 @@ const StepsTracker = () => {
               selectedClientId: values.selectedClientId,
             },
           });
+          await fetchStepData();
         } else {
           const err = await res.json();
           alert(`Error: ${err.error}`);
