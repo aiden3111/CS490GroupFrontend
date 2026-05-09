@@ -148,17 +148,17 @@ const Analytics = () => {
             value={range}
             onChange={(e) => setRange(e.target.value)}
             style={{
-              background: "rgba(255,255,255,0.08)",
+              background: "#032a0d",
               border: "1px solid rgba(255,255,255,0.15)",
               borderRadius: "6px",
               color: "white",
               padding: "6px 10px",
             }}
           >
-            <option value="day">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-          </select>
+              <option value="day" style={{ background: "#032a0d", color: "white" }}>Today</option>
+              <option value="week" style={{ background: "#032a0d", color: "white" }}>This Week</option>
+              <option value="month" style={{ background: "#032a0d", color: "white" }}>This Month</option>
+              </select>
         </div>
 
         <Container fluid>

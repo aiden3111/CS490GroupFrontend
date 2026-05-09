@@ -153,23 +153,25 @@ const sortedDayNumbers = Object.keys(mealsByDay).sort((a, b) => a - b);
         </header>
 
         {/* Dropdown menu is client have more than one plan */}
-        <div className="card" style={{ marginBottom: "20px" }}>
-          <label style={{ color: "#fbbf24", marginBottom: "8px", display: "block" }}>
-            Select Nutrition Plan:
-          </label>
-          <select
-            className="bitfit-input"
-            value={selectedPlanId}
-            onChange={(e) => setSelectedPlanId(e.target.value)}
-            style={{ backgroundColor: "#18181b", color: "white" }}
-          >
-            {plans.map((plan) => (
-              <option key={plan.nutrition_plan_id} value={plan.nutrition_plan_id}>
-                {plan.category} (Created by: {plan.created_by})
-              </option>
-            ))}
-          </select>
-        </div>
+        {plans.length > 0 && (
+          <div className="card" style={{ marginBottom: "20px" }}>
+            <label style={{ color: "#fbbf24", marginBottom: "8px", display: "block" }}>
+              Select Nutrition Plan:
+            </label>
+            <select
+              className="bitfit-input"
+              value={selectedPlanId}
+              onChange={(e) => setSelectedPlanId(e.target.value)}
+              style={{ backgroundColor: "#18181b", color: "white" }}
+            >
+              {plans.map((plan) => (
+                <option key={plan.nutrition_plan_id} value={plan.nutrition_plan_id}>
+                  {plan.category} (Created by: {plan.created_by})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* testing the day separation*/}
         <div className="card" style={{ gap: "20px" }}>
