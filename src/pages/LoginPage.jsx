@@ -136,7 +136,7 @@ function LoginPage() {
               onError={() => console.log("Login failed")}
               theme="filled_black"
               size="large"
-              width="348"
+              width="360"
             />
           </div>
         </div>
