@@ -326,10 +326,6 @@ const formikForm = useFormik({
     if (!values.example_video) errors.example_video = "Required";
 
     
-    if (Object.keys(errors).length > 0) {
-      alert("Please fill in all required fields.");
-    }
-    
     return errors;
   },
 
