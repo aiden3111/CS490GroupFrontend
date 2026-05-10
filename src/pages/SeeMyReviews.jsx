@@ -75,9 +75,6 @@ const SeeMyReviews = () => {
                     <h4 style={{ margin: 0, color: "#ffffff" }}>
                       {r.first_name} {r.last_name}
                     </h4>
-                    <span style={{ color: "#71717a", fontSize: "12px" }}>
-                      Client ID: {r.client_id}
-                    </span>
                   </div>
 
                   <div className="rating-stars">

@@ -354,7 +354,7 @@ const CoachSearch = () => {
               {reviews.length > 0 ? (
                 reviews.map((r, index) => (
                   <div key={index} className="review-card">
-                     <p>Client id: {r.client_id}  -  {r.first_name} {r.last_name}</p>
+                     <p>{r.first_name} {r.last_name}</p>
                     <p>
                       <strong>Rating:</strong> {r.rating}/5
                     </p>

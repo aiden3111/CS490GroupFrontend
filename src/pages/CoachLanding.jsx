@@ -248,7 +248,7 @@ const CoachLanding = () => {
                 reviews.map((r, index) => (
                   <div key={index} className="rreview-card">
                     <p>
-                      Client id: {r.client_id} - {r.first_name} {r.last_name}
+                      {r.first_name} {r.last_name}
                     </p>
                     <p>
                       <strong>Rating:</strong> {r.rating}/10
