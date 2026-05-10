@@ -25,6 +25,13 @@ const CoachLanding = () => {
   const [calorieData, setCalorieData] = useState([]);
   const [reviews, setReviews] = useState([]);
 
+  const fetchClients = () => {
+    fetch(`/api/clients/coach/${clientId}`)
+      .then((res) => res.json())
+      .then((data) => setClients(Array.isArray(data) ? data : []))
+      .catch((err) => console.error("Error loading roster:", err));
+  };
+
   useEffect(() => {
     const fetchLandingData = async () => {
       const response = await fetch(`/api/landing_page/${clientId}`);
@@ -79,10 +86,7 @@ const CoachLanding = () => {
 
   useEffect(() => {
     if (activeTab === "clients") {
-      fetch(`/api/clients/coach/${clientId}`)
-        .then((res) => res.json())
-        .then((data) => setClients(data))
-        .catch((err) => console.error("Error loading roster:", err));
+      fetchClients();
     }
   }, [activeTab, clientId]);
 
@@ -142,6 +146,32 @@ const CoachLanding = () => {
       alert(`Request ${status} successfully!`);
     } catch (err) {
       console.error("Update failed:", err);
+    }
+  };
+
+  const handleRemoveClient = async (targetClient) => {
+    const confirmed = window.confirm(
+      `Remove ${targetClient.first_name} ${targetClient.last_name} from your roster?`,
+    );
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(
+        `/api/clients/coach/${clientId}/${targetClient.client_id}`,
+        { method: "DELETE" },
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.error || "Failed to remove client.");
+        return;
+      }
+      setClients((prev) =>
+        prev.filter((client) => client.client_id !== targetClient.client_id),
+      );
+      alert("Client removed from roster.");
+    } catch (err) {
+      console.error("Remove client failed:", err);
+      alert("Failed to remove client.");
     }
   };
 
@@ -477,6 +507,12 @@ const CoachLanding = () => {
                           }
                         >
                           View Progress
+                        </button>
+                        <button
+                          className="btn-outline-warning"
+                          onClick={() => handleRemoveClient(client)}
+                        >
+                          Remove
                         </button>
                       </div>
                     </div>

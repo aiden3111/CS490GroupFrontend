@@ -5,6 +5,32 @@ import Modal from "./ModalPage";
 import Sidebar from "../components/Sidebar";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 
+const dayOptions = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+const timeOptions = ["Morning", "Afternoon", "Evening"];
+
+const availabilityMatches = (availability = "", selectedDays = [], selectedTimes = []) => {
+  const text = availability.toLowerCase();
+  const dayMap = {
+    mon: ["mon", "monday", "mon-fri", "weekdays"],
+    tue: ["tue", "tuesday", "mon-fri", "tue-sat", "weekdays"],
+    wed: ["wed", "wednesday", "mon-fri", "mon-thu", "weekdays"],
+    thu: ["thu", "thursday", "mon-fri", "mon-thu", "weekdays"],
+    fri: ["fri", "friday", "mon-fri", "weekdays"],
+  };
+
+  const dayMatch =
+    selectedDays.length === 0 ||
+    selectedDays.some((day) =>
+      (dayMap[day] || [day]).some((token) => text.includes(token)),
+    );
+
+  const timeMatch =
+    selectedTimes.length === 0 ||
+    selectedTimes.some((time) => text.includes(time) || text.includes(`${time}s`));
+
+  return dayMatch && timeMatch;
+};
+
 const CoachSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { clientId } = useParams();
@@ -14,6 +40,8 @@ const CoachSearch = () => {
   const navigate = useNavigate();
   const [selectedCoach, setSelectedCoach] = useState(null);
   const [selectedFilters, setselectedFilters] = useState([]);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [selectedTimes, setSelectedTimes] = useState([]);
 
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -208,6 +236,20 @@ const CoachSearch = () => {
     );
   };
 
+  const toggleDay = (day) => {
+    const key = day.toLowerCase();
+    setSelectedDays((prev) =>
+      prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key],
+    );
+  };
+
+  const toggleTime = (time) => {
+    const key = time.toLowerCase();
+    setSelectedTimes((prev) =>
+      prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key],
+    );
+  };
+
   const displayCoaches =
     (selectedFilters.length === 0
       ? coaches
@@ -225,7 +267,9 @@ const CoachSearch = () => {
           }
           return selectedFilters.includes(specialty);
         })
-    ).filter((coach) => coach.coach_id !== clientId);
+    )
+      .filter((coach) => availabilityMatches(coach.availability, selectedDays, selectedTimes))
+      .filter((coach) => coach.coach_id !== clientId);
 
   const handleRequestCoach = async () => {
     try {
@@ -321,6 +365,40 @@ const CoachSearch = () => {
               </Col>
               <Col>
           <div className="filter-group">
+            <p>Days</p>
+            <div className="filter-options">
+              {dayOptions.map((day) => (
+                <label key={day} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedDays.includes(day.toLowerCase())}
+                    onChange={() => toggleDay(day)}
+                  />
+                  {day}
+                </label>
+              ))}
+            </div>
+          </div>
+              </Col>
+              <Col>
+          <div className="filter-group">
+            <p>Time</p>
+            <div className="filter-options">
+              {timeOptions.map((time) => (
+                <label key={time} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedTimes.includes(time.toLowerCase())}
+                    onChange={() => toggleTime(time)}
+                  />
+                  {time}
+                </label>
+              ))}
+            </div>
+          </div>
+              </Col>
+              <Col>
+          <div className="filter-group">
             <p>Sort by Price</p>
             <div className="filter-options">
               <select
@@ -344,7 +422,7 @@ const CoachSearch = () => {
           </div>
 
           </Col>
-           {(selectedFilters.length > 0 || sortOrder) && (
+           {(selectedFilters.length > 0 || selectedDays.length > 0 || selectedTimes.length > 0 || sortOrder) && (
             <button
               className="clear-filters-btn"
               style={{
@@ -357,6 +435,8 @@ const CoachSearch = () => {
             }}
               onClick={() => {
                 setselectedFilters([]);
+                setSelectedDays([]);
+                setSelectedTimes([]);
                 setSortOrder("");
               }}
             >

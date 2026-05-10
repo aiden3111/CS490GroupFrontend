@@ -286,6 +286,12 @@ const Sidebar = ({ activePage = "" }) => {
             >
               Coach Applications
             </li>
+            <li
+              className={`nav-item${activePage === "adminexercises" ? " active" : ""}`}
+              onClick={() => navigate(`/AdminExercises/${clientId}`)}
+            >
+              Exercise Bank
+            </li>
           </>
         )}
 

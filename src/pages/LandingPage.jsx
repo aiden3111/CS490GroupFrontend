@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import Modal from "./ModalPage";
 
 const LandingPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,6 +18,8 @@ const LandingPage = () => {
   });
 
   const [calorieData, setCalorieData] = useState([]);
+  const [selectedCoach, setSelectedCoach] = useState(null);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -103,6 +106,18 @@ const LandingPage = () => {
   const getExerciseName = (id) => {
     const ex = exercises.find((e) => e.exercise_id === id);
     return ex ? ex.exercise_name : `Exercise #${id}`;
+  };
+
+  const openCoachProfile = async (coach) => {
+    setSelectedCoach(coach);
+    try {
+      const res = await fetch(`/api/review/coach/${coach.coach_id}`);
+      const data = await res.json();
+      setReviews(res.ok && Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to fetch coach reviews:", err);
+      setReviews([]);
+    }
   };
 
   useEffect(() => {
@@ -222,7 +237,12 @@ const LandingPage = () => {
             <h3>Top Coaches</h3>
             {landingData.top_coaches?.length > 0 ? (
               landingData.top_coaches.slice(0, 4).map((coach) => (
-                <div key={coach.coach_id} className="coach-square">
+                <div
+                  key={coach.coach_id}
+                  className="coach-square"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => openCoachProfile(coach)}
+                >
                   <div className="coach-avatar">
                     {coach.first_name[0]}
                     {coach.last_name[0]}
@@ -273,6 +293,71 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
+        <Modal
+          open={selectedCoach !== null}
+          onClose={() => setSelectedCoach(null)}
+        >
+          {selectedCoach && (
+            <div className="modal-inner-contentF">
+              <strong>Coach Details:</strong>
+              <h3>
+                Name: {selectedCoach.first_name} {selectedCoach.last_name}
+              </h3>
+              <p className="specialty-tag">
+                <b>Specialty:</b> {selectedCoach.specialty}
+              </p>
+              <p>
+                <b>Pricing:</b> ${selectedCoach.pricing}
+              </p>
+              <p>
+                <b>Certifications:</b>{" "}
+                {[selectedCoach.fitness_certifications, selectedCoach.nutrition_certifications]
+                  .filter(Boolean)
+                  .join(" ")}
+              </p>
+              <p>
+                <b>Availability:</b> {selectedCoach.availability}
+              </p>
+
+              <hr />
+              <h4>Reviews</h4>
+              {reviews.length > 0 ? (
+                reviews.map((r, index) => (
+                  <div key={index} className="review-card">
+                    <p>
+                      <strong>{r.first_name} {r.last_name}</strong>
+                    </p>
+                    <p><strong>Rating:</strong> {r.rating}/5</p>
+                    <p>
+                      <strong>Comment: </strong>
+                      <i>"{r.comment}"</i>
+                    </p>
+                    <p>
+                      <small>
+                        <strong>Date: </strong>
+                        {new Date(r.created_at).toLocaleDateString()}
+                      </small>
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p>No reviews yet for this coach.</p>
+              )}
+
+              <div style={{ marginTop: 18, display: "flex", gap: 10 }}>
+                <button
+                  className="coach-find-btn"
+                  onClick={() => navigate(`/CoachSearch/${clientId}?search=${encodeURIComponent(`${selectedCoach.first_name} ${selectedCoach.last_name}`)}`)}
+                >
+                  Request Coach
+                </button>
+                <button className="back-btn" onClick={() => setSelectedCoach(null)}>
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+        </Modal>
       </main>
     </div>
   );

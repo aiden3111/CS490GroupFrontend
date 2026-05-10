@@ -4,6 +4,32 @@ import React, { useState, useEffect } from "react";
 import Modal from "./ModalPage";
 import Sidebar from "../components/Sidebar";
 
+const dayOptions = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+const timeOptions = ["Morning", "Afternoon", "Evening"];
+
+const availabilityMatches = (availability = "", selectedDays = [], selectedTimes = []) => {
+  const text = availability.toLowerCase();
+  const dayMap = {
+    mon: ["mon", "monday", "mon-fri", "weekdays"],
+    tue: ["tue", "tuesday", "mon-fri", "tue-sat", "weekdays"],
+    wed: ["wed", "wednesday", "mon-fri", "mon-thu", "weekdays"],
+    thu: ["thu", "thursday", "mon-fri", "mon-thu", "weekdays"],
+    fri: ["fri", "friday", "mon-fri", "weekdays"],
+  };
+
+  const dayMatch =
+    selectedDays.length === 0 ||
+    selectedDays.some((day) =>
+      (dayMap[day] || [day]).some((token) => text.includes(token)),
+    );
+
+  const timeMatch =
+    selectedTimes.length === 0 ||
+    selectedTimes.some((time) => text.includes(time) || text.includes(`${time}s`));
+
+  return dayMatch && timeMatch;
+};
+
 //TODO: add the links to side bar
 //TODO: Build the top bar
 //TODO: DEal with the "both" from the
@@ -17,6 +43,8 @@ const SwitchCoach = () => {
   const navigate = useNavigate();
   const [selectedCoach, setSelectedCoach] = useState(null);
   const [selectedFilters, setselectedFilters] = useState([]);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [selectedTimes, setSelectedTimes] = useState([]);
   const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
@@ -28,11 +56,25 @@ const SwitchCoach = () => {
 
   const handleSearch = () => {
     if (searchTerm.trim().length === 0) {
-      alert("Please enter a valid search term.");
+      navigate(`/SwitchCoach/${clientId}`);
       return;
     }
     navigate(
-      `/CoachSearch/${clientId}?search=${encodeURIComponent(searchTerm)}`,
+      `/SwitchCoach/${clientId}?search=${encodeURIComponent(searchTerm)}`,
+    );
+  };
+
+  const toggleDay = (day) => {
+    const key = day.toLowerCase();
+    setSelectedDays((prev) =>
+      prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key],
+    );
+  };
+
+  const toggleTime = (time) => {
+    const key = time.toLowerCase();
+    setSelectedTimes((prev) =>
+      prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key],
     );
   };
 
@@ -43,19 +85,21 @@ const SwitchCoach = () => {
   };
 
   useEffect(() => {
-    if (query) {
-      fetch(`/api/coaches_search/?search=${query}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            console.error("Backend Error:", data.error);
-            setCoaches([]);
-          } else {
-            setCoaches(data);
-          }
-        })
-        .catch((err) => console.error("Fetch error:", err));
-    }
+    const url = query
+      ? `/api/coaches_search?search=${encodeURIComponent(query)}`
+      : "/api/coaches_search";
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          console.error("Backend Error:", data.error);
+          setCoaches([]);
+        } else {
+          setCoaches(data);
+        }
+      })
+      .catch((err) => console.error("Fetch error:", err));
   }, [query]);
 
   const handleFilterChange = (name) => {
@@ -75,10 +119,23 @@ const SwitchCoach = () => {
   const displayCoaches =
     (selectedFilters.length === 0
       ? coaches
-      : coaches.filter((coach) =>
-          selectedFilters.includes(coach.specialty.toLowerCase()),
-        )
-    ).filter((coach) => coach.coach_id !== clientId);
+      : coaches.filter((coach) => {
+          const specialty = coach.specialty
+            ? coach.specialty.toLowerCase().trim()
+            : "";
+          const wantsFitness = selectedFilters.includes("fitness");
+          const wantsNutrition = selectedFilters.includes("nutrition");
+          if (
+            specialty === "both" ||
+            specialty.includes("fitness & nutrition")
+          ) {
+            return wantsFitness || wantsNutrition;
+          }
+          return selectedFilters.includes(specialty);
+        })
+    )
+      .filter((coach) => availabilityMatches(coach.availability, selectedDays, selectedTimes))
+      .filter((coach) => coach.coach_id !== clientId);
 
   const handleRequestCoach = async () => {
     try {
@@ -109,19 +166,19 @@ const SwitchCoach = () => {
   };
 
   const handleRemove = () => {
-    try{
-fetch(`/api/my_coach/${clientId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ client_id: clientId }),
-    })
-    .then(res => res.json())
-    .then(data => {
-      alert("Coach removed!");
-      setMyCoach(null); 
-    });
-    } catch(error){
-      console.error("Error:", error)
+    try {
+      fetch(`/api/my_coach/${clientId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client_id: clientId }),
+      })
+        .then((res) => res.json())
+        .then(() => {
+          alert("Coach removed!");
+          navigate(`/CoachSearch/${clientId}`);
+        });
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
 
@@ -130,14 +187,14 @@ fetch(`/api/my_coach/${clientId}`, {
       <Sidebar activePage="mycoach" />
 
       <main className="main-content">
-        <h1 className="welcome-text"> Remove or Switch Coach</h1>
-        <div className="coach-removal">
+        <h1 className="welcome-text">Remove or Switch Coach</h1>
+        <div className="section-card" style={{ marginBottom: "20px" }}>
           <div className="coachremoval-message">
             <p>
               If you choose to remove your current coach you no longer will be
               able to use their services
             </p>
-            <p>You may select a new coach using the search option bellow</p>
+            <p>You can select a new coach after removing your current coach.</p>
           </div>
           <label className="checkbox-agree">
             <input
@@ -148,12 +205,13 @@ fetch(`/api/my_coach/${clientId}`, {
             />
             I Agree
           </label>
-          <button disabled={!agreed} onClick={() => handleRemove()}> Remove Coach</button>
+          <button className="btn-outline-warning" disabled={!agreed} onClick={() => handleRemove()}>
+            Remove Coach
+          </button>
         </div>
 
-        <div className="search-containerR">
-
-          <h1>Select New Coach</h1>
+        <h1 className="welcome-text">Coach Search</h1>
+        <div className="search-container">
           <input
             type="text"
             className="form-control search-input"
@@ -163,12 +221,71 @@ fetch(`/api/my_coach/${clientId}`, {
             onKeyDown={handleEnter}
           />
           <button className="btn-search" onClick={handleSearch}>
-            {" "}
-            Search{" "}
+            Search
           </button>
         </div>
 
-        {query && <h2 className="section-title">Seach Results: "{query}"</h2>}
+        {query && <h2 className="section-title">Search Results: "{query}"</h2>}
+
+        <section className="filter-panel">
+          <div className="filter-group">
+            <p>Specialty</p>
+            <div className="filter-options">
+              {["Fitness", "Nutrition"].map((name) => (
+                <label key={name} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedFilters.includes(name.toLowerCase())}
+                    onChange={() => handleFilterChange(name)}
+                  />
+                  {name}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="filter-group">
+            <p>Days</p>
+            <div className="filter-options">
+              {dayOptions.map((day) => (
+                <label key={day} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedDays.includes(day.toLowerCase())}
+                    onChange={() => toggleDay(day)}
+                  />
+                  {day}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="filter-group">
+            <p>Time</p>
+            <div className="filter-options">
+              {timeOptions.map((time) => (
+                <label key={time} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedTimes.includes(time.toLowerCase())}
+                    onChange={() => toggleTime(time)}
+                  />
+                  {time}
+                </label>
+              ))}
+            </div>
+          </div>
+          {(selectedFilters.length > 0 || selectedDays.length > 0 || selectedTimes.length > 0) && (
+            <button
+              className="clear-filters-btn"
+              onClick={() => {
+                setselectedFilters([]);
+                setSelectedDays([]);
+                setSelectedTimes([]);
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
+        </section>
 
         <div className="coach-grid">
           {displayCoaches.length > 0
@@ -185,6 +302,9 @@ fetch(`/api/my_coach/${clientId}`, {
                   </p>
                   <p>
                     <b>Pricing:</b> ${coach.pricing}
+                  </p>
+                  <p>
+                    <b>Availability:</b> {coach.availability}
                   </p>
                   <button
                     className="btn-outline"
@@ -213,6 +333,9 @@ fetch(`/api/my_coach/${clientId}`, {
               <p>
                 {" "}
                 <b>Pricing:</b> ${selectedCoach.pricing}{" "}
+              </p>
+              <p>
+                <b>Availability:</b> {selectedCoach.availability}
               </p>
               <p>
                 {" "}
