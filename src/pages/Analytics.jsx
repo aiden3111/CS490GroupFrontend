@@ -173,19 +173,17 @@ const handleUploadCloud = async (e) => {
         const cloudData = await cloudResponse.json();
         const permanentUrl = cloudData.secure_url; 
         
-        const dbResponse = await fetch(`/api/progress/upload/${clientId}`, {
+        const dbResponse = await fetch(`/api/progress/upload/${clientId}`, { 
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                image_url: permanentUrl, 
-                photo_type: photoType,    
+                image_url: permanentUrl,
+                photo_type: photoType,
             }),
         });
 
         if (dbResponse.ok) {
-            alert("Success! Photo is now permanent for the 4-day stress test.");
+            alert("Success! Photo is saved");
            
             if (typeof fetchPhotos === "function") fetchPhotos(); 
         } else {
