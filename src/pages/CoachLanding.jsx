@@ -351,7 +351,7 @@ const CoachLanding = () => {
                       <div className="mood-label">{mood.mood_label}</div>
                       <div className="mood-date">{new Date(mood.log_date.replace(/-/g, '\/')).toLocaleDateString()}</div>
                     </div>
-                    <span className="mood-score">{mood.mood_score} / 5</span>
+                    <span className="mood-score">{mood.mood_score} / 10</span>
                   </div>
                 ))
               ) : (
