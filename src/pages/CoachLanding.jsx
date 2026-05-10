@@ -275,24 +275,21 @@ const CoachLanding = () => {
             <div className="card">
               <h3>Recent Reviews</h3>
               {reviews.length > 0 ? (
-                reviews.map((r, index) => (
-                  <div key={index} className="rreview-card">
-                    <p>
-                      {r.first_name} {r.last_name}
+                reviews.slice(0, 3).map((review, index) => (
+                  <div key={index} className="review-card">
+                    <p style={{ color: "#00ff44", fontWeight: "bold", marginBottom: "5px" }}>
+                      Rating: {review.rating} / 5
                     </p>
-                    <p>
-                      <strong>Rating:</strong> {r.rating}/10
+                    <p style={{ fontStyle: "italic", color: "#f4f4f5" }}>
+                      "{review.comment}"
                     </p>
-                    <p>
-                      <strong>Comment: </strong>
-                      <i>"{r.comment}"</i>
+                    <p style={{ fontSize: "12px", color: "#a1a1aa", marginTop: "5px" }}>
+                      — Client ID: {review.client_id}
                     </p>
-                    <strong>Date: </strong>
-                    {new Date(r.created_at).toLocaleDateString()}
                   </div>
                 ))
               ) : (
-                <p>No reviews yet for this coach.</p>
+                <p>No reviews yet.</p>
               )}
             </div>
 
