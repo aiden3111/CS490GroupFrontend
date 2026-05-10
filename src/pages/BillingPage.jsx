@@ -113,7 +113,7 @@ const BillingPage = () => {
                             {filteredInvoices.map((inv) => (
                                 <div key={inv.invoice_id} className="mood-entry" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
                                     <div>
-                                        <div className="mood-label">Mock Card Charge</div>
+                                        <div className="mood-label">Monthly Coach Subscription</div>
                                         <div className="mood-date">
                                             {inv.billing_month} · Charged {new Date(inv.created_at).toLocaleDateString("en-US")}
                                         </div>
