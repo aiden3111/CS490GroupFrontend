@@ -141,6 +141,8 @@ const AdminReports = () => {
                                         borderRadius: 10,
                                         display: "grid",
                                         gap: 8,
+                                        backgroundColor: "#18181b", 
+                                        color: "#f4f4f5",
                                     }}
                                 >
                                     <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
