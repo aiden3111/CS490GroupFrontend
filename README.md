@@ -1,16 +1,133 @@
-# React + Vite
+# BitFit Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite frontend for the BitFit fitness coaching app.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19
+- Vite
+- React Router
+- React Bootstrap
+- Recharts
+- Socket.IO client
+- Google OAuth client
 
-## React Compiler
+## Local Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Install dependencies:
 
-## Expanding the ESLint configuration
+```bash
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Create a `.env` file in the frontend repo root:
+
+```env
+VITE_BACKEND_URL=http://localhost:5000
+VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
+```
+
+Run locally:
+
+```bash
+npm run dev
+```
+
+Build locally:
+
+```bash
+npm run build
+```
+
+Preview production build:
+
+```bash
+npm run preview
+```
+
+## Vercel Deployment
+
+The frontend is deployed on Vercel. Vercel hosts the React app only. The Flask backend should run on Railway because Socket.IO/WebSockets need a persistent server.
+
+Set these Vercel environment variables:
+
+```env
+VITE_BACKEND_URL=https://your-railway-backend.up.railway.app
+VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
+```
+
+`VITE_BACKEND_URL` is used by `src/pages/MessagingPage.jsx` for Socket.IO.
+
+Most REST calls use relative `/api/...` URLs. These are proxied by `vercel.json`:
+
+```json
+{
+  "source": "/api/:path*",
+  "destination": "https://your-railway-backend.up.railway.app/api/:path*"
+}
+```
+
+When deploying a new backend URL, update the `destination` in `vercel.json`.
+
+## Important Routing Notes
+
+- `/` redirects to `/RegistrationPage`.
+- Client dashboard: `/LandingPage/:clientId`
+- Coach dashboard: `/CoachLanding/:clientId`
+- Admin dashboard: `/AdminAnalytics/:clientId`
+- Admin exercise bank: `/AdminExercises/:clientId`
+- Messaging: `/MessagingPage/:clientId`
+
+## Authentication Notes
+
+Login stores these localStorage values:
+
+```text
+authenticatedClientId
+userRole
+coachSpecialty
+adminId
+```
+
+The shared sidebar uses those values to show client, coach, and admin routes.
+
+## Socket.IO Notes
+
+Live messaging connects directly to:
+
+```js
+import.meta.env.VITE_BACKEND_URL
+```
+
+Do not point Socket.IO at a Vercel serverless backend. Use the Railway backend URL.
+
+## Google OAuth Notes
+
+The frontend requires:
+
+```env
+VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
+```
+
+The same Google OAuth client ID must also be configured on the backend as `GOOGLE_CLIENT_ID`.
+
+In Google Cloud Console, include the deployed Vercel frontend URL in allowed JavaScript origins.
+
+## Common Commands
+
+```bash
+npm install
+npm run dev
+npm run build
+npm run preview
+```
+
+## Deployment Checklist
+
+Before deploying:
+
+- Confirm `vercel.json` points `/api/:path*` to the Railway backend.
+- Confirm Vercel has `VITE_BACKEND_URL`.
+- Confirm Vercel has `VITE_GOOGLE_CLIENT_ID`.
+- Confirm Railway backend has database, Google, and Resend variables.
+- Run `npm run build`.
