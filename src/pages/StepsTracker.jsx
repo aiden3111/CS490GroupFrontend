@@ -19,41 +19,56 @@ const StepsTracker = () => {
   const navigate = useNavigate();
   const [stepData, setStepData] = useState([]);
 
+  const fetchStepData = async () => {
+    try {
+      const response = await fetch(`/api/steps_graph/${clientId}`);
+      const data = await response.json();
+      setStepData([...data].reverse());
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+  };
+
   useEffect(() => {
     const loggedInId = localStorage.getItem("authenticatedClientId");
     if (loggedInId !== clientId) {
       navigate(`/UserProfile/${loggedInId}`);
       return;
     }
+    fetchStepData();
   }, [clientId, navigate]);
 
+ const formatListDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'short', 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  }).replace(/,/g, ''); 
+};
 
-  useEffect(() => {
-    const fetchStepData = async () => {
-      const response = await fetch(
-        `/api/steps_graph/${clientId}`,
-      );
-      const data = await response.json();
-      setStepData(data);
-    };
-    fetchStepData();
-  }, [clientId]);
-
-  const date = new Date().toISOString().split("T")[0];
+const formatGraphDate = (dateStr) => {
+  const date = new Date(dateStr.replace(/-/g, '\/'));
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: '2-digit' 
+  });
+};
   const formik = useFormik({
     initialValues: {
       steps: "",
     },
     onSubmit: async (values) => {
+      const todayISO = new Date().toISOString().split("T")[0];
       try {
         const res = await fetch(`/api/logging`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             client_id: clientId,
-            log_date: date,
+            log_date: todayISO,
             steps: values.steps,
-           
           }),
         });
 
@@ -65,6 +80,7 @@ const StepsTracker = () => {
               selectedClientId: values.selectedClientId,
             },
           });
+          await fetchStepData();
         } else {
           const err = await res.json();
           alert(`Error: ${err.error}`);
@@ -74,9 +90,6 @@ const StepsTracker = () => {
       }
     },
   });
-
-  //TODO: add the links to side bar
-  //TODO: Build the top bar
 
   return (
     <div className="dashboard-container">
@@ -125,9 +138,7 @@ const StepsTracker = () => {
             <div className="steps-scroll-container">
               {stepData.map((steps) => (
                 <div key={steps.log_date} className="meal-square">
-                  <p>
-                    <strong>Date:</strong> {steps.log_date}
-                  </p>
+                  <p><strong>Date:</strong> {formatListDate(steps.log_date)}</p>
                   <p>
                     <strong>Steps:</strong> {steps.steps}
                   </p>
@@ -143,21 +154,27 @@ const StepsTracker = () => {
               <h3>Steps Trends</h3>
               {stepData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={stepData}>
+                  <LineChart data={[...stepData].reverse()}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="log_date" />
+                    <XAxis
+                      dataKey="log_date"
+                      tickFormatter={formatGraphDate}
+                    />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip
+                      labelFormatter={formatListDate}
+                    />
                     <Line
                       type="monotone"
                       dataKey="steps"
                       stroke="#509e54"
-                      fill="#78b47b"
+                      strokeWidth={3}
+                      dot={{ r: 6 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <p>No calorie data found.</p>
+                <p>No steps data found.</p>
               )}
             </div>
           </div>
@@ -167,6 +184,5 @@ const StepsTracker = () => {
     </div>
   );
 };
-//TODO: Fix Styling
-//TODO: Fix Sqares content
+
 export default StepsTracker;

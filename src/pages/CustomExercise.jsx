@@ -140,7 +140,21 @@ function MyCustom({ clientId }) {
             <h3>Exercise: {ex.exercise_name}</h3>
             <p>Muscle Group: {ex.muscle_group} </p>
             <p>Equipment: {ex.equipment}</p>
-            <p>Example: {ex.example_video}</p>
+            <p>
+              <b>Example:</b>{" "}
+              {ex.example_video ? (
+                <a
+                  href={ex.example_video}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: "#1d2c59", textDecoration: "underline" }}
+                >
+                  View Demo Video
+                </a>
+              ) : (
+                "No video available"
+              )}
+            </p>
             <button className="edit-btn" onClick={() => handleEdit(ex)}>
               Edit
             </button>
@@ -289,48 +303,55 @@ function EditModal({ show, onHide, exercise, clientId, onSuccess }) {
 function CustomCreation({ clientId }) {
   const [activeTab, setActiveTab] = useState("create-custom");
 
-  const formikForm = useFormik({
-    initialValues: {
-      exercise_name: "",
-      muscle_group: "",
-      equipment: "",
-      category: "",
-      example_video: "",
-      is_custom: 1,
-      created_by: clientId,
-    },
-    validateOnChange: false,
-    validateOnBlur: false,
+    
+const formikForm = useFormik({
+  initialValues: {
+    exercise_name: "",
+    muscle_group: "",
+    equipment: "",
+    category: "",
+    example_video: "",
+    is_custom: 1,
+    created_by: clientId,
+  },
+    // Remova o validateOnChange: false para validação em tempo real
+    
+  validate: (values) => {
+    const errors = {};
+    
+    if (!values.exercise_name) errors.exercise_name = "Required";
+    if (!values.muscle_group) errors.muscle_group = "Required";
+    if (!values.equipment) errors.equipment = "Required";
+    if (!values.category) errors.category = "Required";
+    if (!values.example_video) errors.example_video = "Required";
 
-    onSubmit: (values) => {
-      fetch("/api/exercises", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            alert(data.error);
-          } else {
-            console.log("Success:", data);
-            alert("Exercise Created.");
-            navigate(`/WorkoutSearchPage/${clientId}`);
-          }
-        })
-        .catch((err) => console.error("Error:", err));
-    },
-    validate: (values) => {
-      if (
-        values.exercise_name.length === 0 ||
-        values.muscle_group.length === 0 ||
-        values.equipment.length === 0 ||
-        values.category.length === 0 ||
-        values.example_video.length === 0
-      )
-        return alert("All fields are required");
-    },
-  });
+    
+    if (Object.keys(errors).length > 0) {
+      alert("Please fill in all required fields.");
+    }
+    
+    return errors;
+  },
+
+  onSubmit: (values) => {
+      
+    fetch("/api/exercises", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.error) {
+        alert(data.error);
+      } else {
+        alert("Exercise Created.");
+          setActiveTab("mycustom");   
+        }
+    })
+    .catch((err) => console.error("Error:", err));
+  },
+});
 
   return (
     <div className="Outer-custom">
@@ -348,6 +369,7 @@ function CustomCreation({ clientId }) {
               <Form.Group className="mb-3" controlId="formExerciseName">
                 <Form.Label>Exercise Name</Form.Label>
                 <Form.Control
+                  required
                   type="text"
                   name="exercise_name"
                   placeholder="..."
@@ -359,6 +381,7 @@ function CustomCreation({ clientId }) {
               <Form.Group className="mb-3" controlId="formMuscleGroup">
                 <Form.Label>Muscle Group</Form.Label>
                 <Form.Select
+                  required
                   name="muscle_group"
                   onChange={formikForm.handleChange}
                   value={formikForm.values.muscle_group}
@@ -378,6 +401,7 @@ function CustomCreation({ clientId }) {
               <Form.Group className="mb-3" controlId="formEquipment">
                 <Form.Label>Equipment</Form.Label>
                 <Form.Select
+                  required
                   name="equipment"
                   onChange={formikForm.handleChange}
                   value={formikForm.values.equipment}
@@ -396,6 +420,7 @@ function CustomCreation({ clientId }) {
               <Form.Group className="mb-3" controlId="formCategory">
                 <Form.Label>Category</Form.Label>
                 <Form.Control
+                  required
                   type="text"
                   name="category"
                   placeholder="e.g. Strength"
@@ -407,6 +432,7 @@ function CustomCreation({ clientId }) {
               <Form.Group className="mb-3" controlId="formVideo">
                 <Form.Label>Example Video URL</Form.Label>
                 <Form.Control
+                  required
                   type="url"
                   name="example_video"
                   placeholder="https://youtube.com/..."

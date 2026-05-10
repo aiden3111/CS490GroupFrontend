@@ -3,6 +3,7 @@ import "./Landingcss.css";
 import React, { useState, useEffect } from "react";
 import Modal from "./ModalPage";
 import Sidebar from "../components/Sidebar";
+import { Form, Button, Container, Row, Col } from "react-bootstrap";
 
 const CoachSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,6 +14,7 @@ const CoachSearch = () => {
   const navigate = useNavigate();
   const [selectedCoach, setSelectedCoach] = useState(null);
   const [selectedFilters, setselectedFilters] = useState([]);
+
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState("");
@@ -53,7 +55,7 @@ const CoachSearch = () => {
   useEffect(() => {
     let url = `/api/coaches_search?`;
     if (query) url += `search=${query}&`;
-  
+
     if (sortOrder) url += `sort=${sortOrder}`;
 
     fetch(url)
@@ -66,9 +68,7 @@ const CoachSearch = () => {
     setPaymentLoading(true);
     setPaymentError("");
     try {
-      const res = await fetch(
-        `/api/payment/client/${clientId}`,
-      );
+      const res = await fetch(`/api/payment/client/${clientId}`);
       const data = await res.json();
       if (!res.ok) {
         setPaymentMethods([]);
@@ -289,10 +289,77 @@ const CoachSearch = () => {
             onKeyDown={handleEnter}
           />
           <button className="btn-search" onClick={handleSearch}>
-            Search</button>
+            Search
+          </button>
         </div>
 
         {query && <h2 className="section-title">Search Results: "{query}"</h2>}
+       
+        <section className="filter-panel">
+          <Row>
+          <Col>
+          <div className="filter-group">
+            <p>Specialty</p>
+            <div className="filter-options">
+              {["Fitness", "Nutrition"].map((name) => (
+                <label key={name} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedFilters.includes(name.toLowerCase())}
+                    onChange={() => handleFilterChange(name.toLowerCase())}
+                  />
+                  {name}
+                </label>
+              ))}
+            </div>
+          </div>
+              </Col>
+              <Col>
+          <div className="filter-group">
+            <p>Sort by Price</p>
+            <div className="filter-options">
+              <select
+                className="filter-select"
+                style={{
+                  background: "#18181b",
+                  color: "white",
+                  border: "1px solid #3f3f46",
+                  padding: "5px 10px",
+                  borderRadius: "6px",
+                  marginTop: "5px",
+                }}
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <option value="">Default</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          </Col>
+           {(selectedFilters.length > 0 || sortOrder) && (
+            <button
+              className="clear-filters-btn"
+              style={{
+              backgroundColor: "#294333",
+              color: "white",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              border: "none",
+              marginTop: "6px"
+            }}
+              onClick={() => {
+                setselectedFilters([]);
+                setSortOrder("");
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
+          </Row>
+        </section>
 
         <div className="coach-grid">
           {displayCoaches.length > 0 ? (
@@ -341,12 +408,18 @@ const CoachSearch = () => {
                 Name: {selectedCoach.first_name} {selectedCoach.last_name}
               </h3>
               <p className="specialty-tag">
-              <b>Specialty:</b> {selectedCoach.specialty} </p>
-              <p><b>Pricing:</b> ${selectedCoach.pricing}</p>
-              <p><b>Certifications:</b> {selectedCoach.fitness_certifications}
+                <b>Specialty:</b> {selectedCoach.specialty}{" "}
+              </p>
+              <p>
+                <b>Pricing:</b> ${selectedCoach.pricing}
+              </p>
+              <p>
+                <b>Certifications:</b> {selectedCoach.fitness_certifications}
                 {selectedCoach.nutrition_certifications}
               </p>
-               <p><b>Availability:</b> {selectedCoach.availability}</p>
+              <p>
+                <b>Availability:</b> {selectedCoach.availability}
+              </p>
 
               <hr />
               <h4>Reviews</h4>
@@ -355,7 +428,6 @@ const CoachSearch = () => {
                 reviews.map((r, index) => (
                   <div key={index} className="review-card">
                      <p>{r.first_name} {r.last_name}</p>
-                    <p>
                       <strong>Rating:</strong> {r.rating}/5
                     </p>
                     <p>

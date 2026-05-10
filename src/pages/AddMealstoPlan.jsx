@@ -217,12 +217,20 @@ const AddMealstoPlan = () => {
                                 </Col>
                                 <Col>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Day</Form.Label>
+                                    <Form.Label>Day of the Week (1-7)</Form.Label>
                                     <Form.Control 
+                                        type="number" 
                                         name="day_number" 
+                                        min="1"  
+                                        max="7" 
+                                        placeholder="1=Sun, 7=Sat"
                                         onChange={formik.handleChange} 
-                                        value={formik.values.day_number} 
-                                        placeholder="Day" />
+                                        value={formik.values.day_number}
+                                        onInput={(e) => {
+                                            if (e.target.value > 7) e.target.value = 7;
+                                            if (e.target.value < 0) e.target.value = 1;
+                                        }}
+                                    />
                                 </Form.Group>
                                 </Col>
                                     </Row>
