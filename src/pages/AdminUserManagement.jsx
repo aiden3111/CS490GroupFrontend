@@ -60,8 +60,8 @@ const AdminUserManagement = () => {
 
             const matchesStatus =
                 statusFilter === "all" ||
-                (statusFilter === "active" && normalizedStatus === "active") ||
-                (statusFilter === "disabled" && (normalizedStatus === "disabled" || normalizedStatus === "suspended"));
+                (statusFilter === "active" && currentStatus === "active") ||
+                (statusFilter === "disabled" && (currentStatus === "disabled" || currentStatus === "suspended"));
 
             return matchesQuery && matchesStatus;
         });
