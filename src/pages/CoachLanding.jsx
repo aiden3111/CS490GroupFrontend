@@ -275,7 +275,7 @@ const CoachLanding = () => {
             <div className="card">
               <h3>Recent Reviews</h3>
               {reviews.length > 0 ? (
-                reviews.slice(0, 3).map((r, index) => (
+                reviews.slice(0, 2).map((r, index) => (
                   <div key={index} className="rreview-card">
                     <p>
                       {r.first_name} {r.last_name}
