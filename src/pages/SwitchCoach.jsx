@@ -73,14 +73,20 @@ const SwitchCoach = () => {
 
 
   const displayCoaches =
-    selectedFilters.length === 0
+    (selectedFilters.length === 0
       ? coaches
       : coaches.filter((coach) =>
           selectedFilters.includes(coach.specialty.toLowerCase()),
-        );
+        )
+    ).filter((coach) => coach.coach_id !== clientId);
 
   const handleRequestCoach = async () => {
     try {
+      if (!selectedCoach) return;
+      if (selectedCoach.coach_id === clientId) {
+        alert("You cannot request yourself as a coach.");
+        return;
+      }
       const response = await fetch(
         `/api/coach/${selectedCoach.coach_id}/request`,
         {

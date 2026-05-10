@@ -209,7 +209,7 @@ const CoachSearch = () => {
   };
 
   const displayCoaches =
-    selectedFilters.length === 0
+    (selectedFilters.length === 0
       ? coaches
       : coaches.filter((coach) => {
           const specialty = coach.specialty
@@ -224,11 +224,16 @@ const CoachSearch = () => {
             return wantsFitness || wantsNutrition;
           }
           return selectedFilters.includes(specialty);
-        });
+        })
+    ).filter((coach) => coach.coach_id !== clientId);
 
   const handleRequestCoach = async () => {
     try {
       if (!selectedCoach) return;
+      if (selectedCoach.coach_id === clientId) {
+        setPaymentError("You cannot request yourself as a coach.");
+        return;
+      }
       if (!selectedPaymentId) {
         setPaymentError(
           "Please select a payment method (or add a new one) before requesting a coach.",
