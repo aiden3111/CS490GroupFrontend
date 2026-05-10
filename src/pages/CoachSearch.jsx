@@ -13,9 +13,9 @@ const availabilityMatches = (availability = "", selectedDays = [], selectedTimes
   const dayMap = {
     mon: ["mon", "monday", "mon-fri", "weekdays"],
     tue: ["tue", "tuesday", "mon-fri", "tue-sat", "weekdays"],
-    wed: ["wed", "wednesday", "mon-fri", "mon-thu", "weekdays"],
-    thu: ["thu", "thursday", "mon-fri", "mon-thu", "weekdays"],
-    fri: ["fri", "friday", "mon-fri", "weekdays"],
+    wed: ["wed", "wednesday", "mon-fri", "mon-thu", "tue-sat", "weekdays"],
+    thu: ["thu", "thursday", "mon-fri", "mon-thu", "tue-sat", "weekdays"],
+    fri: ["fri", "friday", "mon-fri", "tue-sat", "weekdays"],
     sat: ["sat", "saturday", "tue-sat", "weekend", "weekends"],
     sun: ["sun", "sunday", "weekend", "weekends"],
   };
