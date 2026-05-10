@@ -60,10 +60,6 @@ const BillingPage = () => {
     }, [invoices, selectedMonth, selectedYear]);
 
 
-    const handleDownload = (invoiceId) => {
-        window.location.href = `/api/invoice/download/${invoiceId}`;
-    };
-
     const selectStyle = {
         width: "100%",
         background: "rgba(255,255,255,0.08)",
@@ -87,9 +83,9 @@ const BillingPage = () => {
                 </header>
 
                 <div className="card" style={{ marginTop: "20px" }}>
-                    <h3>Payment History</h3>
+                    <h3>Subscription Charges</h3>
                     <p style={{ color: "var(--muted)", fontSize: "13px", marginBottom: "20px" }}>
-                        View and download your monthly service receipts.
+                        Mock card transactions are created when a coach accepts you and once per month after that.
                     </p>
 
                     {/* Filter Section */}
@@ -109,31 +105,29 @@ const BillingPage = () => {
                     </div>
 
                     {loading ? (
-                        <p>Loading transactions...</p>
+                        <p>Loading charges...</p>
                     ) : filteredInvoices.length === 0 ? (
-                        <p style={{ color: "var(--muted)", fontSize: "13px" }}>No matching payments found.</p>
+                        <p style={{ color: "var(--muted)", fontSize: "13px" }}>No subscription charges found.</p>
                     ) : (
                         <div style={{ display: "grid", gap: "10px" }}>
                             {filteredInvoices.map((inv) => (
-                                <div key={inv.invoice_id} className="mood-entry" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div key={inv.invoice_id} className="mood-entry" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
                                     <div>
-                                        <div className="mood-label">Invoice #{inv.invoice_id}</div>
+                                        <div className="mood-label">Mock Card Charge</div>
                                         <div className="mood-date">
-                                            {new Date(inv.created_at).toLocaleDateString('en-US'
-                                            )}
+                                            {inv.billing_month} · Charged {new Date(inv.created_at).toLocaleDateString("en-US")}
+                                        </div>
+                                        <div style={{ color: "var(--muted)", fontSize: "12px", marginTop: "4px" }}>
+                                            Transaction #{inv.invoice_id}
                                         </div>
                                     </div>
                                     <div style={{ textAlign: "right" }}>
                                         <div style={{ color: "#85fb24", fontWeight: "bold", marginBottom: "5px" }}>
-                                            ${inv.amount}
+                                            ${Number(inv.amount).toFixed(2)}
                                         </div>
-                                        <button
-                                            className="search-btn"
-                                            style={{ padding: "5px 15px", fontSize: "12px" }}
-                                            onClick={() => handleDownload(inv.invoice_id)}
-                                        >
-                                            Download .txt
-                                        </button>
+                                        <div style={{ color: "var(--muted)", fontSize: "12px" }}>
+                                            Paid
+                                        </div>
                                     </div>
                                 </div>
                             ))}
