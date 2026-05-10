@@ -36,6 +36,7 @@ import ViewClientProgress from './pages/ViewClientProgress';
 import AccountSuspended from './pages/AccountSuspended';
 import SeeMyReviews from './pages/SeeMyReviews';
 import BillingPage from './pages/BillingPage';
+import SubscriptionPage from './pages/SubscriptionPage';
 import AdminAnalytics from './pages/AdminAnalytics';
 import AssignWorkoutPlan from './pages/AssignWorkoutPlan';
 import AddWorkoutstoPlan from './pages/AddWorkoutstoPlan';
@@ -81,6 +82,7 @@ function App() {
         <Route path="/SeeMyReviews/:clientId" element={<ProtectedRoutes><SeeMyReviews/></ProtectedRoutes>}/>
         <Route path="/AccountSuspended" element={<AccountSuspended />} />
         <Route path="/BillingPage/:clientId" element={<ProtectedRoutes><BillingPage/></ProtectedRoutes>} />
+        <Route path="/SubscriptionPage/:clientId" element={<ProtectedRoutes><SubscriptionPage/></ProtectedRoutes>} />
         <Route path="/AdminAnalytics/:clientId" element={<ProtectedRoutes><AdminAnalytics /></ProtectedRoutes>} />
         <Route path="/AssignWorkoutPlan/:clientId" element={<ProtectedRoutes> <AssignWorkoutPlan /> </ProtectedRoutes>} />
         <Route path="/AddWorkoutstoPlan/:clientId" element={<ProtectedRoutes> <AddWorkoutstoPlan /> </ProtectedRoutes>} />

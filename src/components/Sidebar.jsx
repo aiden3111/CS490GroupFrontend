@@ -171,7 +171,10 @@ const Sidebar = ({ activePage = "" }) => {
         >
           Analytics
         </li>
-        <li className="nav-item nav-placeholder">
+        <li
+          className={`nav-item${activePage === "subscriptions" ? " active" : ""}`}
+          onClick={() => navigate(`/SubscriptionPage/${clientId}`)}
+        >
           Subscriptions
         </li>
 
