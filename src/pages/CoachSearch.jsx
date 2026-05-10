@@ -741,7 +741,7 @@ const CoachSearch = () => {
                   Request Coach
                 </button>
                 <button
-                  className="back-btn"
+                  className="coach-close-btn"
                   onClick={() => setSelectedCoach(null)}
                 >
                   Close

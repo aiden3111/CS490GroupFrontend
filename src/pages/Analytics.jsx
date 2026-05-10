@@ -107,93 +107,95 @@ const Analytics = () => {
     fetchPhotos();
   }, [clientId, range]);
 
-const handleDelete = async (imageUrl) => {
-  if (!window.confirm("Are you sure?")) return;
+  const handleDelete = async (imageUrl) => {
+    if (!window.confirm("Are you sure?")) return;
 
-  const identifier = imageUrl.startsWith("http") 
-    ? encodeURIComponent(imageUrl) 
-    : imageUrl.split("/").pop();
+    const identifier = imageUrl.startsWith("http")
+      ? encodeURIComponent(imageUrl)
+      : imageUrl.split("/").pop();
 
-  try {
-    const res = await fetch(`/api/progress/delete/${identifier}`, {
-      method: "DELETE",
-    });
+    try {
+      const res = await fetch(`/api/progress/delete/${identifier}`, {
+        method: "DELETE",
+      });
 
-    if (res.ok) {
-      setProgressPhotos((prev) => prev.filter((p) => p.image_url !== imageUrl));
+      if (res.ok) {
+        setProgressPhotos((prev) =>
+          prev.filter((p) => p.image_url !== imageUrl),
+        );
+      }
+    } catch (err) {
+      console.error("Failed to delete", err);
     }
-  } catch (err) {
-    console.error("Failed to delete", err);
-  }
-};
+  };
 
- const formatListDate = (dateStr) => {
-  const date = new Date(dateStr.replace(/-/g, '\/'));
-  return date.toLocaleDateString('en-US', { 
-    weekday: 'short', 
-    day: '2-digit', 
-    month: 'short', 
-    year: 'numeric' 
-  }).replace(/,/g, ''); 
-};
+  const formatListDate = (dateStr) => {
+    const date = new Date(dateStr.replace(/-/g, "\/"));
+    return date
+      .toLocaleDateString("en-US", {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+      .replace(/,/g, "");
+  };
 
-const formatGraphDate = (dateStr) => {
-  const date = new Date(dateStr.replace(/-/g, '\/'));
-  return date.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: '2-digit' 
-  });
-};
+  const formatGraphDate = (dateStr) => {
+    const date = new Date(dateStr.replace(/-/g, "\/"));
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+    });
+  };
 
-const handleUploadCloud = async (e) => {
+  const handleUploadCloud = async (e) => {
     e.preventDefault();
     if (!selectedFile) return alert("Please select a photo first!");
 
-   
     const formData = new FormData();
     formData.append("file", selectedFile);
     formData.append("upload_preset", UPLOAD_PRESET);
 
     try {
-        
-        const cloudResponse = await fetch(
-            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-            {
-                method: "POST",
-                body: formData,
-            }
-        );
+      const cloudResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
-        if (!cloudResponse.ok) {
-            const errorData = await cloudResponse.json();
-            console.error("Cloudinary Error:", errorData);
-            return alert("Failed to upload to Cloudinary. Check your Preset!");
-        }
+      if (!cloudResponse.ok) {
+        const errorData = await cloudResponse.json();
+        console.error("Cloudinary Error:", errorData);
+        return alert("Failed to upload to Cloudinary. Check your Preset!");
+      }
 
-        const cloudData = await cloudResponse.json();
-        const permanentUrl = cloudData.secure_url; 
-        
-        const dbResponse = await fetch(`/api/progress/upload/${clientId}`, { 
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                image_url: permanentUrl,
-                photo_type: photoType,
-            }),
-        });
+      const cloudData = await cloudResponse.json();
+      const permanentUrl = cloudData.secure_url;
 
-        if (dbResponse.ok) {
-            alert("Success! Photo is saved");
-           
-            if (typeof fetchPhotos === "function") fetchPhotos(); 
-        } else {
-            alert("Cloudinary worked, but saving to your Database failed.");
-        }
+      const dbResponse = await fetch(`/api/progress/upload/${clientId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          image_url: permanentUrl,
+          photo_type: photoType,
+        }),
+      });
+
+      if (dbResponse.ok) {
+        alert("Success! Photo is saved");
+
+        if (typeof fetchPhotos === "function") fetchPhotos();
+      } else {
+        alert("Cloudinary worked, but saving to your Database failed.");
+      }
     } catch (err) {
-        console.error("Upload process failed:", err);
-        alert("An error occurred during the upload process.");
+      console.error("Upload process failed:", err);
+      alert("An error occurred during the upload process.");
     }
-};
+  };
 
   return (
     <div className="dashboard-container">
@@ -223,10 +225,25 @@ const handleUploadCloud = async (e) => {
               padding: "6px 10px",
             }}
           >
-              <option value="day" style={{ background: "#032a0d", color: "white" }}>Today</option>
-              <option value="week" style={{ background: "#032a0d", color: "white" }}>This Week</option>
-              <option value="month" style={{ background: "#032a0d", color: "white" }}>This Month</option>
-              </select>
+            <option
+              value="day"
+              style={{ background: "#032a0d", color: "white" }}
+            >
+              Today
+            </option>
+            <option
+              value="week"
+              style={{ background: "#032a0d", color: "white" }}
+            >
+              This Week
+            </option>
+            <option
+              value="month"
+              style={{ background: "#032a0d", color: "white" }}
+            >
+              This Month
+            </option>
+          </select>
         </div>
 
         <Container fluid>
@@ -237,8 +254,7 @@ const handleUploadCloud = async (e) => {
                 <ResponsiveContainer>
                   <LineChart data={calorieData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="log_date" 
-                        tickFormatter={formatGraphDate} />
+                    <XAxis dataKey="log_date" tickFormatter={formatGraphDate} />
                     <YAxis />
                     <Tooltip labelFormatter={formatListDate} />
                     <Line
@@ -259,10 +275,7 @@ const handleUploadCloud = async (e) => {
                 <ResponsiveContainer>
                   <LineChart data={stepData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="log_date" 
-                      tickFormatter={formatGraphDate} 
-                    />
+                    <XAxis dataKey="log_date" tickFormatter={formatGraphDate} />
                     <YAxis />
                     <Tooltip labelFormatter={formatListDate} />
                     <Line type="monotone" dataKey="steps" stroke="#3b9ff6" />
@@ -279,10 +292,7 @@ const handleUploadCloud = async (e) => {
                 <ResponsiveContainer>
                   <LineChart data={moodData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="log_date" 
-                      tickFormatter={formatGraphDate} 
-                    />
+                    <XAxis dataKey="log_date" tickFormatter={formatGraphDate} />
                     <YAxis domain={[0, 5]} />
                     <Tooltip labelFormatter={formatListDate} />
                     <Line
@@ -339,26 +349,13 @@ const handleUploadCloud = async (e) => {
                   gap: "15px",
                 }}
               >
-             {progressPhotos.map((photo, index) => {
-               
-                const imageUrl = photo.image_url.startsWith("http") 
-                  ? photo.image_url 
-                  : `/api/uploads/${photo.image_url.split("/").pop()}`;
+                {progressPhotos.map((photo, index) => {
+                  const imageUrl = photo.image_url.startsWith("http")
+                    ? photo.image_url
+                    : `/api/uploads/${photo.image_url.split("/").pop()}`;
 
-                return (
-                  <div key={index} >
-                    <img
-                      src={imageUrl}
-                      alt="progress"
-                      onClick={() => setEnlargedImage(imageUrl)}
-                      style={{
-                        width: "100%",
-                        height: "150px",
-                        objectFit: "cover",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                      }}
-      />
+                  return (
+                    <div key={index}>
                       <img
                         src={imageUrl}
                         alt="progress"
@@ -382,24 +379,27 @@ const handleUploadCloud = async (e) => {
                         {photo.photo_type}
                       </p>
                       <button
-                          onClick={() => handleDelete(photo.image_url)}
-                          style={{
-                            width: "100%",
-                            padding: "6px",
-                            fontSize: "11px",
-                            background: "rgba(255, 77, 77, 0.2)",
-                            border: "1px solid #8a3131",
-                            borderRadius: "4px",
-                            color: "white",
-                            cursor: "pointer",
-                            transition: "0.3s"
-                          }}
-                          onMouseEnter={(e) => (e.target.style.background = "rgba(126, 27, 27, 0.5)")}
-                          onMouseLeave={(e) => (e.target.style.background = "rgba(255, 77, 77, 0.2)")}
-                        >
-                          Delete Photo
-                        </button>
-                
+                        onClick={() => handleDelete(photo.image_url)}
+                        style={{
+                          width: "100%",
+                          padding: "6px",
+                          fontSize: "11px",
+                          background: "rgba(255, 77, 77, 0.2)",
+                          border: "1px solid #8a3131",
+                          borderRadius: "4px",
+                          color: "white",
+                          cursor: "pointer",
+                          transition: "0.3s",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.target.style.background = "rgba(126, 27, 27, 0.5)")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.target.style.background = "rgba(255, 77, 77, 0.2)")
+                        }
+                      >
+                        Delete Photo
+                      </button>
                     </div>
                   );
                 })}

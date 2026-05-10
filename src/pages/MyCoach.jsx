@@ -36,19 +36,25 @@ const MyCoach = () => {
   };
 
   useEffect(() => {
-    fetch(`/api/my_coach/${clientId}`)
-      .then((res) => {
-        if (!res.ok) {
-          return null;
-        }
+  if (!clientId) return;
 
-        return res.json();
-      })
-      .then((data) => {
-        setMyCoach(data);
-      })
-      .catch((error) => console.error("Error fetching my coach:", error));
-  }, [clientId]);
+  fetch(`/api/my_coach/${clientId}`)
+    .then((res) => {
+      
+      if (res.status === 404) return null; 
+      if (!res.ok) throw new Error("Server error");
+      return res.json();
+    })
+    .then((data) => {
+      setMyCoach(data);
+    })
+    .catch((error) => {
+      
+      if (error.message !== "Server error") {
+        console.log("No coach assigned yet.");
+      }
+    });
+}, [clientId]);
 
   const formik = useFormik({
     initialValues: {

@@ -957,3 +957,14 @@ h3{
   margin: 15px 0;
   font-style: italic;
 }
+
+.coach-close-btn {
+  background-color: rgba(3, 53, 19, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #cccccc;
+  padding: 10px 20px;
+  border-radius: 8px;
+  width: 100%;
+  transition: 0.3s;
+  margin-top: 10px;
+}
