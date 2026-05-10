@@ -121,7 +121,7 @@ function RegistrationPage() {
             onError={() => console.log("Signup failed")}
             theme="filled_black"
             size="large"
-            width="100%"
+            width="360"
           />
         </div>
 
