@@ -81,6 +81,17 @@ const MessagingPage = () => {
       }
     }
 
+    // Coaches may also have their own personal coach — add them too if present
+    if (userRole === "coach" || userRole === "nutritionist") {
+      const myCoachRes = await fetch(`/api/my_coach/${clientId}`);
+      if (myCoachRes.ok) {
+        const myCoachData = await myCoachRes.json();
+        if (myCoachData.coach_id && !existingIds.has(myCoachData.coach_id) && !contacts.some(c => c.other_user_id === myCoachData.coach_id)) {
+          contacts.push({ other_user_id: myCoachData.coach_id, first_name: myCoachData.first_name, last_name: myCoachData.last_name, last_message: null });
+        }
+      }
+    }
+
     setConversations([...existing, ...contacts]);
   };
 
