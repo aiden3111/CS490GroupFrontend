@@ -25,6 +25,10 @@ const NotificationsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        await fetch(`/api/notifications/daily-reminders/${clientId}`, {
+          method: "POST",
+        });
+
         const notifRes = await fetch(
           `/api/notifications/${clientId}`,
         );
