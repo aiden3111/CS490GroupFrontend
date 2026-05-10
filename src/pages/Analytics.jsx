@@ -16,6 +16,8 @@ import {
 const Analytics = () => {
   const { clientId } = useParams();
   const navigate = useNavigate();
+  const CLOUD_NAME = "dnmk4tvun";
+  const UPLOAD_PRESET = "bitfit_preset";
 
   const [calorieData, setCalorieData] = useState([]);
   const [stepData, setStepData] = useState([]);
@@ -105,25 +107,23 @@ const Analytics = () => {
     fetchPhotos();
   }, [clientId, range]);
 
-  const handleDelete = async (imageUrl) => {
-  
-  const filename = imageUrl.split("/").pop();
+const handleDelete = async (imageUrl) => {
+  if (!window.confirm("Are you sure?")) return;
 
-  if (!window.confirm("Are you sure you want to delete this photo?")) return;
+  const identifier = imageUrl.startsWith("http") 
+    ? encodeURIComponent(imageUrl) 
+    : imageUrl.split("/").pop();
 
   try {
-    const res = await fetch(`/api/progress/delete/${filename}`, {
+    const res = await fetch(`/api/progress/delete/${identifier}`, {
       method: "DELETE",
     });
 
     if (res.ok) {
-      
       setProgressPhotos((prev) => prev.filter((p) => p.image_url !== imageUrl));
-    } else {
-      alert("Failed to delete photo from server.");
     }
   } catch (err) {
-    console.error("Failed to delete photo", err);
+    console.error("Failed to delete", err);
   }
 };
 
@@ -143,6 +143,58 @@ const formatGraphDate = (dateStr) => {
     month: 'short', 
     day: '2-digit' 
   });
+};
+
+const handleUploadCloud = async (e) => {
+    e.preventDefault();
+    if (!selectedFile) return alert("Please select a photo first!");
+
+   
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    try {
+        
+        const cloudResponse = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+            {
+                method: "POST",
+                body: formData,
+            }
+        );
+
+        if (!cloudResponse.ok) {
+            const errorData = await cloudResponse.json();
+            console.error("Cloudinary Error:", errorData);
+            return alert("Failed to upload to Cloudinary. Check your Preset!");
+        }
+
+        const cloudData = await cloudResponse.json();
+        const permanentUrl = cloudData.secure_url; 
+        
+        const dbResponse = await fetch(`/api/progress/upload/${clientId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                image_url: permanentUrl, 
+                photo_type: photoType,    
+            }),
+        });
+
+        if (dbResponse.ok) {
+            alert("Success! Photo is now permanent for the 4-day stress test.");
+           
+            if (typeof fetchPhotos === "function") fetchPhotos(); 
+        } else {
+            alert("Cloudinary worked, but saving to your Database failed.");
+        }
+    } catch (err) {
+        console.error("Upload process failed:", err);
+        alert("An error occurred during the upload process.");
+    }
 };
 
   return (
@@ -250,7 +302,7 @@ const formatGraphDate = (dateStr) => {
               <h3>Before and After Progress</h3>
 
               <form
-                onSubmit={handleUpload}
+                onSubmit={handleUploadCloud}
                 style={{
                   marginBottom: "20px",
                   display: "flex",
@@ -289,21 +341,26 @@ const formatGraphDate = (dateStr) => {
                   gap: "15px",
                 }}
               >
-                {progressPhotos.map((photo, index) => {
-                  const imageUrl = `/api/uploads/${photo.image_url.split("/").pop()}`;
-                  return (
-                    <div
-                      key={index}
+             {progressPhotos.map((photo, index) => {
+               
+                const imageUrl = photo.image_url.startsWith("http") 
+                  ? photo.image_url 
+                  : `/api/uploads/${photo.image_url.split("/").pop()}`;
+
+                return (
+                  <div key={index} >
+                    <img
+                      src={imageUrl}
+                      alt="progress"
+                      onClick={() => setEnlargedImage(imageUrl)}
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        background: "rgba(255,255,255,0.05)",
-                        padding: "10px",
-                        borderRadius: "8px",
-                        gap: "8px",
+                        width: "100%",
+                        height: "150px",
+                        objectFit: "cover",
+                        borderRadius: "4px",
+                        cursor: "pointer",
                       }}
-                    >
+      />
                       <img
                         src={imageUrl}
                         alt="progress"
