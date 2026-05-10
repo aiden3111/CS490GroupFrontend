@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "./ModalPage";
 import Sidebar from "../components/Sidebar";
 
-const dayOptions = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+const dayOptions = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const timeOptions = ["Morning", "Afternoon", "Evening"];
 
 const availabilityMatches = (availability = "", selectedDays = [], selectedTimes = []) => {
@@ -15,6 +15,8 @@ const availabilityMatches = (availability = "", selectedDays = [], selectedTimes
     wed: ["wed", "wednesday", "mon-fri", "mon-thu", "weekdays"],
     thu: ["thu", "thursday", "mon-fri", "mon-thu", "weekdays"],
     fri: ["fri", "friday", "mon-fri", "weekdays"],
+    sat: ["sat", "saturday", "tue-sat", "weekend", "weekends"],
+    sun: ["sun", "sunday", "weekend", "weekends"],
   };
 
   const dayMatch =
